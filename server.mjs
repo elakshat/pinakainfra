@@ -26,7 +26,8 @@ function loadEnvFile() {
 }
 
 const port = Number(process.env.PORT || 4173);
-const scriptTargets = {
+const disableSheetsBackend = process.env.DISABLE_SHEETS_BACKEND === "true" || process.env.BACKEND_TYPE === "supabase";
+const scriptTargets = disableSheetsBackend ? {} : {
   master: process.env.MASTER_SCRIPT_URL,
   fuel: process.env.FUEL_SCRIPT_URL,
   maintenance: process.env.MAINTENANCE_SCRIPT_URL,
@@ -36,6 +37,9 @@ const scriptTargets = {
   weighbridge: process.env.WEIGHBRIDGE_SCRIPT_URL,
   complaints: process.env.COMPLAINTS_SCRIPT_URL
 };
+if (disableSheetsBackend) {
+  console.log("Google Sheets backend disabled for Supabase testing.");
+}
 const appPinOverrides = {
   fuel: process.env.FUEL_PORTAL_PIN || "1111",
   weighbridge: process.env.WEIGHBRIDGE_PORTAL_PIN || "2222",
