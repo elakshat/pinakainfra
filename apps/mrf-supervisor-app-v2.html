@@ -1,0 +1,1586 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Pinaka Infra &middot; MRF</title>
+<style>
+:root{
+  --bg:#F0F7F0;--surface:#FFFFFF;--surface2:#E8F5E9;
+  --primary:#1B5E20;--primary-mid:#2E7D32;--primary-light:#43A047;
+  --primary-pale:#E8F5E9;--primary-border:#A5D6A7;
+  --text:#0D2010;--text2:#3A5C3E;--text3:#7A9B7A;
+  --border:#C8E6C9;--border2:#A5D6A7;
+  --orange:#E65100;--orange-light:#FFF3E0;--orange-border:#FFCC80;
+  --red:#C62828;--red-light:#FFEBEE;
+  --blue:#1565C0;--blue-bg:#E3F2FD;--blue-border:#90CAF9;
+  --shadow:0 2px 12px rgba(0,50,0,.1);--shadow2:0 4px 24px rgba(0,50,0,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;min-height:100vh;max-width:480px;margin:0 auto}
+.screen{display:none;min-height:100vh}.screen.active{display:block}
+.hdr{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--primary);box-shadow:var(--shadow2)}
+.logo{font-size:15px;font-weight:800;letter-spacing:2px;color:#fff}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.65);letter-spacing:1px;margin-top:2px;text-transform:uppercase}
+.btn-back{background:none;border:none;color:rgba(255,255,255,.85);font-size:14px;cursor:pointer;padding:0;font-family:inherit;font-weight:600}
+.av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;border:2px solid rgba(255,255,255,.4);cursor:pointer}
+.logout-lbl{font-size:9px;color:rgba(255,255,255,.5);margin-top:2px;text-align:center}
+.login-header{background:var(--primary);padding:28px 20px 22px;text-align:center}
+.login-title{font-size:22px;font-weight:800;letter-spacing:3px;color:#fff;margin-bottom:6px}
+.login-tag{font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.75);margin-bottom:2px}
+.login-sub{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:1px;text-transform:uppercase}
+.pin-section{padding:24px 24px 16px}
+.pin-label{text-align:center;color:var(--text3);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;font-weight:600}
+.stat-box{background:var(--primary);margin:14px 16px;border-radius:16px;padding:18px;box-shadow:var(--shadow2)}
+.stat-big{font-size:32px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1}
+.stat-lbl{font-size:10px;color:rgba(255,255,255,.65);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.stat-cnt{color:rgba(255,255,255,.55);font-size:11px;margin-top:4px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 0}
+.stat-mini{background:rgba(0,0,0,.2);border-radius:10px;padding:10px 12px}
+.stat-mini-lbl{font-size:9px;color:rgba(255,255,255,.55);letter-spacing:1.5px;text-transform:uppercase}
+.stat-mini-val{font-size:20px;font-weight:800;color:#fff;margin-top:2px}
+.stat-mini-sub{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px}
+.mini-row{display:flex;align-items:center;gap:6px;margin-top:8px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dy{background:#FFD54F}.db{background:#82B1FF}.dg{background:#69F0AE}.dr{background:#FF8A65}
+.mini-lbl{font-size:11px;color:rgba(255,255,255,.6)}
+.mini-val{font-weight:700;font-size:13px;color:#fff}
+.sync-bar{display:flex;justify-content:space-between;align-items:center;margin:0 16px 10px;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:600;border:1px solid}
+.sync-ok{background:#E8F5E9;color:#1B5E20;border-color:#A5D6A7}
+.sync-pending{background:var(--orange-light);color:var(--orange);border-color:var(--orange-border);cursor:pointer}
+.sync-none{background:var(--surface2);color:var(--text3);border-color:var(--border)}
+.mcard{background:var(--surface);border-radius:12px;padding:16px;margin-bottom:8px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.04);cursor:pointer;transition:background .1s}
+.mcard:active{background:var(--primary-pale)}
+.mcard-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.mcard-icon{font-size:22px;flex-shrink:0}
+.mcard-title{font-size:14px;font-weight:800;color:var(--text);flex:1}
+.mcard-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;flex-shrink:0}
+.mb-done{background:#E8F5E9;color:#1B5E20;border:1px solid #A5D6A7}
+.mb-pend{background:var(--orange-light);color:var(--orange);border:1px solid var(--orange-border)}
+.mcard-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-top:4px}
+.mcard-lbl{color:var(--text3);font-weight:600}
+.mcard-val{color:var(--text);font-weight:700}
+.mcard-val-hi{color:var(--primary);font-weight:800;font-size:14px}
+.fhdr{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--primary)}
+.fhdr-title{font-weight:800;font-size:15px;color:#fff;letter-spacing:.5px}
+.fwrap{padding:0 16px 120px}
+.flbl{color:var(--text2);font-size:11px;letter-spacing:1px;font-weight:700;margin-bottom:6px;margin-top:20px;text-transform:uppercase;display:block}
+.finp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-size:15px;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+.finp:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(27,94,32,.1)}
+.finp:disabled{background:#f5f5f5;color:var(--text3)}
+.finp-big{font-size:26px;font-weight:800;color:var(--primary)}
+.trow{display:flex;gap:8px}
+.info-strip{background:var(--primary-pale);border:1.5px solid var(--primary-border);border-radius:10px;padding:12px 14px;margin-top:10px}
+.info-strip-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.info-strip-row:last-child{margin-bottom:0}
+.info-lbl{color:var(--text3);font-weight:600}
+.info-val{color:var(--primary);font-weight:800;text-align:right;max-width:65%}
+.green-panel{background:var(--primary-pale);border:1.5px solid var(--primary-border);border-radius:12px;padding:16px;margin-top:20px}
+.green-panel-title{font-size:11px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.btn-p{display:block;width:calc(100% - 32px);margin:0 16px;padding:15px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:13px;letter-spacing:1px;cursor:pointer;text-align:center;font-family:inherit;box-shadow:0 4px 14px rgba(27,94,32,.35)}
+.btn-o{display:block;width:calc(100% - 32px);margin:0 16px;padding:14px;background:var(--surface);color:var(--primary);border:2px solid var(--primary);border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;text-align:center;font-family:inherit}
+.btn-wa{display:block;width:calc(100% - 32px);margin:0 16px;padding:14px;background:#25D366;color:#fff;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;text-align:center;font-family:inherit}
+.btn-csv{display:block;width:calc(100% - 32px);margin:0 16px;padding:14px;background:#E3F2FD;color:#1565C0;border:1.5px solid #90CAF9;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;text-align:center;font-family:inherit}
+.btn-edit{background:none;border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);font-family:inherit}
+.fab{position:fixed;bottom:24px;right:24px;width:58px;height:58px;border-radius:50%;background:var(--primary);color:#fff;font-size:28px;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(27,94,32,.45);display:flex;align-items:center;justify-content:center;z-index:99}
+.swrap{padding:24px 16px 0;text-align:center}
+.sicon{font-size:48px}.stitle{color:var(--primary);font-weight:800;font-size:20px;margin-top:8px}
+.ssub{color:var(--text3);font-size:12px;margin-top:4px}
+.rbox{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px;margin:14px 16px;box-shadow:var(--shadow)}
+.rno{text-align:center;font-family:monospace;font-size:13px;color:var(--primary);letter-spacing:3px;margin-bottom:14px;padding:10px;background:var(--primary-pale);border-radius:8px;font-weight:800;border:1px solid var(--primary-border)}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.rrow:last-child{border-bottom:none}
+.rlbl{color:var(--text3);font-size:12px}
+.rval{color:var(--text);font-size:12px;font-weight:600;text-align:right;max-width:65%}
+.rhi{color:var(--primary);font-weight:800;font-size:15px}
+.receipt-btns{display:flex;flex-direction:column;gap:10px;padding:0 0 40px}
+.range-tabs{display:flex;gap:6px;padding:8px 16px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.range-tab{flex-shrink:0;padding:7px 14px;border-radius:18px;font-size:12px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--text2);border:1.5px solid var(--border);white-space:nowrap}
+.range-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.search-box{position:relative;margin:6px 16px}
+.search-inp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:11px 14px 11px 38px;font-size:13px;outline:none;font-family:inherit;color:var(--text)}
+.search-inp:focus{border-color:var(--primary)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px}
+.log-sum{background:var(--primary-pale);border:1px solid var(--primary-border);border-radius:10px;padding:10px 16px;margin:8px 16px 0;display:flex;justify-content:space-between;align-items:center}
+.ls-lbl{font-size:11px;color:var(--text3);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.ls-val{font-size:15px;font-weight:800;color:var(--primary)}
+.log-card{background:var(--surface);border-radius:12px;padding:14px;margin-bottom:8px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.lc-top{display:flex;justify-content:space-between;align-items:flex-start}
+.lc-ltr{font-size:18px;font-weight:800;color:var(--primary);text-align:right}
+.lc-meta{font-size:11px;color:var(--text3);margin-top:3px}
+.lc-name{font-size:14px;font-weight:800;color:var(--text)}
+.lc-sub{font-size:12px;color:var(--text2);margin-top:3px;font-weight:600}
+.lc-footer{display:flex;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);flex-wrap:wrap;align-items:center}
+.lc-chip{font-size:11px;color:var(--text2);background:var(--surface2);padding:3px 8px;border-radius:5px;font-weight:600}
+.out-box{background:var(--surface2);border-radius:10px;padding:10px 12px;margin-top:8px}
+.out-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.out-item{font-size:11px;color:var(--text2)}
+.ward-tag{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:800;background:#E3F2FD;color:#1565C0;flex-shrink:0}
+.lwrap{padding:0 16px 80px}
+.gap{height:12px}
+.empty{text-align:center;color:var(--text3);padding:48px 0;font-size:13px}
+.admin-section{margin:16px 16px 0;background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.admin-section-hdr{background:var(--primary-pale);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.admin-section-title{font-size:13px;font-weight:800;color:var(--primary);letter-spacing:.5px}
+.admin-add-btn{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit}
+.admin-row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:10px}
+.admin-row:last-child{border-bottom:none}
+.admin-row-info{flex:1;min-width:0}
+.admin-row-name{font-size:13px;font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.admin-row-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.admin-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;flex-shrink:0}
+.ab-admin{background:#FFF8E1;color:#E65100;border:1px solid #FFCC80}
+.ab-user{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+.admin-action-btn{background:none;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);font-family:inherit;white-space:nowrap}
+.admin-del-btn{background:none;border:1.5px solid #FFCDD2;border-radius:8px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--red);font-family:inherit}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:20px;text-align:center}
+.modal-flbl{color:var(--text2);font-size:11px;letter-spacing:1px;font-weight:700;margin-bottom:6px;margin-top:16px;text-transform:uppercase;display:block}
+.modal-flbl:first-of-type{margin-top:0}
+.modal-inp{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:15px;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+.modal-inp:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(27,94,32,.1)}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+.modal-btn-save{flex:2;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit}
+.modal-btn-cancel{flex:1;padding:14px;background:var(--surface2);color:var(--text2);border:1px solid var(--border);border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+.modal-trow{display:flex;gap:8px;margin-top:4px}
+.modal-tog{flex:1;padding:11px;text-align:center;border-radius:10px;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.modal-tog.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.tog{flex:1;padding:12px;text-align:center;border-radius:10px;background:var(--surface);color:var(--text2);border:1.5px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.tog.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.spinner{display:inline-block;width:11px;height:11px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.97);display:none;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:14px;font-family:inherit}
+#loading-overlay.show{display:flex}
+.loading-spinner{width:48px;height:48px;border:4px solid #C8E6C9;border-top-color:#1B5E20;border-radius:50%;animation:spin 1s linear infinite}
+#loading-msg{color:var(--primary);font-weight:700;font-size:14px;letter-spacing:1px}
+.site-tag{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:1px}
+.st-malaka{background:#FFF8E1;color:#E65100;border:1px solid #FFCC80}
+.st-raddiya{background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9}
+.st-ajgawan{background:#F3E5F5;color:#6A1B9A;border:1px solid #E1BEE7}
+.st-mithnapur{background:#E8F5E9;color:#1B5E20;border:1px solid #A5D6A7}
+</style>
+  <link rel="stylesheet" href="shared-theme.css">
+</head>
+<body>
+<div id="loading-overlay"><div class="loading-spinner"></div><div id="loading-msg">Loading...</div></div>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-header">
+    <div class="login-title">MRF SUPERVISOR</div>
+    <div class="login-tag">PINAKA INFRA</div>
+    <div class="login-sub">Nagar Palika Parishad &middot; Fatehpur</div>
+  </div>
+  <div class="pin-section">
+    <div class="pin-label">Select User</div>
+    <div id="user-list"></div>
+    <div id="mrf-connect-card" class="mrf-connect-card" style="display:none">
+      <div class="mrf-connect-title">MRF Google Sheets setup needed</div>
+      <div class="mrf-connect-sub" id="mrf-connect-status">Paste the deployed MRF Apps Script Web App URL ending with /exec.</div>
+      <input class="finp mrf-url-input" id="mrf-script-url" placeholder="MRF Apps Script URL" autocomplete="off"/>
+      <div class="mrf-connect-actions">
+        <button class="mrf-connect-btn primary" onclick="saveMrfScriptUrl()">Save URL</button>
+        <button class="mrf-connect-btn" onclick="runMrfDebug()">Test</button>
+        <button class="mrf-connect-btn danger" onclick="clearMrfScriptUrl()">Clear</button>
+      </div>
+      <div id="mrf-debug-result" class="mrf-debug-result"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="screen-dash" class="screen">
+  <div class="hdr">
+    <div>
+      <div class="logo" id="dash-site-lbl">MRF</div>
+      <div class="logo-sub" id="dash-user-lbl">PINAKA INFRA</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="admin-btn" style="display:none;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit" onclick="goTo('admin')">&#9881; Admin</button>
+      <div><div class="av" id="dash-av" onclick="logout()">S</div><div class="logout-lbl">Logout</div></div>
+    </div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-lbl">TODAY'S WASTE RECEIVED</div>
+    <div class="stat-big" id="d-total">-- TPD</div>
+    <div class="stat-cnt" id="d-sub">Wet + Dry combined</div>
+    <div class="stat-grid">
+      <div class="stat-mini"><div class="stat-mini-lbl">Wet Waste</div><div class="stat-mini-val" id="d-wet">--</div><div class="stat-mini-sub">TPD today</div></div>
+      <div class="stat-mini"><div class="stat-mini-lbl">Dry Waste</div><div class="stat-mini-val" id="d-dry">--</div><div class="stat-mini-sub">TPD today</div></div>
+    </div>
+    <div class="mini-row"><div class="dot dy"></div><span class="mini-lbl">Vehicle Trips Today:</span><span class="mini-val" id="d-trips">0</span></div>
+    <div class="mini-row"><div class="dot dg"></div><span class="mini-lbl">Total Weight Today:</span><span class="mini-val" id="d-tripwt">0 kg</span></div>
+  </div>
+  <div id="sync-bar" class="sync-bar sync-none">&#9679; Connecting to Google Sheets...</div>
+  <div style="display:flex;gap:6px;padding:4px 16px 8px">
+    <button style="flex:1;padding:10px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);font-family:inherit" onclick="sendDailyWA()">&#128172; Daily WA</button>
+    <button style="flex:1;padding:10px;background:#E3F2FD;border:1.5px solid #90CAF9;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;color:#1565C0;font-family:inherit" onclick="downloadTodayCSV()">&#128190; CSV Report</button>
+  </div>
+  <div class="lwrap" id="dash-modules"></div>
+</div>
+
+<!-- TRIP ENTRY -->
+<div id="screen-trip-entry" class="screen">
+  <div class="fhdr">
+    <button class="btn-back" onclick="goTo('trip-log')">&#8592; Back</button>
+    <div class="fhdr-title" id="te-title">&#128665; New Trip Entry</div>
+    <div style="width:50px"></div>
+  </div>
+  <div class="fwrap">
+    <label class="flbl" style="margin-top:16px">Select Vehicle *</label>
+    <select class="finp" id="te-vehicle" onchange="onVehicleChange()"><option value="">-- Select Vehicle --</option></select>
+    <div class="info-strip" id="te-vinfo" style="display:none">
+      <div class="info-strip-row"><span class="info-lbl">Ward No</span><span class="info-val" id="tei-wno">--</span></div>
+      <div class="info-strip-row"><span class="info-lbl">Ward Name</span><span class="info-val" id="tei-wname">--</span></div>
+      <div class="info-strip-row"><span class="info-lbl">Vehicle Type</span><span class="info-val" id="tei-type">--</span></div>
+    </div>
+    <label class="flbl">Driver Name *</label>
+    <input class="finp" id="te-driver" type="text" placeholder="Enter driver name" autocomplete="off"/>
+    <label class="flbl">Weight (kg) *</label>
+    <input class="finp finp-big" id="te-weight" type="number" inputmode="decimal" placeholder="e.g. 1150"/>
+    <div class="trow">
+      <div style="flex:1"><label class="flbl">Arrival Time *</label><input class="finp" id="te-arrival" type="time"/></div>
+      <div style="flex:1"><label class="flbl">Departure Time *</label><input class="finp" id="te-departure" type="time"/></div>
+    </div>
+    <div class="gap"></div><div class="gap"></div>
+    <button class="btn-p" id="te-submit-btn" onclick="submitTrip()">&#10003; CONFIRM &amp; SAVE TRIP</button>
+    <div class="gap"></div>
+  </div>
+</div>
+
+<!-- TRIP SLIP -->
+<div id="screen-trip-slip" class="screen">
+  <div class="swrap"><div class="sicon">&#9989;</div><div class="stitle">Trip Saved</div><div class="ssub" id="ts-sub">Recorded successfully</div></div>
+  <div class="rbox">
+    <div class="rno" id="ts-slipno">MRF-XXXXXX-001</div>
+    <div class="rrow"><span class="rlbl">Date</span><span class="rval" id="ts-date">--</span></div>
+    <div class="rrow"><span class="rlbl">Vehicle</span><span class="rval" id="ts-vehicle">--</span></div>
+    <div class="rrow"><span class="rlbl">Ward</span><span class="rval" id="ts-ward">--</span></div>
+    <div class="rrow"><span class="rlbl">Driver</span><span class="rval" id="ts-driver">--</span></div>
+    <div class="rrow"><span class="rlbl">Weight</span><span class="rval rhi" id="ts-weight">-- kg</span></div>
+    <div class="rrow"><span class="rlbl">Time</span><span class="rval" id="ts-time">--</span></div>
+    <div class="rrow"><span class="rlbl">Supervisor</span><span class="rval" id="ts-sup">--</span></div>
+  </div>
+  <div class="receipt-btns">
+    <button class="btn-wa" id="ts-wa-btn">&#128172; SHARE ON WHATSAPP</button>
+    <button class="btn-p" onclick="goTo('trip-entry')">+ New Trip Entry</button>
+    <button class="btn-o" onclick="goTo('trip-log')">&#8592; Back to Trip Log</button>
+  </div>
+</div>
+
+<!-- TRIP LOG -->
+<div id="screen-trip-log" class="screen">
+  <div class="fhdr">
+    <button class="btn-back" onclick="goTo('dash')">&#8592; Back</button>
+    <div class="fhdr-title">&#128665; Vehicle Trip Log</div>
+    <div style="width:50px"></div>
+  </div>
+  <div class="search-box"><span class="search-icon">&#128269;</span><input class="search-inp" id="tl-search" placeholder="Search vehicle, ward, driver..." oninput="renderTripLog()"/></div>
+  <div class="range-tabs">
+    <div class="range-tab active" id="tl-rt-today" onclick="setRange('tl','today')">Today</div>
+    <div class="range-tab" id="tl-rt-week" onclick="setRange('tl','week')">This Week</div>
+    <div class="range-tab" id="tl-rt-month" onclick="setRange('tl','month')">This Month</div>
+    <div class="range-tab" id="tl-rt-all" onclick="setRange('tl','all')">All</div>
+  </div>
+  <div id="tl-sum" class="log-sum" style="display:none"></div>
+  <div class="lwrap" id="tl-list" style="padding-top:10px"></div>
+  <button class="fab" onclick="startEntry('trip')">+</button>
+</div>
+
+<!-- COMPOST ENTRY -->
+<div id="screen-compost-entry" class="screen">
+  <div class="fhdr">
+    <button class="btn-back" onclick="goTo('compost-log')">&#8592; Back</button>
+    <div class="fhdr-title" id="ce-title">&#127807; Compost Entry</div>
+    <div style="width:50px"></div>
+  </div>
+  <div class="fwrap">
+    <label class="flbl" style="margin-top:16px">Date *</label>
+    <input class="finp" id="ce-date" type="date"/>
+    <label class="flbl">Wet Waste Collected (TPD) *</label>
+    <input class="finp finp-big" id="ce-collected" type="number" inputmode="decimal" step="0.01" placeholder="e.g. 20.67"/>
+    <label class="flbl">Wet Waste Processed at Plant (TPD) *</label>
+    <input class="finp" id="ce-processed" type="number" inputmode="decimal" step="0.01" placeholder="e.g. 20.67"/>
+    <label class="flbl">Processing Method</label>
+    <select class="finp" id="ce-method">
+      <option>Aerobic pit based composting</option><option>Windrow composting</option><option>Vermicomposting</option><option>Other</option>
+    </select>
+    <label class="flbl">Compost Generated at Plant (TPD) *</label>
+    <input class="finp finp-big" id="ce-compost" type="number" inputmode="decimal" step="0.01" placeholder="e.g. 4.17"/>
+    <label class="flbl">Utilization of Finished Products</label>
+    <select class="finp" id="ce-util"><option>ULB</option><option>Sold</option><option>Distributed</option><option>Stockpiled</option></select>
+    <label class="flbl">Quantity (Optional)</label>
+    <input class="finp" id="ce-qty" type="text" placeholder="Optional" autocomplete="off"/>
+    <div class="gap"></div><div class="gap"></div>
+    <button class="btn-p" id="ce-submit-btn" onclick="submitCompost()">&#10003; CONFIRM &amp; SAVE ENTRY</button>
+    <div class="gap"></div>
+  </div>
+</div>
+
+<!-- COMPOST LOG -->
+<div id="screen-compost-log" class="screen">
+  <div class="fhdr">
+    <button class="btn-back" onclick="goTo('dash')">&#8592; Back</button>
+    <div class="fhdr-title">&#127807; Compost Log</div>
+    <div style="width:50px"></div>
+  </div>
+  <div class="range-tabs">
+    <div class="range-tab" id="cl-rt-today" onclick="setRange('cl','today')">Today</div>
+    <div class="range-tab" id="cl-rt-week" onclick="setRange('cl','week')">This Week</div>
+    <div class="range-tab active" id="cl-rt-month" onclick="setRange('cl','month')">This Month</div>
+    <div class="range-tab" id="cl-rt-all" onclick="setRange('cl','all')">All</div>
+  </div>
+  <div id="cl-sum" class="log-sum" style="display:none"></div>
+  <div class="lwrap" id="cl-list" style="padding-top:10px"></div>
+  <button class="fab" onclick="startEntry('compost')">+</button>
+</div>
+
+<!-- DRY WASTE ENTRY -->
+<div id="screen-drywaste-entry" class="screen">
+  <div class="fhdr">
+    <button class="btn-back" onclick="goTo('drywaste-log')">&#8592; Back</button>
+    <div class="fhdr-title" id="de-title">&#9851; Dry Waste Entry</div>
+    <div style="width:50px"></div>
+  </div>
+  <div class="fwrap">
+    <label class="flbl" style="margin-top:16px">Date *</label>
+    <input class="finp" id="de-date" type="date"/>
+    <label class="flbl">Dry Waste Received at Plant (TPD) *</label>
+    <input class="finp finp-big" id="de-rcv" type="number" inputmode="decimal" step="0.01" placeholder="e.g. 4.68"/>
+    <label class="flbl">Dry Waste Processed at Plant (TPD) *</label>
+    <input class="finp" id="de-proc" type="number" inputmode="decimal" step="0.01" placeholder="e.g. 4.68"/>
+    <div class="green-panel">
+      <div class="green-panel-title">Output of Plant (TPD)</div>
+      <div class="trow"><div style="flex:1"><label class="flbl" style="margin-top:0">Cardboard</label><input class="finp" id="de-cb" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div><div style="flex:1"><label class="flbl" style="margin-top:0">Paper</label><input class="finp" id="de-pp" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div></div>
+      <div class="trow"><div style="flex:1"><label class="flbl">Plastic</label><input class="finp" id="de-pl" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div><div style="flex:1"><label class="flbl">Cloth</label><input class="finp" id="de-cl" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div></div>
+      <div class="trow"><div style="flex:1"><label class="flbl">Glass</label><input class="finp" id="de-gl" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div><div style="flex:1"><label class="flbl">Packaging</label><input class="finp" id="de-pk" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div></div>
+      <div class="trow"><div style="flex:1"><label class="flbl">Rubber</label><input class="finp" id="de-rb" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div><div style="flex:1"><label class="flbl">Metal</label><input class="finp" id="de-mt" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div></div>
+    </div>
+    <label class="flbl">Quantity Utilised</label>
+    <select class="finp" id="de-util"><option>Sell to recycler / store</option><option>Stockpiled</option><option>Distributed</option></select>
+    <div class="gap"></div><div class="gap"></div>
+    <button class="btn-p" id="de-submit-btn" onclick="submitDryWaste()">&#10003; CONFIRM &amp; SAVE ENTRY</button>
+    <div class="gap"></div>
+  </div>
+</div>
+
+<!-- DRY WASTE LOG -->
+<div id="screen-drywaste-log" class="screen">
+  <div class="fhdr">
+    <button class="btn-back" onclick="goTo('dash')">&#8592; Back</button>
+    <div class="fhdr-title">&#9851; Dry Waste Log</div>
+    <div style="width:50px"></div>
+  </div>
+  <div class="range-tabs">
+    <div class="range-tab" id="dl-rt-today" onclick="setRange('dl','today')">Today</div>
+    <div class="range-tab" id="dl-rt-week" onclick="setRange('dl','week')">This Week</div>
+    <div class="range-tab active" id="dl-rt-month" onclick="setRange('dl','month')">This Month</div>
+    <div class="range-tab" id="dl-rt-all" onclick="setRange('dl','all')">All</div>
+  </div>
+  <div id="dl-sum" class="log-sum" style="display:none"></div>
+  <div class="lwrap" id="dl-list" style="padding-top:10px"></div>
+  <button class="fab" onclick="startEntry('drywaste')">+</button>
+</div>
+
+<!-- TROMMEL WET ENTRY -->
+<div id="screen-twet-entry" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('twet-log')">&#8592; Back</button><div class="fhdr-title" id="twe-title">&#128167; Trommel Wet Entry</div><div style="width:50px"></div></div>
+  <div class="fwrap">
+    <label class="flbl" style="margin-top:16px">Date *</label><input class="finp" id="twe-date" type="date"/>
+    <div class="trow">
+      <div style="flex:1"><label class="flbl">Trommel Start Time *</label><input class="finp" id="twe-start" type="time"/></div>
+      <div style="flex:1"><label class="flbl">Trommel End Time *</label><input class="finp" id="twe-end" type="time"/></div>
+    </div>
+    <label class="flbl">Shutdown / Break Hours</label>
+    <input class="finp" id="twe-shut" type="number" inputmode="decimal" step="0.5" placeholder="e.g. 1"/>
+    <label class="flbl">Total Running Hours (auto)</label>
+    <input class="finp" id="twe-run" type="number" inputmode="decimal" step="0.1" placeholder="Auto-calculated"/>
+    <label class="flbl">Finished Compost After 4mm Screening (MT) *</label>
+    <input class="finp finp-big" id="twe-compost" type="number" inputmode="decimal" step="0.01" placeholder="e.g. 5.15"/>
+    <label class="flbl">Remarks</label>
+    <input class="finp" id="twe-rem" type="text" placeholder="e.g. Shutdown due to breakdown" autocomplete="off"/>
+    <div class="gap"></div><div class="gap"></div>
+    <button class="btn-p" id="twe-submit-btn" onclick="submitTrommelWet()">&#10003; CONFIRM &amp; SAVE</button><div class="gap"></div>
+  </div>
+</div>
+
+<!-- TROMMEL WET LOG -->
+<div id="screen-twet-log" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('dash')">&#8592; Back</button><div class="fhdr-title">&#128167; Trommel Wet Log</div><div style="width:50px"></div></div>
+  <div class="range-tabs">
+    <div class="range-tab" id="twl-rt-today" onclick="setRange('twl','today')">Today</div>
+    <div class="range-tab" id="twl-rt-week" onclick="setRange('twl','week')">This Week</div>
+    <div class="range-tab active" id="twl-rt-month" onclick="setRange('twl','month')">This Month</div>
+    <div class="range-tab" id="twl-rt-all" onclick="setRange('twl','all')">All</div>
+  </div>
+  <div id="twl-sum" class="log-sum" style="display:none"></div>
+  <div class="lwrap" id="twl-list" style="padding-top:10px"></div>
+  <button class="fab" onclick="startEntry('twet')">+</button>
+</div>
+
+<!-- TROMMEL DRY ENTRY -->
+<div id="screen-tdry-entry" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('tdry-log')">&#8592; Back</button><div class="fhdr-title" id="tde-title">&#128204; Trommel Dry Entry</div><div style="width:50px"></div></div>
+  <div class="fwrap">
+    <label class="flbl" style="margin-top:16px">Date *</label><input class="finp" id="tde-date" type="date"/>
+    <div class="trow">
+      <div style="flex:1"><label class="flbl">Start Time *</label><input class="finp" id="tde-start" type="time"/></div>
+      <div style="flex:1"><label class="flbl">End Time *</label><input class="finp" id="tde-end" type="time"/></div>
+    </div>
+    <label class="flbl">Shutdown / Break Hours</label>
+    <input class="finp" id="tde-shut" type="number" inputmode="decimal" step="0.5" placeholder="e.g. 1"/>
+    <label class="flbl">Total Running Hours (auto)</label>
+    <input class="finp" id="tde-run" type="number" inputmode="decimal" step="0.1" placeholder="Auto-calculated"/>
+    <label class="flbl">Dry Waste Input (MT) *</label>
+    <input class="finp finp-big" id="tde-input" type="number" inputmode="decimal" step="0.01" placeholder="e.g. 44"/>
+    <div class="green-panel">
+      <div class="green-panel-title">Plant Output</div>
+      <div class="trow">
+        <div style="flex:1"><label class="flbl" style="margin-top:0">Plant Rejected (MT)</label><input class="finp" id="tde-rej" type="number" inputmode="decimal" step="0.1" placeholder="0.0"/></div>
+        <div style="flex:1"><label class="flbl" style="margin-top:0">Bio Soil (MT)</label><input class="finp" id="tde-bio" type="number" inputmode="decimal" step="0.1" placeholder="0.0"/></div>
+      </div>
+      <label class="flbl">Insects Rejection (MT)</label>
+      <input class="finp" id="tde-ins" type="number" inputmode="decimal" step="0.01" placeholder="0.0"/>
+    </div>
+    <label class="flbl">Remarks</label>
+    <input class="finp" id="tde-rem" type="text" placeholder="Optional" autocomplete="off"/>
+    <div class="gap"></div><div class="gap"></div>
+    <button class="btn-p" id="tde-submit-btn" onclick="submitTrommelDry()">&#10003; CONFIRM &amp; SAVE</button><div class="gap"></div>
+  </div>
+</div>
+
+<!-- TROMMEL DRY LOG -->
+<div id="screen-tdry-log" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('dash')">&#8592; Back</button><div class="fhdr-title">&#128204; Trommel Dry Log</div><div style="width:50px"></div></div>
+  <div class="range-tabs">
+    <div class="range-tab" id="tdl-rt-today" onclick="setRange('tdl','today')">Today</div>
+    <div class="range-tab" id="tdl-rt-week" onclick="setRange('tdl','week')">This Week</div>
+    <div class="range-tab active" id="tdl-rt-month" onclick="setRange('tdl','month')">This Month</div>
+    <div class="range-tab" id="tdl-rt-all" onclick="setRange('tdl','all')">All</div>
+  </div>
+  <div id="tdl-sum" class="log-sum" style="display:none"></div>
+  <div class="lwrap" id="tdl-list" style="padding-top:10px"></div>
+  <button class="fab" onclick="startEntry('tdry')">+</button>
+</div>
+
+<!-- RDF ENTRY -->
+<div id="screen-rdf-entry" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('rdf-log')">&#8592; Back</button><div class="fhdr-title" id="re-title">&#128230; RDF Dispatch Entry</div><div style="width:50px"></div></div>
+  <div class="fwrap">
+    <label class="flbl" style="margin-top:16px">Date *</label><input class="finp" id="re-date" type="date"/>
+    <label class="flbl">Vehicle No *</label><input class="finp" id="re-vno" type="text" placeholder="e.g. UP71CT3457" autocomplete="off" style="text-transform:uppercase"/>
+    <label class="flbl">Driver Name *</label><input class="finp" id="re-driver" type="text" placeholder="Driver name" autocomplete="off"/>
+    <div class="trow">
+      <div style="flex:1"><label class="flbl">Gross Weight (kg) *</label><input class="finp finp-big" id="re-gross" type="number" inputmode="decimal" placeholder="0"/></div>
+      <div style="flex:1"><label class="flbl">Tare Weight (kg) *</label><input class="finp finp-big" id="re-tare" type="number" inputmode="decimal" placeholder="0"/></div>
+    </div>
+    <div class="info-strip" style="margin-top:10px"><div class="info-strip-row"><span class="info-lbl">Net Weight</span><span class="info-val rhi" id="re-net-disp">-- kg</span></div></div>
+    <label class="flbl">Disposal Method</label>
+    <select class="finp" id="re-disposal"><option>Cement Plant</option><option>Brick Kiln</option><option>Power Plant</option><option>Other</option></select>
+    <label class="flbl">Receiver Name</label><input class="finp" id="re-receiver" type="text" placeholder="Receiver / company name" autocomplete="off"/>
+    <div class="gap"></div><div class="gap"></div>
+    <button class="btn-p" id="re-submit-btn" onclick="submitRDF()">&#10003; CONFIRM &amp; SAVE DISPATCH</button><div class="gap"></div>
+  </div>
+</div>
+
+<!-- RDF LOG -->
+<div id="screen-rdf-log" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('dash')">&#8592; Back</button><div class="fhdr-title">&#128230; RDF Dispatch Log</div><div style="width:50px"></div></div>
+  <div class="range-tabs">
+    <div class="range-tab active" id="rl-rt-today" onclick="setRange('rl','today')">Today</div>
+    <div class="range-tab" id="rl-rt-week" onclick="setRange('rl','week')">This Week</div>
+    <div class="range-tab" id="rl-rt-month" onclick="setRange('rl','month')">This Month</div>
+    <div class="range-tab" id="rl-rt-all" onclick="setRange('rl','all')">All</div>
+  </div>
+  <div id="rl-sum" class="log-sum" style="display:none"></div>
+  <div class="lwrap" id="rl-list" style="padding-top:10px"></div>
+  <button class="fab" onclick="startEntry('rdf')">+</button>
+</div>
+
+<!-- POCLAIN ENTRY -->
+<div id="screen-poc-entry" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('poc-log')">&#8592; Back</button><div class="fhdr-title" id="pe-title">&#128081; Poclain Log Entry</div><div style="width:50px"></div></div>
+  <div class="fwrap">
+    <label class="flbl" style="margin-top:16px">Date *</label><input class="finp" id="pe-date" type="date"/>
+    <div class="trow">
+      <div style="flex:1"><label class="flbl">Reading Start (Hrs) *</label><input class="finp finp-big" id="pe-rstart" type="number" inputmode="decimal" step="0.1" placeholder="0.0"/></div>
+      <div style="flex:1"><label class="flbl">Reading End (Hrs) *</label><input class="finp finp-big" id="pe-rend" type="number" inputmode="decimal" step="0.1" placeholder="0.0"/></div>
+    </div>
+    <div class="trow">
+      <div style="flex:1"><label class="flbl">Start Time</label><input class="finp" id="pe-start" type="time"/></div>
+      <div style="flex:1"><label class="flbl">End Time</label><input class="finp" id="pe-end" type="time"/></div>
+    </div>
+    <label class="flbl">Purpose of Journey</label>
+    <select class="finp" id="pe-purpose"><option>Waste Sifting</option><option>Loading</option><option>Unloading</option><option>Other</option></select>
+    <label class="flbl">Diesel (Litres)</label><input class="finp" id="pe-diesel" type="number" inputmode="decimal" step="0.5" placeholder="e.g. 100"/>
+    <label class="flbl">Driver Name</label><input class="finp" id="pe-driver" type="text" placeholder="Driver name" autocomplete="off"/>
+    <label class="flbl">Remarks</label><input class="finp" id="pe-rem" type="text" placeholder="Optional" autocomplete="off"/>
+    <div class="gap"></div><div class="gap"></div>
+    <button class="btn-p" id="pe-submit-btn" onclick="submitPoclain()">&#10003; CONFIRM &amp; SAVE</button><div class="gap"></div>
+  </div>
+</div>
+
+<!-- POCLAIN LOG -->
+<div id="screen-poc-log" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('dash')">&#8592; Back</button><div class="fhdr-title">&#128081; Poclain Log</div><div style="width:50px"></div></div>
+  <div class="range-tabs">
+    <div class="range-tab active" id="pl-rt-today" onclick="setRange('pl','today')">Today</div>
+    <div class="range-tab" id="pl-rt-week" onclick="setRange('pl','week')">This Week</div>
+    <div class="range-tab" id="pl-rt-month" onclick="setRange('pl','month')">This Month</div>
+    <div class="range-tab" id="pl-rt-all" onclick="setRange('pl','all')">All</div>
+  </div>
+  <div id="pl-sum" class="log-sum" style="display:none"></div>
+  <div class="lwrap" id="pl-list" style="padding-top:10px"></div>
+  <button class="fab" onclick="startEntry('poc')">+</button>
+</div>
+
+<!-- C&D ENTRY -->
+<div id="screen-cd-entry" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('cd-log')">&#8592; Back</button><div class="fhdr-title" id="cde-title">&#127959; C&amp;D Waste Entry</div><div style="width:50px"></div></div>
+  <div class="fwrap">
+    <label class="flbl" style="margin-top:16px">Date *</label><input class="finp" id="cde-date" type="date"/>
+    <div class="trow">
+      <div style="flex:1"><label class="flbl">Total Generated (TPD) *</label><input class="finp finp-big" id="cde-gen" type="number" inputmode="decimal" step="0.01" placeholder="0.00"/></div>
+      <div style="flex:1"><label class="flbl">Total Collected (TPD) *</label><input class="finp finp-big" id="cde-col" type="number" inputmode="decimal" step="0.01" placeholder="0.00"/></div>
+    </div>
+    <div class="green-panel">
+      <div class="green-panel-title">Material Breakdown (TPD)</div>
+      <div class="trow"><div style="flex:1"><label class="flbl" style="margin-top:0">Bricks</label><input class="finp" id="cde-br" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div><div style="flex:1"><label class="flbl" style="margin-top:0">Concrete</label><input class="finp" id="cde-co" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div></div>
+      <div class="trow"><div style="flex:1"><label class="flbl">Solid</label><input class="finp" id="cde-so" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div><div style="flex:1"><label class="flbl">Wood</label><input class="finp" id="cde-wo" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/></div></div>
+      <label class="flbl">Mortar</label><input class="finp" id="cde-mo" type="number" inputmode="decimal" step="0.001" placeholder="0.000"/>
+    </div>
+    <div class="gap"></div><div class="gap"></div>
+    <button class="btn-p" id="cde-submit-btn" onclick="submitCD()">&#10003; CONFIRM &amp; SAVE</button><div class="gap"></div>
+  </div>
+</div>
+
+<!-- C&D LOG -->
+<div id="screen-cd-log" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('dash')">&#8592; Back</button><div class="fhdr-title">&#127959; C&amp;D Waste Log</div><div style="width:50px"></div></div>
+  <div class="range-tabs">
+    <div class="range-tab" id="cdl-rt-today" onclick="setRange('cdl','today')">Today</div>
+    <div class="range-tab" id="cdl-rt-week" onclick="setRange('cdl','week')">This Week</div>
+    <div class="range-tab active" id="cdl-rt-month" onclick="setRange('cdl','month')">This Month</div>
+    <div class="range-tab" id="cdl-rt-all" onclick="setRange('cdl','all')">All</div>
+  </div>
+  <div id="cdl-sum" class="log-sum" style="display:none"></div>
+  <div class="lwrap" id="cdl-list" style="padding-top:10px"></div>
+  <button class="fab" onclick="startEntry('cd')">+</button>
+</div>
+
+<!-- ADMIN -->
+<div id="screen-admin" class="screen">
+  <div class="fhdr"><button class="btn-back" onclick="goTo('dash')">&#8592; Back</button><div class="fhdr-title">&#9881; Admin Panel</div><div style="width:50px"></div></div>
+  <div style="padding-bottom:40px">
+    <div class="admin-section">
+      <div class="admin-section-hdr"><span class="admin-section-title">&#128665; Vehicles</span><button class="admin-add-btn" onclick="openVehicleModal()">+ Add</button></div>
+      <div id="admin-vehicle-list"></div>
+    </div>
+    <div class="admin-section">
+      <div class="admin-section-hdr"><span class="admin-section-title">&#128100; Users</span><button class="admin-add-btn" onclick="openUserModal()">+ Add</button></div>
+      <div id="admin-user-list"></div>
+    </div>
+    <div class="admin-section" style="margin-bottom:16px">
+      <div class="admin-section-hdr"><span class="admin-section-title">&#9881; Settings</span><button class="admin-add-btn" onclick="saveSettingsAdmin()">Save</button></div>
+      <div style="padding:16px">
+        <label class="modal-flbl" style="margin-top:0">Admin WhatsApp Number</label>
+        <input class="modal-inp" id="set-admin-wa" placeholder="919876543210" inputmode="numeric"/>
+        <label class="modal-flbl">Allow Supervisors to Edit Old Entries</label>
+        <div class="modal-trow">
+          <button class="modal-tog" id="set-edit-y" onclick="setEditTog('true')">Yes — Editing ON</button>
+          <button class="modal-tog" id="set-edit-n" onclick="setEditTog('false')">No — Locked</button>
+        </div>
+        <input type="hidden" id="set-edit-val" value="true"/>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px">Turn OFF once supervisors are trained to lock all entries.</div>
+      </div>
+    </div>
+    <div style="margin:0 16px 16px">
+      <button style="width:100%;padding:13px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);font-family:inherit" onclick="adminReload()">&#128269; Test Connection &amp; Reload Data</button>
+      <div id="admin-test-result" style="display:none;margin-top:10px;padding:12px 14px;border-radius:10px;font-size:11px;line-height:1.7;font-weight:600;word-break:break-word;white-space:pre-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<!-- VEHICLE MODAL -->
+<div class="modal-overlay" id="modal-vehicle">
+  <div class="modal">
+    <div class="modal-title" id="mv-title">Add Vehicle</div>
+    <label class="modal-flbl">Vehicle Number *</label><input class="modal-inp" id="mv-no" placeholder="e.g. UP71CT3457" style="text-transform:uppercase" autocomplete="off"/>
+    <label class="modal-flbl">Vehicle Type *</label>
+    <select class="modal-inp" id="mv-type"><option>MAGIC</option><option>COMPACTOR</option><option>DUMPER</option><option>JCB</option><option>TRACTOR</option><option>POCLAIN</option><option>DP BIN DBL</option><option>DP BIN SMALL</option><option>CAR</option><option>OTHER</option></select>
+    <label class="modal-flbl">Ward No *</label><input class="modal-inp" id="mv-wardno" placeholder="e.g. W13" autocomplete="off"/>
+    <label class="modal-flbl">Ward Name *</label><input class="modal-inp" id="mv-wardname" placeholder="e.g. Raddiya" autocomplete="off"/>
+    <label class="modal-flbl">Driver Name</label><input class="modal-inp" id="mv-driver" placeholder="Default driver" autocomplete="off"/>
+    <label class="modal-flbl">Status</label>
+    <div class="modal-trow"><button class="modal-tog active" id="mv-act-y" onclick="setVehActive('Y')">Active</button><button class="modal-tog" id="mv-act-n" onclick="setVehActive('N')">Inactive</button></div>
+    <input type="hidden" id="mv-active" value="Y"/><input type="hidden" id="mv-edit-no" value=""/>
+    <div class="modal-btns"><button class="modal-btn-cancel" onclick="closeModal('modal-vehicle')">Cancel</button><button class="modal-btn-save" onclick="saveVehicleAdmin()">Save Vehicle</button></div>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<div class="modal-overlay" id="modal-user">
+  <div class="modal">
+    <div class="modal-title" id="mu-title">Add User</div>
+    <label class="modal-flbl">User ID *</label><input class="modal-inp" id="mu-id" placeholder="e.g. vishal (no spaces)" autocomplete="off"/>
+    <label class="modal-flbl">Full Name *</label><input class="modal-inp" id="mu-name" placeholder="e.g. Vishal Singh" autocomplete="off"/>
+    <label class="modal-flbl">Site</label>
+    <select class="modal-inp" id="mu-site"><option value="malaka">Malaka (Full Plant)</option><option value="raddiya">Raddiya (MRF)</option><option value="ajgawan">Ajgawan (MRF)</option><option value="mithnapur">Mithnapur (MRF)</option></select>
+    <label class="modal-flbl">Role</label>
+    <div class="modal-trow"><button class="modal-tog active" id="mu-role-n" onclick="setRoleTog('N')">Supervisor</button><button class="modal-tog" id="mu-role-y" onclick="setRoleTog('Y')">Admin</button></div>
+    <input type="hidden" id="mu-admin" value="N"/><input type="hidden" id="mu-edit-id" value=""/>
+    <div class="modal-btns"><button class="modal-btn-cancel" onclick="closeModal('modal-user')">Cancel</button><button class="modal-btn-save" onclick="saveUserAdmin()">Save User</button></div>
+  </div>
+</div>
+<script>
+// ══════════════════════════════════════════════════════════
+const DEFAULT_SCRIPT_URL = '/api/mrf';
+let SCRIPT_URL = DEFAULT_SCRIPT_URL;
+localStorage.removeItem('mrf_script_url');
+// ══════════════════════════════════════════════════════════
+
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DEFAULT_VEHICLES=[
+  {no:'UP71CT3457',type:'MAGIC',wardNo:'W13',wardName:'Raddiya',driver:'Akash Kumar',active:'Y'},
+  {no:'UP71CT3458',type:'MAGIC',wardNo:'W19',wardName:'Murain Tola',driver:'Ankit',active:'Y'},
+  {no:'UP71CT3459',type:'MAGIC',wardNo:'W16',wardName:'Asti',driver:'Vanshi Lal',active:'Y'},
+  {no:'UP71CT3460',type:'MAGIC',wardNo:'W14',wardName:'Abu Nagar',driver:'Kailash Kumar',active:'Y'},
+  {no:'UP71CT3461',type:'MAGIC',wardNo:'W27',wardName:'Collector Ganj',driver:'Santosh',active:'Y'},
+  {no:'UP71CT0439',type:'MAGIC',wardNo:'W15',wardName:'Maswani',driver:'Ashwani',active:'Y'},
+  {no:'UP71CT0440',type:'MAGIC',wardNo:'W2',wardName:'Awas Vikas',driver:'Ashish',active:'Y'},
+  {no:'UP71CT0445',type:'MAGIC',wardNo:'W22',wardName:'Isainpurwa',driver:'Dileep Pal',active:'Y'},
+  {no:'UP71CT0447',type:'MAGIC',wardNo:'W29',wardName:'Krishna Vihari Nagar',driver:'Arun Kumar',active:'Y'},
+  {no:'UP71CT0448',type:'MAGIC',wardNo:'W34',wardName:'Ahmad Ganj',driver:'Harishchandra',active:'Y'},
+  {no:'UP71CT0449',type:'MAGIC',wardNo:'W28',wardName:'Mahajari',driver:'Gaurav',active:'Y'},
+  {no:'UP71CT0450',type:'MAGIC',wardNo:'W24',wardName:'Amar Jai',driver:'Amit Kumar',active:'Y'},
+  {no:'UP71G0379',type:'MAGIC',wardNo:'W21',wardName:'Shadipur',driver:'Imran Ahmad',active:'Y'},
+  {no:'UP71G0384',type:'MAGIC',wardNo:'--',wardName:'2nd Shift',driver:'Sumit',active:'Y'},
+];
+const DEFAULT_USERS=[
+  {id:'mrf-supervisor',name:'MRF Supervisor',pin:'4444',admin:false,site:'malaka'},
+];
+
+let VEHICLES=[...DEFAULT_VEHICLES], USERS=[...DEFAULT_USERS];
+let SETTINGS={admin_whatsapp:'',editing_allowed:'true'};
+let TRIPS=[], COMPOST=[], DRYWASTE=[], TROMMELWET=[], TROMMELDRY=[], RDF=[], POCLAIN=[], CD=[];
+let CUR=null;
+let RANGES={tl:'today',cl:'month',dl:'month',twl:'month',tdl:'month',rl:'today',pl:'today',cdl:'month'};
+let EDIT_MODE=null;
+
+// ── UTILS ──────────────────────────────────────────────────
+function tod(){const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
+function nowTime(){const d=new Date();return p2(d.getHours())+':'+p2(d.getMinutes());}
+function p2(n){return String(n).padStart(2,'0');}
+function fmtD(s){if(!s)return'--';const p=String(s).split('-');return p.length===3?p[2]+' '+MON[parseInt(p[1])-1]+' '+p[0]:s;}
+function fmt2(n){return Number(n||0).toFixed(2);}
+function fmt3(n){return Number(n||0).toFixed(3);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function visibleUsers(list){return(list||[]).filter(u=>u&&u.id!=='admin'&&String(u.name||'').toLowerCase()!=='admin');}
+function usableUsers(list){
+  const validSites=['malaka','raddiya','ajgawan','mithnapur'];
+  const users=visibleUsers(list).map(u=>({
+    id:String(u.id||'').trim(),
+    name:String(u.name||'').trim(),
+    pin:String(u.pin||'').trim(),
+    admin:u.admin===true||String(u.admin||'').toUpperCase()==='Y',
+    site:String(u.site||'').trim().toLowerCase()
+  })).filter(u=>u.id&&u.name.length>1&&u.pin&&validSites.includes(u.site));
+  return users.length?users:DEFAULT_USERS.map(u=>Object.assign({},u));
+}
+function isMalaka(){return CUR&&CUR.site==='malaka';}
+function editingAllowed(){return SETTINGS.editing_allowed!=='false'&&SETTINGS.editing_allowed!==false;}
+function curSite(){return CUR?CUR.site||'raddiya':'';}
+function siteName(s){return{malaka:'Malaka Plant',raddiya:'Raddiya MRF',ajgawan:'Ajgawan MRF',mithnapur:'Mithnapur MRF'}[s]||s;}
+function normalizeScriptUrl(url){return String(url||'').trim().replace(/\/+$/,'');}
+function hasScriptUrl(){return /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/i.test(normalizeScriptUrl(SCRIPT_URL));}
+function setDebugResult(msg,ok){
+  const el=document.getElementById('mrf-debug-result');if(!el)return;
+  el.textContent=msg;el.className='mrf-debug-result'+(ok?'':' error');el.style.display='block';
+}
+function renderConnectionPanel(){
+  const card=document.getElementById('mrf-connect-card');
+  const inp=document.getElementById('mrf-script-url');
+  const st=document.getElementById('mrf-connect-status');
+  if(card)card.style.display=hasScriptUrl()?'none':'block';
+  if(inp)inp.value=hasScriptUrl()?SCRIPT_URL:'';
+  if(st)st.textContent=hasScriptUrl()?'MRF web app URL saved.':'Paste the deployed MRF Apps Script Web App URL ending with /exec.';
+}
+function saveMrfScriptUrl(){
+  SCRIPT_URL=DEFAULT_SCRIPT_URL;localStorage.removeItem('mrf_script_url');
+  renderConnectionPanel();
+  setDebugResult('Using secure backend route for MRF. Running debug now...',true);
+  runMrfDebug();
+}
+function clearMrfScriptUrl(){
+  SCRIPT_URL=DEFAULT_SCRIPT_URL;localStorage.removeItem('mrf_script_url');
+  renderConnectionPanel();
+  setDebugResult('Using secure backend route for MRF.',true);
+}
+async function fetchMrfJson(url){
+  const r=await fetch(url,{cache:'no-store'});
+  const txt=await r.text();
+  let d;try{d=JSON.parse(txt);}catch(e){throw new Error('Response was not JSON. First response text: '+txt.slice(0,160));}
+  if(!r.ok)throw new Error('HTTP '+r.status+': '+(d.error||d.msg||txt.slice(0,160)));
+  return d;
+}
+async function runMrfDebug(){
+  renderConnectionPanel();
+  if(!hasScriptUrl()){setDebugResult('MRF URL missing. Paste the deployed Apps Script Web App URL ending with /exec.',false);return;}
+  setDebugResult('Testing MRF connection...',true);
+  try{
+    const test=await fetchMrfJson(SCRIPT_URL+'?action=test');
+    if(!test.ok)throw new Error(test.error||'test returned ok=false');
+    const cfg=await fetchMrfJson(SCRIPT_URL+'?action=config');
+    if(!cfg.ok)throw new Error(cfg.error||'config returned ok=false');
+    setDebugResult(
+      'Connected to: '+(test.spreadsheet||'Spreadsheet')+'\n'+
+      'Sheets: '+((test.sheets||[]).join(', ')||'No sheet list returned')+'\n'+
+      'Vehicles fetched: '+((cfg.vehicles||[]).length)+'\n'+
+      'Users fetched: '+((cfg.users||[]).filter(u=>u&&u.id!=='admin').length)+'\n'+
+      'Settings keys: '+Object.keys(cfg.settings||{}).length,
+      true
+    );
+    if(cfg.vehicles&&cfg.vehicles.length)VEHICLES=cfg.vehicles;
+    if(cfg.users&&cfg.users.length)USERS=usableUsers(cfg.users);
+    if(cfg.settings)SETTINGS=Object.assign({},SETTINGS,cfg.settings);
+    saveLocal();renderUserList();renderConnectionPanel();
+  }catch(e){setDebugResult('MRF debug failed: '+e.message,false);}
+}
+function postToSheets(action,payload){if(!hasScriptUrl()){renderConnectionPanel();alert('MRF backend route is not configured.');showUserPicker();return Promise.resolve({ok:false,error:'MRF backend route not configured'});}return fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify(Object.assign({action},payload||{}))}).then(r=>r.json()).then(d=>{if(!d.ok)alert('Could not save to Google Sheets: '+(d.error||d.msg||'Save rejected'));return d;}).catch(e=>{alert('Could not save to Google Sheets. Please check internet and try again.');return{ok:false,error:e.message};});}
+async function saveSheetEntry(action,entry){
+  const d=await postToSheets(action,{entry});
+  if(!d.ok)return null;
+  entry.synced=true;
+  if(d.slipNo)entry.slipNo=d.slipNo;
+  return d;
+}
+function showLoad(msg){const el=document.getElementById('loading-overlay');el.classList.add('show');document.getElementById('loading-msg').textContent=msg||'Loading...';}
+function hideLoad(){document.getElementById('loading-overlay').classList.remove('show');}
+
+// ── STORAGE ────────────────────────────────────────────────
+function saveLocal(){
+  try{localStorage.setItem('mrf_cfg',JSON.stringify({VEHICLES,USERS,SETTINGS}));}catch(e){}
+}
+function loadLocal(){
+  TRIPS=[];COMPOST=[];DRYWASTE=[];TROMMELWET=[];TROMMELDRY=[];RDF=[];POCLAIN=[];CD=[];
+  try{localStorage.removeItem('mrf_data');}catch(e){}
+  try{const c=JSON.parse(localStorage.getItem('mrf_cfg')||'null');if(c){if(c.VEHICLES&&c.VEHICLES.length)VEHICLES=c.VEHICLES;if(c.USERS&&c.USERS.length)USERS=usableUsers(c.USERS);if(c.SETTINGS)SETTINGS=Object.assign({},SETTINGS,c.SETTINGS);}}catch(e){}
+  USERS=usableUsers(USERS);
+}
+
+// ── SYNC ───────────────────────────────────────────────────
+async function syncAll(){
+  if(!hasScriptUrl()){updateSyncBar('error');return;}
+  updateSyncBar('syncing');
+  try{
+    const cfg=await fetch(SCRIPT_URL+'?action=config',{cache:'no-store'}).then(r=>r.json());
+    if(!cfg.ok)throw new Error(cfg.error||'config returned ok=false');
+    if(cfg.ok){
+      if(cfg.vehicles&&cfg.vehicles.length)VEHICLES=cfg.vehicles;
+      if(cfg.users&&cfg.users.length)USERS=usableUsers(cfg.users);
+      if(cfg.settings)SETTINGS=Object.assign({},SETTINGS,cfg.settings);
+    }
+    saveLocal();
+    updateSyncBar('ok');
+    renderDash();
+  }catch(e){updateSyncBar('error');setDebugResult('MRF sync failed: '+e.message,false);}
+}
+async function flushPending(){
+  if(!hasScriptUrl())return;
+  const pend=(arr)=>arr.filter(e=>!e.synced);
+  const post=async(action,entry)=>{try{const r=await fetch(SCRIPT_URL,{method:'POST',body:JSON.stringify({action,entry})});const d=await r.json();return d;}catch(e){return{ok:false};}};
+  for(const e of pend(TRIPS)){const r=await post('saveTrip',e);if(r.ok){e.synced=true;if(r.slipNo)e.slipNo=r.slipNo;}}
+  for(const e of pend(COMPOST)){const r=await post('saveCompost',e);if(r.ok)e.synced=true;}
+  for(const e of pend(DRYWASTE)){const r=await post('saveDryWaste',e);if(r.ok)e.synced=true;}
+  for(const e of pend(TROMMELWET)){const r=await post('saveTrommelWet',e);if(r.ok)e.synced=true;}
+  for(const e of pend(TROMMELDRY)){const r=await post('saveTrommelDry',e);if(r.ok)e.synced=true;}
+  for(const e of pend(RDF)){const r=await post('saveRDF',e);if(r.ok){e.synced=true;if(r.slipNo)e.slipNo=r.slipNo;}}
+  for(const e of pend(POCLAIN)){const r=await post('savePoclain',e);if(r.ok)e.synced=true;}
+  for(const e of pend(CD)){const r=await post('saveCD',e);if(r.ok)e.synced=true;}
+  saveLocal();
+}
+function updateSyncBar(state){
+  const el=document.getElementById('sync-bar');if(!el)return;
+  const pend=[TRIPS,COMPOST,DRYWASTE,TROMMELWET,TROMMELDRY,RDF,POCLAIN,CD].reduce((s,a)=>s+a.filter(e=>!e.synced).length,0);
+  if(state==='syncing'){el.className='sync-bar sync-none';el.innerHTML='<span class="spinner"></span> Syncing with Google Sheets...';el.onclick=null;return;}
+  if(state==='error'){el.className='sync-bar sync-pending';el.onclick=()=>{showLoad('Checking Google Sheets...');syncAll().then(hideLoad);};el.innerHTML='&#9888; Google Sheets check failed &mdash; Tap to retry';return;}
+  if(pend>0){el.className='sync-bar sync-pending';el.onclick=()=>{showLoad('Syncing...');syncAll().then(hideLoad);};el.innerHTML='&#9888; '+pend+' entr'+(pend===1?'y':'ies')+' not synced &mdash; Tap to sync';}
+  else if(state==='ok'){el.className='sync-bar sync-ok';el.onclick=null;el.innerHTML='&#10003; All entries synced to Google Sheets';}
+  else if(hasScriptUrl()){el.className='sync-bar sync-ok';el.onclick=null;el.innerHTML='&#10003; Google Sheets connected';}
+  else{updateSyncBar('error');}
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────
+function goTo(s){
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-'+s).classList.add('active');
+  window.scrollTo(0,0);
+  if(s==='dash')renderDash();
+  else if(s==='trip-log')renderTripLog();
+  else if(s==='compost-log')renderCompostLog();
+  else if(s==='drywaste-log')renderDryWasteLog();
+  else if(s==='twet-log')renderTrommelWetLog();
+  else if(s==='tdry-log')renderTrommelDryLog();
+  else if(s==='rdf-log')renderRDFLog();
+  else if(s==='poc-log')renderPoclainLog();
+  else if(s==='cd-log')renderCDLog();
+  else if(s==='admin')renderAdmin();
+}
+
+// ── LOGIN ─────────────────────────────────────────────────
+function renderUserList(){
+  const el=document.getElementById('user-list');if(!el)return;
+  USERS=usableUsers(USERS);
+  el.innerHTML=USERS.map(u=>`<button type="button" class="btn-p user-select-btn" data-user-id="${esc(u.id)}" style="width:100%;margin:0 0 10px;text-align:left">${esc(u.name)}<span style="display:block;font-size:11px;font-weight:600;opacity:.78;margin-top:2px">${esc(siteName(u.site||'raddiya'))}${u.admin?' · Admin':''}</span></button>`).join('');
+  renderConnectionPanel();
+}
+function selectUser(id){
+  const match=USERS.find(u=>u.id===id);if(!match)return;
+  CUR=match;localStorage.setItem('mrf_user',JSON.stringify(match));
+  renderDash();goTo('dash');
+  syncAll();
+}
+function logout(){CUR=null;EDIT_MODE=null;showUserPicker();}
+function showUserPicker(){
+  renderUserList();renderConnectionPanel();
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-login').classList.add('active');
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────
+function renderDash(){
+  if(!CUR)return;
+  const sn=siteName(CUR.site);
+  document.getElementById('dash-site-lbl').textContent='PINAKA INFRA';
+  document.getElementById('dash-user-lbl').textContent='MRF Supervisor';
+  document.getElementById('dash-av').textContent=CUR.name[0].toUpperCase();
+  const ab=document.getElementById('admin-btn');if(ab)ab.style.display=CUR.admin?'inline-block':'none';
+  const today=tod();
+  const todayTrips=TRIPS.filter(e=>e.date===today&&e.site===CUR.site);
+  const tripWt=todayTrips.reduce((s,e)=>s+Number(e.weight||0),0);
+  const tripWards=new Set(todayTrips.map(e=>e.wardNo)).size;
+  document.getElementById('d-trips').textContent=todayTrips.length;
+  document.getElementById('d-tripwt').textContent=tripWt>0?tripWt.toLocaleString()+' kg':'0 kg';
+  const todayComp=COMPOST.find(e=>e.date===today&&e.site===CUR.site);
+  const todayDry=DRYWASTE.find(e=>e.date===today&&e.site===CUR.site);
+  const wetN=todayComp?Number(todayComp.wetCollected):0;
+  const dryN=todayDry?Number(todayDry.received):0;
+  const total=wetN+dryN;
+  document.getElementById('d-wet').textContent=todayComp?fmt2(wetN):'--';
+  document.getElementById('d-dry').textContent=todayDry?fmt2(dryN):'--';
+  document.getElementById('d-total').textContent=total>0?fmt2(total)+' TPD':'-- TPD';
+  document.getElementById('d-sub').textContent='Wet '+(wetN>0?fmt2(wetN):'--')+' + Dry '+(dryN>0?fmt2(dryN):'--')+' TPD';
+  // Module cards
+  const mc=document.getElementById('dash-modules');
+  const bdg=(ok,txt)=>`<span class="mcard-badge ${ok?'mb-done':'mb-pend'}">${txt}</span>`;
+  let cards=`
+  <div class="mcard" onclick="goTo('trip-log')">
+    <div class="mcard-top"><span class="mcard-icon">&#128665;</span><span class="mcard-title">Vehicle Trip Register</span>${bdg(todayTrips.length>0,todayTrips.length+(todayTrips.length===1?' trip':' trips'))}</div>
+    <div class="mcard-row"><span class="mcard-lbl">Total Weight Today</span><span class="mcard-val-hi">${tripWt>0?tripWt.toLocaleString()+' kg':'-- kg'}</span></div>
+    <div class="mcard-row"><span class="mcard-lbl">Wards Covered Today</span><span class="mcard-val">${tripWards>0?tripWards+(tripWards===1?' ward':' wards'):'--'}</span></div>
+  </div>
+  <div class="mcard" onclick="goTo('compost-log')">
+    <div class="mcard-top"><span class="mcard-icon">&#127807;</span><span class="mcard-title">Waste to Compost Log</span>${bdg(!!todayComp,todayComp?'&#10003; Done':'Not Entered')}</div>
+    <div class="mcard-row"><span class="mcard-lbl">Wet Waste Collected</span><span class="mcard-val-hi">${todayComp?fmt2(wetN)+' TPD':'-- TPD'}</span></div>
+    <div class="mcard-row"><span class="mcard-lbl">Compost Generated</span><span class="mcard-val">${todayComp?fmt2(todayComp.compostGenerated)+' TPD':'-- TPD'}</span></div>
+  </div>
+  <div class="mcard" onclick="goTo('drywaste-log')">
+    <div class="mcard-top"><span class="mcard-icon">&#9851;</span><span class="mcard-title">Dry Waste Log</span>${bdg(!!todayDry,todayDry?'&#10003; Done':'Not Entered')}</div>
+    <div class="mcard-row"><span class="mcard-lbl">Dry Waste Received</span><span class="mcard-val-hi">${todayDry?fmt2(dryN)+' TPD':'-- TPD'}</span></div>
+    <div class="mcard-row"><span class="mcard-lbl">Dry Waste Processed</span><span class="mcard-val">${todayDry?fmt2(todayDry.processed)+' TPD':'-- TPD'}</span></div>
+  </div>`;
+  if(isMalaka()){
+    const todayTW=TROMMELWET.find(e=>e.date===today);
+    const todayTD=TROMMELDRY.find(e=>e.date===today);
+    const todayRDF=RDF.filter(e=>e.date===today);
+    const todayPoc=POCLAIN.filter(e=>e.date===today);
+    const todayCD=CD.find(e=>e.date===today);
+    cards+=`
+  <div style="margin:12px 0 4px;font-size:10px;font-weight:800;color:var(--primary);letter-spacing:2px;text-transform:uppercase;padding:0 4px">MALAKA PLANT ONLY</div>
+  <div class="mcard" onclick="goTo('twet-log')">
+    <div class="mcard-top"><span class="mcard-icon">&#128167;</span><span class="mcard-title">Trommel Wet Processing</span>${bdg(!!todayTW,todayTW?'&#10003; Done':'Not Entered')}</div>
+    <div class="mcard-row"><span class="mcard-lbl">Compost Screened Today</span><span class="mcard-val-hi">${todayTW?fmt2(todayTW.compostScreened)+' MT':'-- MT'}</span></div>
+    <div class="mcard-row"><span class="mcard-lbl">Running Hours</span><span class="mcard-val">${todayTW?fmt2(todayTW.runningHours)+' hrs':'--'}</span></div>
+  </div>
+  <div class="mcard" onclick="goTo('tdry-log')">
+    <div class="mcard-top"><span class="mcard-icon">&#128204;</span><span class="mcard-title">Trommel Dry Processing</span>${bdg(!!todayTD,todayTD?'&#10003; Done':'Not Entered')}</div>
+    <div class="mcard-row"><span class="mcard-lbl">Dry Input Today</span><span class="mcard-val-hi">${todayTD?fmt2(todayTD.dryInput)+' MT':'-- MT'}</span></div>
+    <div class="mcard-row"><span class="mcard-lbl">Bio Soil Generated</span><span class="mcard-val">${todayTD?fmt2(todayTD.bioSoil)+' MT':'--'}</span></div>
+  </div>
+  <div class="mcard" onclick="goTo('rdf-log')">
+    <div class="mcard-top"><span class="mcard-icon">&#128230;</span><span class="mcard-title">RDF Dispatch</span>${bdg(todayRDF.length>0,todayRDF.length>0?todayRDF.length+' dispatch':'No Dispatch Today')}</div>
+    <div class="mcard-row"><span class="mcard-lbl">Net Weight Dispatched</span><span class="mcard-val-hi">${todayRDF.length>0?todayRDF.reduce((s,e)=>s+Number(e.netWeight||0),0).toLocaleString()+' kg':'-- kg'}</span></div>
+  </div>
+  <div class="mcard" onclick="goTo('poc-log')">
+    <div class="mcard-top"><span class="mcard-icon">&#128081;</span><span class="mcard-title">Poclain Log</span>${bdg(todayPoc.length>0,todayPoc.length>0?todayPoc.length+' entr'+(todayPoc.length===1?'y':'ies'):'Not Entered')}</div>
+    <div class="mcard-row"><span class="mcard-lbl">Total Running Today</span><span class="mcard-val-hi">${todayPoc.length>0?fmt2(todayPoc.reduce((s,e)=>s+Number(e.totalHours||0),0))+' hrs':'-- hrs'}</span></div>
+  </div>
+  <div class="mcard" onclick="goTo('cd-log')">
+    <div class="mcard-top"><span class="mcard-icon">&#127959;</span><span class="mcard-title">C&amp;D Waste Log</span>${bdg(!!todayCD,todayCD?'&#10003; Done':'Not Entered')}</div>
+    <div class="mcard-row"><span class="mcard-lbl">Total Generated Today</span><span class="mcard-val-hi">${todayCD?fmt2(todayCD.totalGenerated)+' TPD':'-- TPD'}</span></div>
+  </div>`;
+  }
+  mc.innerHTML=cards;
+  updateSyncBar(hasScriptUrl()?'ok':'error');
+}
+
+// ── RANGE TABS ─────────────────────────────────────────────
+function setRange(prefix,range){
+  RANGES[prefix]=range;
+  ['today','week','month','all'].forEach(r=>{const el=document.getElementById(prefix+'-rt-'+r);if(el)el.classList.toggle('active',r===range);});
+  const renders={tl:renderTripLog,cl:renderCompostLog,dl:renderDryWasteLog,twl:renderTrommelWetLog,tdl:renderTrommelDryLog,rl:renderRDFLog,pl:renderPoclainLog,cdl:renderCDLog};
+  if(renders[prefix])renders[prefix]();
+}
+function filterRange(list,range){
+  const today=tod();const now=new Date();
+  return list.filter(e=>{
+    const d=String(e.date||e.Date||'');
+    if(range==='today')return d===today;
+    if(range==='week'){try{return(now-new Date(d))/86400000<=7;}catch(x){return false;}}
+    if(range==='month')return d.slice(0,7)===today.slice(0,7);
+    return true;
+  });
+}
+
+// ── ENTRY MODE ─────────────────────────────────────────────
+function startEntry(type){
+  EDIT_MODE=null;
+  if(type==='trip'){setupTripEntry();goTo('trip-entry');}
+  else if(type==='compost'){setupCompostEntry();goTo('compost-entry');}
+  else if(type==='drywaste'){setupDryWasteEntry();goTo('drywaste-entry');}
+  else if(type==='twet'){setupTrommelWetEntry();goTo('twet-entry');}
+  else if(type==='tdry'){setupTrommelDryEntry();goTo('tdry-entry');}
+  else if(type==='rdf'){setupRDFEntry();goTo('rdf-entry');}
+  else if(type==='poc'){setupPoclainEntry();goTo('poc-entry');}
+  else if(type==='cd'){setupCDEntry();goTo('cd-entry');}
+}
+function editEntry(type,idx){
+  EDIT_MODE={type,idx};
+  if(type==='trip'){const e=TRIPS[idx];if(!e)return;setupTripEntry(e);document.getElementById('te-title').textContent='Edit Trip';document.getElementById('te-submit-btn').textContent='UPDATE TRIP';goTo('trip-entry');}
+  else if(type==='compost'){const e=COMPOST[idx];if(!e)return;setupCompostEntry(e);document.getElementById('ce-title').textContent='Edit Compost Entry';document.getElementById('ce-submit-btn').textContent='UPDATE ENTRY';goTo('compost-entry');}
+  else if(type==='drywaste'){const e=DRYWASTE[idx];if(!e)return;setupDryWasteEntry(e);document.getElementById('de-title').textContent='Edit Dry Waste Entry';document.getElementById('de-submit-btn').textContent='UPDATE ENTRY';goTo('drywaste-entry');}
+  else if(type==='twet'){const e=TROMMELWET[idx];if(!e)return;setupTrommelWetEntry(e);document.getElementById('twe-title').textContent='Edit Trommel Wet';document.getElementById('twe-submit-btn').textContent='UPDATE';goTo('twet-entry');}
+  else if(type==='tdry'){const e=TROMMELDRY[idx];if(!e)return;setupTrommelDryEntry(e);document.getElementById('tde-title').textContent='Edit Trommel Dry';document.getElementById('tde-submit-btn').textContent='UPDATE';goTo('tdry-entry');}
+  else if(type==='rdf'){const e=RDF[idx];if(!e)return;setupRDFEntry(e);document.getElementById('re-title').textContent='Edit RDF Dispatch';document.getElementById('re-submit-btn').textContent='UPDATE';goTo('rdf-entry');}
+  else if(type==='poc'){const e=POCLAIN[idx];if(!e)return;setupPoclainEntry(e);document.getElementById('pe-title').textContent='Edit Poclain Entry';document.getElementById('pe-submit-btn').textContent='UPDATE';goTo('poc-entry');}
+  else if(type==='cd'){const e=CD[idx];if(!e)return;setupCDEntry(e);document.getElementById('cde-title').textContent='Edit C&D Entry';document.getElementById('cde-submit-btn').textContent='UPDATE';goTo('cd-entry');}
+}
+
+// ── TRIP ──────────────────────────────────────────────────
+function setupTripEntry(e){
+  const sel=document.getElementById('te-vehicle');
+  const vehicles=VEHICLES.filter(v=>v.active!=='N'||(e&&e.vehicleNo===v.no));
+  sel.innerHTML='<option value="">-- Select Vehicle --</option>'+vehicles.map(v=>`<option value="${esc(v.no)}">${esc(v.no)} - ${esc(v.wardNo)} ${esc(v.wardName)}</option>`).join('');
+  document.getElementById('te-title').textContent='New Trip Entry';
+  document.getElementById('te-submit-btn').textContent='CONFIRM & SAVE TRIP';
+  if(e){
+    sel.value=e.vehicleNo||'';
+    document.getElementById('te-driver').value=e.driver||'';
+    document.getElementById('te-weight').value=e.weight||'';
+    document.getElementById('te-arrival').value=e.arrival||'';
+    document.getElementById('te-departure').value=e.departure||'';
+    onVehicleChange();
+  } else {
+    sel.value='';
+    document.getElementById('te-driver').value='';
+    document.getElementById('te-weight').value='';
+    document.getElementById('te-arrival').value=nowTime();
+    document.getElementById('te-departure').value='';
+    document.getElementById('te-vinfo').style.display='none';
+  }
+}
+function onVehicleChange(){
+  const vno=document.getElementById('te-vehicle').value;
+  const info=document.getElementById('te-vinfo');
+  if(!vno){info.style.display='none';document.getElementById('te-driver').value='';return;}
+  const v=VEHICLES.find(x=>x.no===vno);if(!v){info.style.display='none';return;}
+  document.getElementById('te-driver').value=v.driver||'';
+  document.getElementById('tei-wno').textContent=v.wardNo||'--';
+  document.getElementById('tei-wname').textContent=v.wardName||'--';
+  document.getElementById('tei-type').textContent=v.type||'--';
+  info.style.display='block';
+}
+async function submitTrip(){
+  const vno=document.getElementById('te-vehicle').value;
+  const driver=document.getElementById('te-driver').value.trim();
+  const weight=document.getElementById('te-weight').value.trim();
+  const arrival=document.getElementById('te-arrival').value;
+  const depart=document.getElementById('te-departure').value;
+  if(!vno||!driver||!weight||!arrival||!depart){alert('All fields marked * are required.');return;}
+  if(Number(weight)<=0){alert('Weight must be greater than 0.');return;}
+  const v=VEHICLES.find(x=>x.no===vno)||{wardNo:'--',wardName:'--',type:'MAGIC'};
+  const now=new Date();
+  if(EDIT_MODE&&EDIT_MODE.type==='trip'){
+    const old=TRIPS[EDIT_MODE.idx];
+    const updated=Object.assign({},old,{vehicleNo:vno,vehicleType:v.type,wardNo:v.wardNo,wardName:v.wardName,driver,weight:Number(weight),arrival,departure:depart,synced:false});
+    if(updated.slipNo)updated._editSlip=updated.slipNo;
+    const d=await saveSheetEntry('saveTrip',updated);if(!d)return;
+    Object.assign(old,updated);
+    EDIT_MODE=null;alert('Trip updated!');goTo('trip-log');return;
+  }
+  const todayCount=TRIPS.filter(e=>e.date===tod()&&e.site===CUR.site).length;
+  const entry={slipNo:'MRF-'+tod().slice(2).replace(/-/g,'')+'-'+String(todayCount+1).padStart(3,'0'),date:tod(),time:p2(now.getHours())+':'+p2(now.getMinutes()),vehicleNo:vno,vehicleType:v.type,wardNo:v.wardNo,wardName:v.wardName,driver,weight:Number(weight),arrival,departure:depart,supervisor:CUR?CUR.name:'--',site:curSite(),synced:false};
+  const d=await saveSheetEntry('saveTrip',entry);if(!d)return;
+  TRIPS.unshift(entry);
+  showTripSlip(entry);
+}
+function showTripSlip(e){
+  document.getElementById('ts-slipno').textContent=e.slipNo;
+  document.getElementById('ts-date').textContent=fmtD(e.date);
+  document.getElementById('ts-vehicle').textContent=e.vehicleNo;
+  document.getElementById('ts-ward').textContent=e.wardNo+' · '+e.wardName;
+  document.getElementById('ts-driver').textContent=e.driver;
+  document.getElementById('ts-weight').textContent=Number(e.weight).toLocaleString()+' kg';
+  document.getElementById('ts-time').textContent=e.arrival+' → '+e.departure;
+  document.getElementById('ts-sup').textContent=e.supervisor;
+  document.getElementById('ts-sub').textContent=e.vehicleNo+' · '+e.wardName;
+  const msg='*PINAKA INFRA — MRF Trip Slip*\nSlip No: '+e.slipNo+'\nDate: '+fmtD(e.date)+'\nSite: '+siteName(e.site||CUR.site)+'\nVehicle: '+e.vehicleNo+'\nWard: '+e.wardNo+' '+e.wardName+'\nDriver: '+e.driver+'\n*Weight: '+Number(e.weight).toLocaleString()+' kg*\nTime: '+e.arrival+' to '+e.departure+'\nSupervisor: '+e.supervisor+'\n_Pinaka Infra · Fatehpur_';
+  document.getElementById('ts-wa-btn').onclick=()=>window.open('https://wa.me/'+(SETTINGS.admin_whatsapp||'')+'?text='+encodeURIComponent(msg),'_blank');
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-trip-slip').classList.add('active');window.scrollTo(0,0);
+}
+function renderTripLog(){
+  const q=(document.getElementById('tl-search').value||'').toLowerCase();
+  let list=filterRange(TRIPS.filter(e=>e.site===CUR.site||!e.site),RANGES.tl);
+  if(q)list=list.filter(e=>[e.vehicleNo,e.wardNo,e.wardName,e.driver,e.slipNo||''].some(f=>f.toLowerCase().includes(q)));
+  list=[...list].sort((a,b)=>b.date.localeCompare(a.date)||(b.time||'').localeCompare(a.time||''));
+  const totalW=list.reduce((s,e)=>s+Number(e.weight||0),0);
+  const sum=document.getElementById('tl-sum');
+  if(list.length){sum.style.display='flex';sum.innerHTML=`<span class="ls-lbl">Total Weight</span><span class="ls-val">${totalW.toLocaleString()} kg &nbsp;·&nbsp; ${list.length} trips</span>`;}
+  else sum.style.display='none';
+  const el=document.getElementById('tl-list');
+  if(!list.length){el.innerHTML='<div class="empty">No trip entries found</div>';return;}
+  el.innerHTML=list.map(e=>{
+    const idx=TRIPS.indexOf(e);
+    const editBtn=editingAllowed()?`<button class="btn-edit" onclick="editEntry('trip',${idx})">&#9998; Edit</button>`:'';
+    return`<div class="log-card">
+      <div class="lc-top">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px"><span class="ward-tag">${esc(e.wardNo)}</span><span class="lc-name">${esc(e.vehicleNo)}</span></div>
+          <div class="lc-sub">${esc(e.driver)}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${fmtD(e.date)} &nbsp;·&nbsp; ${esc(e.arrival||'')} &rarr; ${esc(e.departure||'')}</div>
+        </div>
+        <div style="text-align:right"><div class="lc-ltr">${Number(e.weight||0).toLocaleString()} <span style="font-size:12px">kg</span></div><div class="lc-meta">${esc(e.slipNo||'--')}</div></div>
+      </div>
+      <div class="lc-footer"><span class="lc-chip">${esc(e.wardName)}</span><span class="lc-chip">${esc(e.vehicleType||'MAGIC')}</span>${!e.synced?'<span class="lc-chip" style="color:var(--orange)">&#9888; Not synced</span>':''}${editBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── COMPOST ───────────────────────────────────────────────
+function setupCompostEntry(e){
+  document.getElementById('ce-title').textContent='🌿 Compost Entry';
+  document.getElementById('ce-submit-btn').textContent='✓ CONFIRM & SAVE ENTRY';
+  document.getElementById('ce-date').value=e?e.date:tod();
+  document.getElementById('ce-collected').value=e?e.wetCollected:'';
+  document.getElementById('ce-processed').value=e?e.wetProcessed:'';
+  document.getElementById('ce-method').value=e?e.method:'Aerobic pit based composting';
+  document.getElementById('ce-compost').value=e?e.compostGenerated:'';
+  document.getElementById('ce-util').value=e?e.utilization:'ULB';
+  document.getElementById('ce-qty').value=e?e.quantity||'':'';
+}
+async function submitCompost(){
+  const date=document.getElementById('ce-date').value;
+  const wc=document.getElementById('ce-collected').value.trim();
+  const wp=document.getElementById('ce-processed').value.trim();
+  const comp=document.getElementById('ce-compost').value.trim();
+  if(!date||!wc||!wp||!comp){alert('Please fill all required fields.');return;}
+  const entry={date,wetCollected:Number(wc),wetProcessed:Number(wp),method:document.getElementById('ce-method').value,compostGenerated:Number(comp),utilization:document.getElementById('ce-util').value,quantity:document.getElementById('ce-qty').value.trim(),supervisor:CUR?CUR.name:'--',site:curSite(),synced:false};
+  if(EDIT_MODE&&EDIT_MODE.type==='compost'){const updated=Object.assign({},COMPOST[EDIT_MODE.idx],entry);const d=await saveSheetEntry('saveCompost',updated);if(!d)return;Object.assign(COMPOST[EDIT_MODE.idx],updated);EDIT_MODE=null;alert('Entry updated!');goTo('compost-log');return;}
+  COMPOST=COMPOST.filter(e=>!(e.date===date&&e.site===curSite()));
+  const d=await saveSheetEntry('saveCompost',entry);if(!d)return;
+  COMPOST.unshift(entry);
+  alert('Compost entry saved for '+fmtD(date)+'!');goTo('compost-log');
+}
+function renderCompostLog(){
+  let list=filterRange(COMPOST.filter(e=>e.site===CUR.site||!e.site),RANGES.cl);
+  list=[...list].sort((a,b)=>b.date.localeCompare(a.date));
+  const totalW=list.reduce((s,e)=>s+Number(e.wetCollected||0),0);
+  const totalC=list.reduce((s,e)=>s+Number(e.compostGenerated||0),0);
+  const sum=document.getElementById('cl-sum');
+  if(list.length){sum.style.display='flex';sum.innerHTML=`<span class="ls-lbl">Wet: ${fmt2(totalW)} TPD</span><span class="ls-val">Compost: ${fmt2(totalC)} TPD</span>`;}
+  else sum.style.display='none';
+  const el=document.getElementById('cl-list');
+  if(!list.length){el.innerHTML='<div class="empty">No compost entries found</div>';return;}
+  el.innerHTML=list.map(e=>{
+    const idx=COMPOST.indexOf(e);
+    const editBtn=editingAllowed()?`<button class="btn-edit" onclick="editEntry('compost',${idx})">&#9998; Edit</button>`:'';
+    return`<div class="log-card">
+      <div class="lc-top">
+        <div><div class="lc-name">${fmtD(e.date)}</div><div class="lc-sub">${esc(e.method)}</div></div>
+        <div style="text-align:right"><div class="lc-ltr">${fmt2(e.compostGenerated)} <span style="font-size:12px">TPD</span></div><div class="lc-meta">Compost generated</div></div>
+      </div>
+      <div class="lc-footer"><span class="lc-chip">Wet: ${fmt2(e.wetCollected)} TPD</span><span class="lc-chip">${esc(e.utilization)}</span>${!e.synced?'<span class="lc-chip" style="color:var(--orange)">&#9888; Not synced</span>':''}${editBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── DRY WASTE ─────────────────────────────────────────────
+function setupDryWasteEntry(e){
+  document.getElementById('de-title').textContent='♻ Dry Waste Entry';
+  document.getElementById('de-submit-btn').textContent='✓ CONFIRM & SAVE ENTRY';
+  document.getElementById('de-date').value=e?e.date:tod();
+  document.getElementById('de-rcv').value=e?e.received:'';
+  document.getElementById('de-proc').value=e?e.processed:'';
+  const fields=[['de-cb','cardboard'],['de-pp','paper'],['de-pl','plastic'],['de-cl','cloth'],['de-gl','glass'],['de-pk','packaging'],['de-rb','rubber'],['de-mt','metal']];
+  fields.forEach(([id,k])=>document.getElementById(id).value=e?e[k]||'':'');
+  document.getElementById('de-util').value=e?e.qtyUtilised:'Sell to recycler / store';
+}
+async function submitDryWaste(){
+  const date=document.getElementById('de-date').value;
+  const rcv=document.getElementById('de-rcv').value.trim();
+  const proc=document.getElementById('de-proc').value.trim();
+  if(!date||!rcv||!proc){alert('Date, Received, and Processed are required.');return;}
+  const entry={date,received:Number(rcv),processed:Number(proc),cardboard:Number(document.getElementById('de-cb').value)||0,paper:Number(document.getElementById('de-pp').value)||0,plastic:Number(document.getElementById('de-pl').value)||0,cloth:Number(document.getElementById('de-cl').value)||0,glass:Number(document.getElementById('de-gl').value)||0,packaging:Number(document.getElementById('de-pk').value)||0,rubber:Number(document.getElementById('de-rb').value)||0,metal:Number(document.getElementById('de-mt').value)||0,qtyUtilised:document.getElementById('de-util').value,supervisor:CUR?CUR.name:'--',site:curSite(),synced:false};
+  if(EDIT_MODE&&EDIT_MODE.type==='drywaste'){const updated=Object.assign({},DRYWASTE[EDIT_MODE.idx],entry);const d=await saveSheetEntry('saveDryWaste',updated);if(!d)return;Object.assign(DRYWASTE[EDIT_MODE.idx],updated);EDIT_MODE=null;alert('Entry updated!');goTo('drywaste-log');return;}
+  DRYWASTE=DRYWASTE.filter(e=>!(e.date===date&&e.site===curSite()));
+  const d=await saveSheetEntry('saveDryWaste',entry);if(!d)return;
+  DRYWASTE.unshift(entry);
+  alert('Dry waste entry saved for '+fmtD(date)+'!');goTo('drywaste-log');
+}
+function renderDryWasteLog(){
+  let list=filterRange(DRYWASTE.filter(e=>e.site===CUR.site||!e.site),RANGES.dl);
+  list=[...list].sort((a,b)=>b.date.localeCompare(a.date));
+  const totalR=list.reduce((s,e)=>s+Number(e.received||0),0);
+  const sum=document.getElementById('dl-sum');
+  if(list.length){sum.style.display='flex';sum.innerHTML=`<span class="ls-lbl">Received: ${fmt2(totalR)} TPD</span><span class="ls-val">${list.length} entries</span>`;}
+  else sum.style.display='none';
+  const FIELDS=[['Cardboard','cardboard'],['Paper','paper'],['Plastic','plastic'],['Cloth','cloth'],['Glass','glass'],['Packaging','packaging'],['Rubber','rubber'],['Metal','metal']];
+  const el=document.getElementById('dl-list');
+  if(!list.length){el.innerHTML='<div class="empty">No dry waste entries found</div>';return;}
+  el.innerHTML=list.map(e=>{
+    const idx=DRYWASTE.indexOf(e);
+    const editBtn=editingAllowed()?`<button class="btn-edit" onclick="editEntry('drywaste',${idx})">&#9998; Edit</button>`:'';
+    const outTotal=FIELDS.reduce((s,[,k])=>s+Number(e[k]||0),0);
+    return`<div class="log-card">
+      <div class="lc-top"><div><div class="lc-name">${fmtD(e.date)}</div><div class="lc-sub">${esc(e.qtyUtilised)}</div></div><div style="text-align:right"><div class="lc-ltr">${fmt2(e.received)} <span style="font-size:12px">TPD</span></div><div class="lc-meta">Received</div></div></div>
+      <div class="out-box"><div style="font-size:10px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">Output</div><div class="out-grid">${FIELDS.map(([l,k])=>`<div class="out-item"><span style="color:var(--text3)">${l}:</span> <b>${fmt3(e[k]||0)}</b></div>`).join('')}</div><div style="margin-top:5px;font-size:11px;color:var(--primary);font-weight:800">Total: ${fmt3(outTotal)} TPD</div></div>
+      <div class="lc-footer">${!e.synced?'<span class="lc-chip" style="color:var(--orange)">&#9888; Not synced</span>':''}${editBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── TROMMEL WET ───────────────────────────────────────────
+function calcTrommelHours(startId,endId,shutId,runId){
+  const s=document.getElementById(startId).value;
+  const en=document.getElementById(endId).value;
+  const shut=Number(document.getElementById(shutId).value)||0;
+  if(s&&en){
+    const [sh,sm]=s.split(':').map(Number);
+    const [eh,em]=en.split(':').map(Number);
+    let diff=(eh*60+em)-(sh*60+sm);
+    if(diff<0)diff+=24*60;
+    const hrs=Math.max(0,(diff/60)-shut);
+    document.getElementById(runId).value=hrs.toFixed(1);
+  }
+}
+function setupTrommelWetEntry(e){
+  document.getElementById('twe-title').textContent='💧 Trommel Wet Entry';
+  document.getElementById('twe-submit-btn').textContent='✓ CONFIRM & SAVE';
+  document.getElementById('twe-date').value=e?e.date:tod();
+  document.getElementById('twe-start').value=e?e.startTime:'08:00';
+  document.getElementById('twe-end').value=e?e.endTime:'16:00';
+  document.getElementById('twe-shut').value=e?e.shutdownHours||'':'';
+  document.getElementById('twe-run').value=e?e.runningHours||'':'';
+  document.getElementById('twe-compost').value=e?e.compostScreened:'';
+  document.getElementById('twe-rem').value=e?e.remarks||'':'';
+}
+async function submitTrommelWet(){
+  calcTrommelHours('twe-start','twe-end','twe-shut','twe-run');
+  const date=document.getElementById('twe-date').value;
+  const comp=document.getElementById('twe-compost').value.trim();
+  if(!date||!comp){alert('Date and Compost Screened are required.');return;}
+  const entry={date,startTime:document.getElementById('twe-start').value,endTime:document.getElementById('twe-end').value,shutdownHours:Number(document.getElementById('twe-shut').value)||0,runningHours:Number(document.getElementById('twe-run').value)||0,compostScreened:Number(comp),remarks:document.getElementById('twe-rem').value.trim(),supervisor:CUR?CUR.name:'--',synced:false};
+  if(EDIT_MODE&&EDIT_MODE.type==='twet'){const updated=Object.assign({},TROMMELWET[EDIT_MODE.idx],entry);const d=await saveSheetEntry('saveTrommelWet',updated);if(!d)return;Object.assign(TROMMELWET[EDIT_MODE.idx],updated);EDIT_MODE=null;alert('Entry updated!');goTo('twet-log');return;}
+  TROMMELWET=TROMMELWET.filter(e=>e.date!==date);
+  const d=await saveSheetEntry('saveTrommelWet',entry);if(!d)return;
+  TROMMELWET.unshift(entry);
+  alert('Trommel Wet entry saved for '+fmtD(date)+'!');goTo('twet-log');
+}
+function renderTrommelWetLog(){
+  let list=filterRange(TROMMELWET,RANGES.twl);
+  list=[...list].sort((a,b)=>b.date.localeCompare(a.date));
+  const totalC=list.reduce((s,e)=>s+Number(e.compostScreened||0),0);
+  const sum=document.getElementById('twl-sum');
+  if(list.length){sum.style.display='flex';sum.innerHTML=`<span class="ls-lbl">Compost Screened</span><span class="ls-val">${fmt2(totalC)} MT</span>`;}
+  else sum.style.display='none';
+  const el=document.getElementById('twl-list');
+  if(!list.length){el.innerHTML='<div class="empty">No trommel wet entries</div>';return;}
+  el.innerHTML=list.map(e=>{
+    const idx=TROMMELWET.indexOf(e);
+    const editBtn=editingAllowed()?`<button class="btn-edit" onclick="editEntry('twet',${idx})">&#9998; Edit</button>`:'';
+    return`<div class="log-card">
+      <div class="lc-top"><div><div class="lc-name">${fmtD(e.date)}</div><div class="lc-sub">${esc(e.startTime||'')} &rarr; ${esc(e.endTime||'')} &nbsp;·&nbsp; ${fmt2(e.runningHours||0)} hrs running</div>${e.remarks?`<div style="font-size:11px;color:var(--orange);margin-top:2px">${esc(e.remarks)}</div>`:''}</div><div style="text-align:right"><div class="lc-ltr">${fmt2(e.compostScreened)} <span style="font-size:12px">MT</span></div><div class="lc-meta">After 4mm screening</div></div></div>
+      <div class="lc-footer"><span class="lc-chip">Shutdown: ${fmt2(e.shutdownHours||0)} hrs</span>${!e.synced?'<span class="lc-chip" style="color:var(--orange)">&#9888; Not synced</span>':''}${editBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── TROMMEL DRY ───────────────────────────────────────────
+function setupTrommelDryEntry(e){
+  document.getElementById('tde-title').textContent='🔴 Trommel Dry Entry';
+  document.getElementById('tde-submit-btn').textContent='✓ CONFIRM & SAVE';
+  document.getElementById('tde-date').value=e?e.date:tod();
+  document.getElementById('tde-start').value=e?e.startTime:'08:00';
+  document.getElementById('tde-end').value=e?e.endTime:'16:00';
+  document.getElementById('tde-shut').value=e?e.shutdownHours||'':'';
+  document.getElementById('tde-run').value=e?e.runningHours||'':'';
+  document.getElementById('tde-input').value=e?e.dryInput:'';
+  document.getElementById('tde-rej').value=e?e.plantRejected||'':'';
+  document.getElementById('tde-bio').value=e?e.bioSoil||'':'';
+  document.getElementById('tde-ins').value=e?e.insectsRejection||'':'';
+  document.getElementById('tde-rem').value=e?e.remarks||'':'';
+}
+async function submitTrommelDry(){
+  calcTrommelHours('tde-start','tde-end','tde-shut','tde-run');
+  const date=document.getElementById('tde-date').value;
+  const inp=document.getElementById('tde-input').value.trim();
+  if(!date||!inp){alert('Date and Dry Input are required.');return;}
+  const entry={date,startTime:document.getElementById('tde-start').value,endTime:document.getElementById('tde-end').value,shutdownHours:Number(document.getElementById('tde-shut').value)||0,runningHours:Number(document.getElementById('tde-run').value)||0,dryInput:Number(inp),plantRejected:Number(document.getElementById('tde-rej').value)||0,bioSoil:Number(document.getElementById('tde-bio').value)||0,insectsRejection:Number(document.getElementById('tde-ins').value)||0,remarks:document.getElementById('tde-rem').value.trim(),supervisor:CUR?CUR.name:'--',synced:false};
+  if(EDIT_MODE&&EDIT_MODE.type==='tdry'){const updated=Object.assign({},TROMMELDRY[EDIT_MODE.idx],entry);const d=await saveSheetEntry('saveTrommelDry',updated);if(!d)return;Object.assign(TROMMELDRY[EDIT_MODE.idx],updated);EDIT_MODE=null;alert('Entry updated!');goTo('tdry-log');return;}
+  TROMMELDRY=TROMMELDRY.filter(e=>e.date!==date);
+  const d=await saveSheetEntry('saveTrommelDry',entry);if(!d)return;
+  TROMMELDRY.unshift(entry);
+  alert('Trommel Dry entry saved for '+fmtD(date)+'!');goTo('tdry-log');
+}
+function renderTrommelDryLog(){
+  let list=filterRange(TROMMELDRY,RANGES.tdl);
+  list=[...list].sort((a,b)=>b.date.localeCompare(a.date));
+  const sum=document.getElementById('tdl-sum');
+  if(list.length){const totalI=list.reduce((s,e)=>s+Number(e.dryInput||0),0);sum.style.display='flex';sum.innerHTML=`<span class="ls-lbl">Dry Input</span><span class="ls-val">${fmt2(totalI)} MT</span>`;}
+  else sum.style.display='none';
+  const el=document.getElementById('tdl-list');
+  if(!list.length){el.innerHTML='<div class="empty">No trommel dry entries</div>';return;}
+  el.innerHTML=list.map(e=>{
+    const idx=TROMMELDRY.indexOf(e);
+    const editBtn=editingAllowed()?`<button class="btn-edit" onclick="editEntry('tdry',${idx})">&#9998; Edit</button>`:'';
+    return`<div class="log-card">
+      <div class="lc-top"><div><div class="lc-name">${fmtD(e.date)}</div><div class="lc-sub">${esc(e.startTime||'')} &rarr; ${esc(e.endTime||'')} &nbsp;·&nbsp; ${fmt2(e.runningHours||0)} hrs</div>${e.remarks?`<div style="font-size:11px;color:var(--orange);margin-top:2px">${esc(e.remarks)}</div>`:''}</div><div style="text-align:right"><div class="lc-ltr">${fmt2(e.dryInput)} <span style="font-size:12px">MT</span></div><div class="lc-meta">Dry input</div></div></div>
+      <div class="out-box"><div class="out-grid"><div class="out-item"><span style="color:var(--text3)">Plant Rejected:</span> <b>${fmt2(e.plantRejected||0)} MT</b></div><div class="out-item"><span style="color:var(--text3)">Bio Soil:</span> <b>${fmt2(e.bioSoil||0)} MT</b></div><div class="out-item"><span style="color:var(--text3)">Insects Rej:</span> <b>${fmt2(e.insectsRejection||0)} MT</b></div></div></div>
+      <div class="lc-footer">${!e.synced?'<span class="lc-chip" style="color:var(--orange)">&#9888; Not synced</span>':''}${editBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── RDF ───────────────────────────────────────────────────
+function setupRDFEntry(e){
+  document.getElementById('re-title').textContent='📦 RDF Dispatch Entry';
+  document.getElementById('re-submit-btn').textContent='✓ CONFIRM & SAVE DISPATCH';
+  document.getElementById('re-date').value=e?e.date:tod();
+  document.getElementById('re-vno').value=e?e.vehicleNo:'';
+  document.getElementById('re-driver').value=e?e.driverName:'';
+  document.getElementById('re-gross').value=e?e.grossWeight:'';
+  document.getElementById('re-tare').value=e?e.tareWeight:'';
+  document.getElementById('re-disposal').value=e?e.disposalMethod:'Cement Plant';
+  document.getElementById('re-receiver').value=e?e.receiverName||'':'';
+  document.getElementById('re-net-disp').textContent=e?Number(e.netWeight||0).toLocaleString()+' kg':'-- kg';
+}
+document.getElementById('re-gross').addEventListener?null:0;
+function calcRDFNet(){const g=Number(document.getElementById('re-gross').value)||0;const t=Number(document.getElementById('re-tare').value)||0;document.getElementById('re-net-disp').textContent=(g-t>0?(g-t).toLocaleString():'--')+' kg';}
+async function submitRDF(){
+  const date=document.getElementById('re-date').value;
+  const vno=document.getElementById('re-vno').value.trim().toUpperCase();
+  const gross=Number(document.getElementById('re-gross').value)||0;
+  const tare=Number(document.getElementById('re-tare').value)||0;
+  if(!date||!vno||!gross||!tare){alert('Date, Vehicle No, Gross and Tare Weight are required.');return;}
+  const net=gross-tare;
+  if(net<=0){alert('Gross Weight must be greater than Tare Weight.');return;}
+  const entry={date,vehicleNo:vno,driverName:document.getElementById('re-driver').value.trim(),grossWeight:gross,tareWeight:tare,netWeight:net,disposalMethod:document.getElementById('re-disposal').value,receiverName:document.getElementById('re-receiver').value.trim(),supervisor:CUR?CUR.name:'--',synced:false};
+  if(EDIT_MODE&&EDIT_MODE.type==='rdf'){const updated=Object.assign({},RDF[EDIT_MODE.idx],entry);const d=await saveSheetEntry('saveRDF',updated);if(!d)return;Object.assign(RDF[EDIT_MODE.idx],updated);EDIT_MODE=null;alert('Dispatch updated!');goTo('rdf-log');return;}
+  entry.slipNo='RDF-'+date.slice(2).replace(/-/g,'')+'-'+String(RDF.length+1).padStart(3,'0');
+  const d=await saveSheetEntry('saveRDF',entry);if(!d)return;
+  RDF.unshift(entry);
+  alert('RDF Dispatch saved! Net: '+net.toLocaleString()+' kg');goTo('rdf-log');
+}
+function renderRDFLog(){
+  let list=filterRange(RDF,RANGES.rl);
+  list=[...list].sort((a,b)=>b.date.localeCompare(a.date));
+  const totalN=list.reduce((s,e)=>s+Number(e.netWeight||0),0);
+  const sum=document.getElementById('rl-sum');
+  if(list.length){sum.style.display='flex';sum.innerHTML=`<span class="ls-lbl">Net Dispatched</span><span class="ls-val">${totalN.toLocaleString()} kg &nbsp;·&nbsp; ${list.length} dispatch</span>`;}
+  else sum.style.display='none';
+  const el=document.getElementById('rl-list');
+  if(!list.length){el.innerHTML='<div class="empty">No RDF dispatch entries</div>';return;}
+  el.innerHTML=list.map(e=>{
+    const idx=RDF.indexOf(e);
+    const editBtn=editingAllowed()?`<button class="btn-edit" onclick="editEntry('rdf',${idx})">&#9998; Edit</button>`:'';
+    return`<div class="log-card">
+      <div class="lc-top"><div><div class="lc-name">${fmtD(e.date)} &nbsp;·&nbsp; ${esc(e.vehicleNo)}</div><div class="lc-sub">${esc(e.driverName||'--')} &nbsp;·&nbsp; ${esc(e.disposalMethod||'')}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${esc(e.slipNo||'--')}</div></div><div style="text-align:right"><div class="lc-ltr">${Number(e.netWeight||0).toLocaleString()} <span style="font-size:12px">kg</span></div><div class="lc-meta">Net weight</div></div></div>
+      <div class="lc-footer"><span class="lc-chip">Gross: ${Number(e.grossWeight||0).toLocaleString()} kg</span><span class="lc-chip">Tare: ${Number(e.tareWeight||0).toLocaleString()} kg</span>${!e.synced?'<span class="lc-chip" style="color:var(--orange)">&#9888; Not synced</span>':''}${editBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── POCLAIN ───────────────────────────────────────────────
+function setupPoclainEntry(e){
+  document.getElementById('pe-title').textContent='🏗 Poclain Log Entry';
+  document.getElementById('pe-submit-btn').textContent='✓ CONFIRM & SAVE';
+  document.getElementById('pe-date').value=e?e.date:tod();
+  document.getElementById('pe-rstart').value=e?e.readingStart:'';
+  document.getElementById('pe-rend').value=e?e.readingEnd:'';
+  document.getElementById('pe-start').value=e?e.stationFrom||'':'';
+  document.getElementById('pe-end').value=e?e.stationTo||'':'';
+  document.getElementById('pe-purpose').value=e?e.purpose:'Waste Sifting';
+  document.getElementById('pe-diesel').value=e?e.diesel||'':'';
+  document.getElementById('pe-driver').value=e?e.driverName||'':'';
+  document.getElementById('pe-rem').value=e?e.remarks||'':'';
+}
+async function submitPoclain(){
+  const date=document.getElementById('pe-date').value;
+  const rs=document.getElementById('pe-rstart').value.trim();
+  const re=document.getElementById('pe-rend').value.trim();
+  if(!date||!rs||!re){alert('Date, Reading Start and End are required.');return;}
+  if(Number(re)<Number(rs)){alert('Reading End must be greater than or equal to Reading Start.');return;}
+  const total=Math.max(0,Number(re)-Number(rs));
+  const entry={date,readingStart:Number(rs),readingEnd:Number(re),totalHours:total,stationFrom:document.getElementById('pe-start').value,stationTo:document.getElementById('pe-end').value,purpose:document.getElementById('pe-purpose').value,diesel:document.getElementById('pe-diesel').value,driverName:document.getElementById('pe-driver').value.trim(),remarks:document.getElementById('pe-rem').value.trim(),supervisor:CUR?CUR.name:'--',synced:false};
+  if(EDIT_MODE&&EDIT_MODE.type==='poc'){const updated=Object.assign({},POCLAIN[EDIT_MODE.idx],entry);const d=await saveSheetEntry('savePoclain',updated);if(!d)return;Object.assign(POCLAIN[EDIT_MODE.idx],updated);EDIT_MODE=null;alert('Entry updated!');goTo('poc-log');return;}
+  const d=await saveSheetEntry('savePoclain',entry);if(!d)return;
+  POCLAIN.unshift(entry);
+  alert('Poclain entry saved!');goTo('poc-log');
+}
+function renderPoclainLog(){
+  let list=filterRange(POCLAIN,RANGES.pl);
+  list=[...list].sort((a,b)=>b.date.localeCompare(a.date));
+  const sum=document.getElementById('pl-sum');
+  if(list.length){const totalH=list.reduce((s,e)=>s+Number(e.totalHours||0),0);sum.style.display='flex';sum.innerHTML=`<span class="ls-lbl">Total Hours</span><span class="ls-val">${fmt2(totalH)} hrs</span>`;}
+  else sum.style.display='none';
+  const el=document.getElementById('pl-list');
+  if(!list.length){el.innerHTML='<div class="empty">No poclain entries</div>';return;}
+  el.innerHTML=list.map(e=>{
+    const idx=POCLAIN.indexOf(e);
+    const editBtn=editingAllowed()?`<button class="btn-edit" onclick="editEntry('poc',${idx})">&#9998; Edit</button>`:'';
+    return`<div class="log-card">
+      <div class="lc-top"><div><div class="lc-name">${fmtD(e.date)}</div><div class="lc-sub">${esc(e.purpose||'Waste Sifting')}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Reading: ${esc(String(e.readingStart||0))} → ${esc(String(e.readingEnd||0))} hrs</div></div><div style="text-align:right"><div class="lc-ltr">${fmt2(e.totalHours||0)} <span style="font-size:12px">hrs</span></div><div class="lc-meta">Running</div></div></div>
+      <div class="lc-footer">${e.diesel?`<span class="lc-chip">Diesel: ${esc(String(e.diesel))} L</span>`:''}<span class="lc-chip">${esc(e.driverName||'--')}</span>${!e.synced?'<span class="lc-chip" style="color:var(--orange)">&#9888; Not synced</span>':''}${editBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── C&D WASTE ─────────────────────────────────────────────
+function setupCDEntry(e){
+  document.getElementById('cde-title').textContent='🏗 C&D Waste Entry';
+  document.getElementById('cde-submit-btn').textContent='✓ CONFIRM & SAVE';
+  document.getElementById('cde-date').value=e?e.date:tod();
+  document.getElementById('cde-gen').value=e?e.totalGenerated:'';
+  document.getElementById('cde-col').value=e?e.totalCollected:'';
+  document.getElementById('cde-br').value=e?e.bricks||'':'';
+  document.getElementById('cde-co').value=e?e.concrete||'':'';
+  document.getElementById('cde-so').value=e?e.solid||'':'';
+  document.getElementById('cde-wo').value=e?e.wood||'':'';
+  document.getElementById('cde-mo').value=e?e.mortar||'':'';
+}
+async function submitCD(){
+  const date=document.getElementById('cde-date').value;
+  const gen=document.getElementById('cde-gen').value.trim();
+  const col=document.getElementById('cde-col').value.trim();
+  if(!date||!gen||!col){alert('Date, Generated and Collected are required.');return;}
+  const entry={date,totalGenerated:Number(gen),totalCollected:Number(col),bricks:Number(document.getElementById('cde-br').value)||0,concrete:Number(document.getElementById('cde-co').value)||0,solid:Number(document.getElementById('cde-so').value)||0,wood:Number(document.getElementById('cde-wo').value)||0,mortar:Number(document.getElementById('cde-mo').value)||0,supervisor:CUR?CUR.name:'--',synced:false};
+  if(EDIT_MODE&&EDIT_MODE.type==='cd'){const updated=Object.assign({},CD[EDIT_MODE.idx],entry);const d=await saveSheetEntry('saveCD',updated);if(!d)return;Object.assign(CD[EDIT_MODE.idx],updated);EDIT_MODE=null;alert('Entry updated!');goTo('cd-log');return;}
+  CD=CD.filter(e=>e.date!==date);
+  const d=await saveSheetEntry('saveCD',entry);if(!d)return;
+  CD.unshift(entry);
+  alert('C&D entry saved for '+fmtD(date)+'!');goTo('cd-log');
+}
+function renderCDLog(){
+  let list=filterRange(CD,RANGES.cdl);
+  list=[...list].sort((a,b)=>b.date.localeCompare(a.date));
+  const sum=document.getElementById('cdl-sum');
+  if(list.length){const totalG=list.reduce((s,e)=>s+Number(e.totalGenerated||0),0);sum.style.display='flex';sum.innerHTML=`<span class="ls-lbl">Total Generated</span><span class="ls-val">${fmt2(totalG)} TPD</span>`;}
+  else sum.style.display='none';
+  const el=document.getElementById('cdl-list');
+  if(!list.length){el.innerHTML='<div class="empty">No C&D waste entries</div>';return;}
+  el.innerHTML=list.map(e=>{
+    const idx=CD.indexOf(e);
+    const editBtn=editingAllowed()?`<button class="btn-edit" onclick="editEntry('cd',${idx})">&#9998; Edit</button>`:'';
+    return`<div class="log-card">
+      <div class="lc-top"><div><div class="lc-name">${fmtD(e.date)}</div><div class="lc-sub">Collected: ${fmt2(e.totalCollected)} TPD</div></div><div style="text-align:right"><div class="lc-ltr">${fmt2(e.totalGenerated)} <span style="font-size:12px">TPD</span></div><div class="lc-meta">Generated</div></div></div>
+      <div class="out-box"><div class="out-grid"><div class="out-item"><span style="color:var(--text3)">Bricks:</span> <b>${fmt3(e.bricks||0)}</b></div><div class="out-item"><span style="color:var(--text3)">Concrete:</span> <b>${fmt3(e.concrete||0)}</b></div><div class="out-item"><span style="color:var(--text3)">Solid:</span> <b>${fmt3(e.solid||0)}</b></div><div class="out-item"><span style="color:var(--text3)">Wood:</span> <b>${fmt3(e.wood||0)}</b></div><div class="out-item"><span style="color:var(--text3)">Mortar:</span> <b>${fmt3(e.mortar||0)}</b></div></div></div>
+      <div class="lc-footer">${!e.synced?'<span class="lc-chip" style="color:var(--orange)">&#9888; Not synced</span>':''}${editBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── CSV DOWNLOAD ───────────────────────────────────────────
+function downloadTodayCSV(){
+  const today=tod();
+  const site=curSite();
+  let csv='\uFEFF';
+  csv+='PINAKA INFRA — MRF DAILY REPORT\n';
+  csv+='Site: '+siteName(site)+'\n';
+  csv+='Date: '+fmtD(today)+'\n';
+  csv+='Supervisor: '+(CUR?CUR.name:'--')+'\n\n';
+
+  const trips=TRIPS.filter(e=>e.date===today&&(e.site===site||!e.site));
+  if(trips.length){
+    csv+='VEHICLE TRIP REGISTER\n';
+    csv+='Slip No,Date,Time,Vehicle No,Ward No,Ward Name,Driver,Weight (kg),Arrival,Departure,Supervisor\n';
+    trips.forEach(e=>{csv+=`"${e.slipNo||''}","${e.date}","${e.time||''}","${e.vehicleNo}","${e.wardNo}","${e.wardName}","${e.driver}","${e.weight}","${e.arrival||''}","${e.departure||''}","${e.supervisor}"\n`;});
+    csv+='\n';
+  }
+
+  const comp=COMPOST.find(e=>e.date===today&&(e.site===site||!e.site));
+  if(comp){
+    csv+='WASTE TO COMPOST LOG\n';
+    csv+='Date,Wet Collected (TPD),Wet Processed (TPD),Method,Compost Generated (TPD),Utilization,Quantity,Supervisor\n';
+    csv+=`"${comp.date}","${comp.wetCollected}","${comp.wetProcessed}","${comp.method}","${comp.compostGenerated}","${comp.utilization}","${comp.quantity||''}","${comp.supervisor}"\n\n`;
+  }
+
+  const dry=DRYWASTE.find(e=>e.date===today&&(e.site===site||!e.site));
+  if(dry){
+    csv+='DRY WASTE LOG\n';
+    csv+='Date,Received (TPD),Processed (TPD),Cardboard,Paper,Plastic,Cloth,Glass,Packaging,Rubber,Metal,Qty Utilised,Supervisor\n';
+    csv+=`"${dry.date}","${dry.received}","${dry.processed}","${dry.cardboard||0}","${dry.paper||0}","${dry.plastic||0}","${dry.cloth||0}","${dry.glass||0}","${dry.packaging||0}","${dry.rubber||0}","${dry.metal||0}","${dry.qtyUtilised}","${dry.supervisor}"\n\n`;
+  }
+
+  if(isMalaka()){
+    const tw=TROMMELWET.find(e=>e.date===today);
+    if(tw){csv+='TROMMEL WET PROCESSING\n';csv+='Date,Start Time,End Time,Shutdown Hrs,Running Hrs,Compost Screened (MT),Remarks,Supervisor\n';csv+=`"${tw.date}","${tw.startTime}","${tw.endTime}","${tw.shutdownHours||0}","${tw.runningHours||0}","${tw.compostScreened}","${tw.remarks||''}","${tw.supervisor}"\n\n`;}
+    const td=TROMMELDRY.find(e=>e.date===today);
+    if(td){csv+='TROMMEL DRY PROCESSING\n';csv+='Date,Start Time,End Time,Shutdown Hrs,Running Hrs,Dry Input (MT),Plant Rejected (MT),Bio Soil (MT),Insects (MT),Remarks,Supervisor\n';csv+=`"${td.date}","${td.startTime}","${td.endTime}","${td.shutdownHours||0}","${td.runningHours||0}","${td.dryInput}","${td.plantRejected||0}","${td.bioSoil||0}","${td.insectsRejection||0}","${td.remarks||''}","${td.supervisor}"\n\n`;}
+    const rdfs=RDF.filter(e=>e.date===today);
+    if(rdfs.length){csv+='RDF DISPATCH LOG\n';csv+='Slip No,Date,Vehicle No,Driver,Gross Wt (kg),Tare Wt (kg),Net Wt (kg),Disposal Method,Receiver,Supervisor\n';rdfs.forEach(e=>{csv+=`"${e.slipNo||''}","${e.date}","${e.vehicleNo}","${e.driverName||''}","${e.grossWeight}","${e.tareWeight}","${e.netWeight}","${e.disposalMethod||''}","${e.receiverName||''}","${e.supervisor}"\n`;});csv+='\n';}
+    const pocs=POCLAIN.filter(e=>e.date===today);
+    if(pocs.length){csv+='POCLAIN LOG\n';csv+='Date,Reading Start,Reading End,Total Hrs,Purpose,Diesel (L),Driver,Remarks,Supervisor\n';pocs.forEach(e=>{csv+=`"${e.date}","${e.readingStart}","${e.readingEnd}","${e.totalHours||0}","${e.purpose||''}","${e.diesel||''}","${e.driverName||''}","${e.remarks||''}","${e.supervisor}"\n`;});csv+='\n';}
+    const cd=CD.find(e=>e.date===today);
+    if(cd){csv+='C&D WASTE LOG\n';csv+='Date,Total Generated (TPD),Total Collected (TPD),Bricks,Concrete,Solid,Wood,Mortar,Supervisor\n';csv+=`"${cd.date}","${cd.totalGenerated}","${cd.totalCollected}","${cd.bricks||0}","${cd.concrete||0}","${cd.solid||0}","${cd.wood||0}","${cd.mortar||0}","${cd.supervisor}"\n`;}
+  }
+
+  if(csv.split('\n').length<=6){alert('No entries found for today to download.');return;}
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='MRF_Report_'+today+'_'+siteName(site).replace(/\s/g,'_')+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+// ── WHATSAPP ───────────────────────────────────────────────
+function sendDailyWA(){
+  const today=tod();const site=curSite();
+  const trips=TRIPS.filter(e=>e.date===today&&(e.site===site||!e.site));
+  const comp=COMPOST.find(e=>e.date===today&&(e.site===site||!e.site));
+  const dry=DRYWASTE.find(e=>e.date===today&&(e.site===site||!e.site));
+  if(!trips.length&&!comp&&!dry){alert('No entries today to share.');return;}
+  const tripWt=trips.reduce((s,e)=>s+Number(e.weight||0),0);
+  let msg='*PINAKA INFRA — Daily MRF Report*\n'+fmtD(today)+'\nSite: '+siteName(site)+'\n================================\n';
+  if(comp)msg+='*Wet Waste Collected: '+fmt2(comp.wetCollected)+' TPD*\nCompost Generated: '+fmt2(comp.compostGenerated)+' TPD\n\n';
+  if(dry)msg+='*Dry Waste Received: '+fmt2(dry.received)+' TPD*\nProcessed: '+fmt2(dry.processed)+' TPD\n\n';
+  if(trips.length){msg+='*Vehicle Trips: '+trips.length+' | Weight: '+tripWt.toLocaleString()+' kg*\n';trips.slice(0,10).forEach(e=>{msg+='\u2022 '+e.vehicleNo+' ('+e.wardNo+'): '+Number(e.weight).toLocaleString()+' kg\n';});}
+  msg+='================================\nPinaka Infra \u00b7 Fatehpur';
+  window.open('https://wa.me/'+(SETTINGS.admin_whatsapp||'')+'?text='+encodeURIComponent(msg),'_blank');
+}
+
+// ── ADMIN ─────────────────────────────────────────────────
+function renderAdmin(){
+  USERS=usableUsers(USERS);
+  document.getElementById('set-admin-wa').value=SETTINGS.admin_whatsapp||'';
+  const editAllowed=SETTINGS.editing_allowed!=='false'&&SETTINGS.editing_allowed!==false;
+  document.getElementById('set-edit-val').value=editAllowed?'true':'false';
+  document.getElementById('set-edit-y').classList.toggle('active',editAllowed);
+  document.getElementById('set-edit-n').classList.toggle('active',!editAllowed);
+  const vc=document.getElementById('admin-vehicle-list');
+  vc.innerHTML=VEHICLES.length?VEHICLES.map(v=>`<div class="admin-row"><div class="admin-row-info"><div class="admin-row-name">${esc(v.no)}</div><div class="admin-row-sub">${esc(v.type)} &middot; ${esc(v.wardNo)} ${esc(v.wardName)} &middot; ${esc(v.driver)}</div></div><button class="admin-action-btn" onclick="openVehicleModal('${esc(v.no)}')">Edit</button><button class="admin-del-btn" onclick="deleteVehicleAdmin('${esc(v.no)}')">&#10005;</button></div>`).join(''):'<div class="empty" style="padding:20px">No vehicles.</div>';
+  const uc=document.getElementById('admin-user-list');
+  const SITE_LABELS={malaka:'Malaka',raddiya:'Raddiya',ajgawan:'Ajgawan',mithnapur:'Mithnapur'};
+  uc.innerHTML=USERS.length?USERS.map(u=>`<div class="admin-row"><div class="admin-row-info"><div class="admin-row-name">${esc(u.name)}</div><div class="admin-row-sub">ID: ${esc(u.id)} &middot; Site: ${esc(SITE_LABELS[u.site]||u.site||'--')}</div></div><span class="admin-badge ${u.admin?'ab-admin':'ab-user'}">${u.admin?'Admin':'Supervisor'}</span><button class="admin-action-btn" onclick="openUserModal('${esc(u.id)}')">Edit</button><button class="admin-del-btn" onclick="deleteUserAdmin('${esc(u.id)}')">&#10005;</button></div>`).join(''):'<div class="empty" style="padding:20px">No users.</div>';
+}
+function setEditTog(v){document.getElementById('set-edit-val').value=v;document.getElementById('set-edit-y').classList.toggle('active',v==='true');document.getElementById('set-edit-n').classList.toggle('active',v==='false');}
+function openVehicleModal(no){
+  document.getElementById('mv-title').textContent=no?'Edit Vehicle':'Add Vehicle';
+  document.getElementById('mv-edit-no').value=no||'';
+  if(no){const v=VEHICLES.find(x=>x.no===no);if(!v)return;document.getElementById('mv-no').value=v.no;document.getElementById('mv-type').value=v.type;document.getElementById('mv-wardno').value=v.wardNo;document.getElementById('mv-wardname').value=v.wardName;document.getElementById('mv-driver').value=v.driver;setVehActive(v.active||'Y');}
+  else{['mv-no','mv-wardno','mv-wardname','mv-driver'].forEach(id=>document.getElementById(id).value='');document.getElementById('mv-type').value='MAGIC';setVehActive('Y');}
+  document.getElementById('modal-vehicle').classList.add('open');
+}
+function setVehActive(v){document.getElementById('mv-active').value=v;document.getElementById('mv-act-y').classList.toggle('active',v==='Y');document.getElementById('mv-act-n').classList.toggle('active',v==='N');}
+async function saveVehicleAdmin(){
+  const editNo=document.getElementById('mv-edit-no').value;
+  const v={no:document.getElementById('mv-no').value.trim().toUpperCase(),type:document.getElementById('mv-type').value,wardNo:document.getElementById('mv-wardno').value.trim().toUpperCase(),wardName:document.getElementById('mv-wardname').value.trim(),driver:document.getElementById('mv-driver').value.trim(),active:document.getElementById('mv-active').value};
+  if(!v.no||!v.wardNo){alert('Vehicle No and Ward No required.');return;}
+  const idx=VEHICLES.findIndex(x=>x.no===(editNo||v.no));
+  if(idx>=0)VEHICLES[idx]=Object.assign({},VEHICLES[idx],v);else VEHICLES.push(v);
+  saveLocal();closeModal('modal-vehicle');renderAdmin();
+  await postToSheets('saveVehicle',{vehicle:v,editNo:editNo||null});
+}
+async function deleteVehicleAdmin(no){
+  if(!confirm('Delete vehicle '+no+'?'))return;
+  VEHICLES=VEHICLES.filter(v=>v.no!==no);saveLocal();renderAdmin();
+  await postToSheets('deleteVehicle',{no});
+}
+function openUserModal(id){
+  document.getElementById('mu-title').textContent=id?'Edit User':'Add User';
+  document.getElementById('mu-edit-id').value=id||'';
+  if(id){const u=USERS.find(x=>x.id===id);if(!u)return;document.getElementById('mu-id').value=u.id;document.getElementById('mu-name').value=u.name;document.getElementById('mu-site').value=u.site||'raddiya';setRoleTog(u.admin?'Y':'N');}
+  else{['mu-id','mu-name'].forEach(id=>document.getElementById(id).value='');document.getElementById('mu-site').value='raddiya';setRoleTog('N');}
+  document.getElementById('modal-user').classList.add('open');
+}
+function setRoleTog(v){document.getElementById('mu-admin').value=v;document.getElementById('mu-role-n').classList.toggle('active',v==='N');document.getElementById('mu-role-y').classList.toggle('active',v==='Y');}
+async function saveUserAdmin(){
+  const editId=document.getElementById('mu-edit-id').value;
+  const old=USERS.find(x=>x.id===editId);
+  const u={id:document.getElementById('mu-id').value.trim().toLowerCase(),name:document.getElementById('mu-name').value.trim(),pin:old&&old.pin?old.pin:'',admin:document.getElementById('mu-admin').value==='Y',site:document.getElementById('mu-site').value};
+  if(!u.id||!u.name){alert('User ID and Full Name are required.');return;}
+  if(u.id==='admin'||u.name.toLowerCase()==='admin'){alert('Admin account is not allowed.');return;}
+  const idx=USERS.findIndex(x=>x.id===(editId||u.id));
+  if(idx>=0)USERS[idx]=Object.assign({},USERS[idx],u);else USERS.push(u);
+  saveLocal();closeModal('modal-user');renderAdmin();
+  await postToSheets('saveUser',{user:Object.assign({},u,{admin:u.admin?'Y':'N'}),editId:editId||null});
+}
+async function deleteUserAdmin(id){
+  if(!confirm('Delete user '+id+'?'))return;
+  USERS=USERS.filter(u=>u.id!==id);saveLocal();renderAdmin();
+  await postToSheets('deleteUser',{id});
+}
+async function saveSettingsAdmin(){
+  SETTINGS.admin_whatsapp=document.getElementById('set-admin-wa').value.trim();
+  SETTINGS.editing_allowed=document.getElementById('set-edit-val').value;
+  saveLocal();
+  await postToSheets('saveSettings',{settings:SETTINGS});
+  alert('Settings saved.');
+}
+async function adminReload(){
+  const res=document.getElementById('admin-test-result');res.style.display='none';
+  if(!hasScriptUrl()){res.style.cssText='background:#FFEBEE;color:#C62828;border:none';res.textContent='Cannot connect. Save the deployed MRF Apps Script Web App URL on the login screen first.';res.style.display='block';return;}
+  try{
+    const r=await fetch(SCRIPT_URL+'?action=test',{cache:'no-store'});const d=await r.json();
+    if(d.ok){await syncAll();res.style.cssText='background:#E8F5E9;color:#1B5E20;border:1px solid #A5D6A7';res.textContent='Connected! Sheets: '+d.sheets.join(', ');}
+    else{res.style.cssText='background:#FFEBEE;color:#C62828;border:none';res.textContent='Error: '+(d.error||'Unknown');}
+  }catch(e){res.style.cssText='background:#FFEBEE;color:#C62828;border:none';res.textContent='Cannot connect. Check SCRIPT_URL in HTML file.';}
+  res.style.display='block';renderAdmin();
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
+document.addEventListener('click',function(ev){
+  const btn=ev.target.closest('.user-select-btn');
+  if(btn)selectUser(btn.dataset.userId);
+});
+
+// RDF net weight live calculation
+document.addEventListener('input',function(ev){
+  if(ev.target.id==='re-gross'||ev.target.id==='re-tare')calcRDFNet();
+  if(ev.target.id==='twe-start'||ev.target.id==='twe-end'||ev.target.id==='twe-shut')calcTrommelHours('twe-start','twe-end','twe-shut','twe-run');
+  if(ev.target.id==='tde-start'||ev.target.id==='tde-end'||ev.target.id==='tde-shut')calcTrommelHours('tde-start','tde-end','tde-shut','tde-run');
+});
+
+// ── INIT ──────────────────────────────────────────────────
+window.onload=function(){
+  loadLocal();
+  localStorage.removeItem('mrf_user');
+  const portalParams=new URLSearchParams(location.search);
+  if(portalParams.get('portal')==='1'){
+    const portalUser=portalParams.get('user');
+    USERS=usableUsers(USERS);
+    CUR=USERS.find(u=>u.id===portalUser)||USERS[0];
+    if(CUR){localStorage.setItem('mrf_user',JSON.stringify(CUR));renderDash();goTo('dash');syncAll();return;}
+  }
+  showUserPicker();
+};
+</script>
+</body>
+</html>
+
+
+

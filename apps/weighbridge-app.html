@@ -1,0 +1,473 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Pinaka Infra · Weighbridge</title>
+<style>
+:root{
+  --bg:#F0F7F0;--surface:#FFFFFF;--surface2:#E8F5E9;
+  --primary:#1B5E20;--primary-mid:#2E7D32;--primary-light:#43A047;
+  --primary-pale:#E8F5E9;--primary-border:#A5D6A7;
+  --text:#0D2010;--text2:#3A5C3E;--text3:#7A9B7A;
+  --border:#C8E6C9;--border2:#A5D6A7;
+  --orange:#E65100;--orange-light:#FFF3E0;--orange-border:#FFCC80;
+  --red:#C62828;
+  --blue:#1565C0;--blue-bg:#E3F2FD;--blue-border:#90CAF9;
+  --shadow:0 2px 12px rgba(0,50,0,.10);--shadow2:0 4px 24px rgba(0,50,0,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;min-height:100vh;max-width:480px;margin:0 auto}
+.screen{display:none;min-height:100vh}.screen.active{display:block}
+
+.hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--primary);box-shadow:var(--shadow2)}
+.hdr-title{font-size:14px;font-weight:800;letter-spacing:2.5px;color:#fff}
+.hdr-sub{font-size:9px;color:rgba(255,255,255,.55);letter-spacing:1.5px;margin-top:2px;text-transform:uppercase}
+.av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;flex-shrink:0;border:1.5px solid rgba(255,255,255,.3);cursor:pointer}
+.logout-lbl{font-size:8px;color:rgba(255,255,255,.4);margin-top:3px;text-align:center;letter-spacing:.5px}
+
+.login-header{background:var(--primary);padding:36px 20px 32px;text-align:center}
+.login-title{font-size:22px;font-weight:800;letter-spacing:3px;color:#fff;margin-bottom:6px}
+.login-tag{font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.75);margin-bottom:2px}
+.login-sub{font-size:10px;color:rgba(255,255,255,.45);letter-spacing:1.5px;text-transform:uppercase}
+
+.pin-section{padding:32px 24px 24px}
+.pin-label{text-align:center;color:var(--text3);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:22px;font-weight:600}
+.pin-dots{display:flex;justify-content:center;gap:16px;margin-bottom:30px}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border2);background:var(--surface);transition:all .15s}
+.pin-dot.filled{background:var(--primary);border-color:var(--primary)}
+.pin-dot.error{background:var(--red);border-color:var(--red)}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:276px;margin:0 auto}
+.pin-key{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:17px 10px;text-align:center;font-size:22px;font-weight:700;cursor:pointer;color:var(--text);box-shadow:0 2px 6px rgba(0,0,0,.05);transition:all .1s;-webkit-user-select:none;user-select:none}
+.pin-key:active{background:var(--primary-pale);border-color:var(--primary);transform:scale(.95)}
+.pin-key-del{font-size:16px;color:var(--text3)}
+.pin-key-empty{background:transparent;border:none;box-shadow:none;cursor:default}
+.pin-key-empty:active{background:transparent;transform:none}
+.pin-error{text-align:center;color:var(--red);font-size:12px;font-weight:600;min-height:20px;margin-top:14px}
+.user-select-list{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.user-select-btn{width:100%;display:flex;align-items:center;gap:12px;border:1px solid var(--border);background:#fff;border-radius:14px;padding:14px;text-align:left;box-shadow:0 4px 12px rgba(0,0,0,.06);cursor:pointer}
+.user-select-btn:active{transform:scale(.99)}
+.user-select-avatar{width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;flex:0 0 40px}
+.user-select-info{display:flex;flex-direction:column;gap:3px;min-width:0}
+.user-select-info strong{font-size:15px;color:var(--text)}
+.user-select-info em{font-style:normal;font-size:12px;color:var(--text3)}
+
+.stat-box{background:var(--primary);margin:14px 16px;border-radius:16px;padding:20px;box-shadow:var(--shadow2)}
+.stat-lbl{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
+.stat-big{font-size:38px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1}
+.stat-cnt{color:rgba(255,255,255,.45);font-size:11px;margin-top:5px}
+.stat-side{display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.mini-row{display:flex;align-items:center;gap:6px}
+.mini-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dg{background:#69F0AE}.dy{background:#FFD740}
+.mini-lbl{font-size:10px;color:rgba(255,255,255,.5)}
+.mini-val{font-weight:700;font-size:12px;color:#fff}
+.stat-info{margin-top:14px;padding:10px 12px;background:rgba(0,0,0,.18);border-radius:8px;font-size:11px;color:rgba(255,255,255,.5);line-height:1.5}
+.stat-info strong{color:#fff;font-weight:700}
+
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 12px}
+.s-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:13px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.s-card-lbl{font-size:9px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:5px}
+.s-card-val{font-size:18px;font-weight:800;color:var(--text)}
+.s-card-sub{font-size:10px;color:var(--text3);margin-top:3px}
+
+.sync-bar{display:flex;justify-content:space-between;align-items:center;margin:0 16px 12px;padding:10px 14px;border-radius:10px;font-size:11px;font-weight:600;border:1px solid}
+.sync-ok{background:#E8F5E9;color:#1B5E20;border-color:#A5D6A7}
+.sync-pending{background:var(--orange-light);color:var(--orange);border-color:var(--orange-border);cursor:pointer}
+.sync-none{background:var(--surface2);color:var(--text3);border-color:var(--border)}
+.warn-bar{background:var(--orange-light);color:var(--orange);border:1px solid var(--orange-border);padding:10px 14px;margin:10px 16px;border-radius:9px;font-size:11px;font-weight:600;text-align:center}
+
+.btn-p{display:block;width:calc(100% - 32px);margin:0 16px;padding:15px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:13px;letter-spacing:1.5px;cursor:pointer;text-align:center;font-family:inherit;box-shadow:0 4px 14px rgba(27,94,32,.3)}
+.btn-p:active{transform:scale(.98)}
+.btn-o{display:block;width:calc(100% - 32px);margin:10px 16px 0;padding:13px;background:var(--surface);color:var(--primary);border:2px solid var(--primary);border-radius:12px;font-weight:700;font-size:12px;letter-spacing:1px;cursor:pointer;text-align:center;font-family:inherit}
+.btn-amber{display:block;width:calc(100% - 32px);margin:10px 16px 0;padding:13px;background:#F9A825;color:#3E2723;border:none;border-radius:12px;font-weight:700;font-size:12px;letter-spacing:1px;cursor:pointer;text-align:center;font-family:inherit}
+.btn-back{background:none;border:none;color:rgba(255,255,255,.8);font-size:13px;cursor:pointer;padding:0;font-family:inherit;font-weight:600}
+
+.range-tabs{display:flex;gap:6px;padding:14px 16px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.range-tabs::-webkit-scrollbar{display:none}
+.range-tab{flex-shrink:0;padding:7px 14px;border-radius:18px;font-size:11px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--text2);border:1.5px solid var(--border);white-space:nowrap}
+.range-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.lwrap{padding:0 16px 100px}
+.trip-card{background:var(--surface);border-radius:12px;padding:13px 14px;margin-bottom:8px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.trip-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.trip-veh{font-weight:800;font-size:14px;color:var(--text);letter-spacing:.5px;font-family:monospace}
+.trip-net-kg{font-weight:800;font-size:17px;color:var(--primary);text-align:right}
+.trip-net-mt{font-size:10px;color:var(--text3);text-align:right;margin-top:2px}
+.trip-meta{color:var(--text3);font-size:11px;margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.trip-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:9px;padding-top:9px;border-top:1px solid var(--border)}
+.trip-rst{font-family:monospace;font-size:10px;color:var(--primary);font-weight:800;background:var(--primary-pale);padding:3px 8px;border-radius:4px;border:1px solid var(--primary-border)}
+.trip-time{font-size:10px;color:var(--text3)}
+.type-pill{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.pill-dumper{background:#E8F5E9;color:#1B5E20;border:1px solid #A5D6A7}
+.pill-compactor{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+.pill-magic{background:#FFF3E0;color:#E65100;border:1px solid #FFCC80}
+.pill-tractor{background:#F3E5F5;color:#6A1B9A;border:1px solid #CE93D8}
+.pill-jcb{background:#FBE9E7;color:#BF360C;border:1px solid #FFAB91}
+.pill-bull{background:#EFEBE9;color:#4E342E;border:1px solid #BCAAA4}
+.pill-dp{background:#E0F7FA;color:#006064;border:1px solid #80DEEA}
+.pill-other{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+.sync-dot{display:inline-block;width:6px;height:6px;border-radius:50%;vertical-align:middle}
+.sd-ok{background:#2E7D32}.sd-pend{background:var(--orange)}
+.empty{text-align:center;color:var(--text3);padding:52px 0;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+
+.fhdr{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--primary);box-shadow:var(--shadow2)}
+.fhdr-title{font-weight:800;font-size:14px;color:#fff;letter-spacing:1.5px}
+.fwrap{padding:0 16px 140px}
+.flbl{color:var(--text2);font-size:10px;letter-spacing:1.5px;font-weight:700;margin-bottom:6px;margin-top:22px;text-transform:uppercase;display:block}
+.finp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-size:15px;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none;transition:border-color .15s}
+.finp:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(27,94,32,.08)}
+.finp-num{font-size:24px;font-weight:800;color:var(--primary);text-align:center}
+.finp-auto{background:var(--surface2);color:var(--text2);cursor:default}
+.rst-box{background:var(--primary-pale);border:2px solid var(--primary-border);border-radius:10px;padding:14px;text-align:center}
+.rst-num{font-family:monospace;font-size:30px;font-weight:800;color:var(--primary);letter-spacing:3px}
+.rst-lbl{font-size:9px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;font-weight:600}
+.net-box{background:var(--primary);border-radius:12px;padding:18px;text-align:center;margin-top:8px}
+.net-lbl{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px;font-weight:600}
+.net-kg{font-size:34px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1}
+.net-mt{font-size:12px;color:rgba(255,255,255,.5);margin-top:5px}
+.time-row{display:flex;gap:10px}
+.time-row > div{flex:1}
+.now-btn{width:100%;margin-top:6px;padding:9px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;font-size:11px;font-weight:700;color:var(--primary);cursor:pointer;font-family:inherit;letter-spacing:.5px}
+.now-btn:active{background:var(--primary);color:#fff}
+.auto-row{display:flex;gap:8px;margin-top:10px}
+.auto-chip{flex:1;background:var(--primary-pale);border:1px solid var(--primary-border);border-radius:8px;padding:10px;text-align:center}
+.auto-chip-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+.auto-chip-val{font-size:12px;font-weight:800;color:var(--primary);margin-top:4px;word-break:break-all}
+
+.veh-wrap{position:relative}
+.veh-trigger{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text3);font-size:14px;outline:none;font-family:inherit;text-align:left;cursor:pointer;font-weight:500;transition:border-color .15s}
+.veh-trigger.sel{color:var(--text);font-weight:800;font-family:monospace;font-size:15px;border-color:var(--primary)}
+.veh-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1.5px solid var(--primary);border-top:none;border-radius:0 0 10px 10px;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:240px;overflow:hidden;flex-direction:column}
+.veh-dropdown.open{display:flex}
+.veh-search-inp{width:100%;padding:11px 14px;border:none;border-bottom:1px solid var(--border);font-size:14px;outline:none;font-family:inherit;background:var(--surface2);flex-shrink:0;color:var(--text)}
+.veh-list{overflow-y:auto;flex:1}
+.veh-item{padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer}
+.veh-item:last-child{border-bottom:none}
+.veh-item:active{background:var(--primary-pale)}
+.veh-num{font-weight:800;font-size:13px;color:var(--text);font-family:monospace}
+.veh-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+.fixed-bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(240,247,240,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:14px 16px 18px;border-top:1px solid var(--border);z-index:200}
+.submit-btn{width:100%;padding:16px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:14px;letter-spacing:2px;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(27,94,32,.3)}
+.submit-btn:active{transform:scale(.98)}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed}
+
+.flash{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#1B5E20;color:#fff;padding:14px 18px;text-align:center;font-weight:700;font-size:13px;z-index:999;border-radius:0 0 12px 12px;letter-spacing:.5px;display:none;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.flash.show{display:block}
+.gap{height:12px}
+.refresh-row{display:flex;justify-content:space-between;align-items:center;margin:0 16px 8px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:9px}
+.refresh-ts{font-size:10px;color:var(--text3);font-weight:600}
+.refresh-btn{background:none;border:none;font-size:12px;cursor:pointer;padding:4px 10px;border-radius:6px;color:var(--primary);font-family:inherit;font-weight:800;letter-spacing:.5px}
+.refresh-btn:active{background:var(--primary-pale)}
+</style>
+  <link rel="stylesheet" href="shared-theme.css">
+</head>
+<body>
+
+<div class="flash" id="flash">Trip saved — ready for next vehicle</div>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-header">
+    <div class="login-title">WEIGHBRIDGE</div>
+    <div class="login-tag">PINAKA INFRA</div>
+    <div class="login-sub">Nagar Palika Parishad &middot; Fatehpur</div>
+  </div>
+
+  <div class="pin-section">
+    <div class="pin-label">Select User ID</div>
+    <div class="user-select-list"><div class="empty">Loading users...</div></div>
+    <div class="pin-error" id="pin-error"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="screen-dash" class="screen">
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">PINAKA INFRA</div>
+      <div class="hdr-sub">Weighbridge</div>
+    </div>
+    <div style="text-align:center" onclick="logout()">
+      <div class="av" id="dash-av">A</div>
+      <div class="logout-lbl">LOGOUT</div>
+    </div>
+  </div>
+
+  <div id="warn-config" style="display:none" class="warn-bar">Google Sheets not configured &mdash; saving is disabled</div>
+
+  <div class="stat-box">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div class="stat-lbl">Today's Total</div>
+        <div class="stat-big" id="d-total">0.000 MT</div>
+        <div class="stat-cnt" id="d-cnt">0 trips recorded</div>
+      </div>
+      <div class="stat-side">
+        <div class="mini-row"><div class="mini-dot dg"></div><span class="mini-lbl">Gross</span><span class="mini-val" id="d-gross">0 KG</span></div>
+        <div class="mini-row"><div class="mini-dot dy"></div><span class="mini-lbl">Tare</span><span class="mini-val" id="d-tare">0 KG</span></div>
+      </div>
+    </div>
+    <div class="stat-info" id="d-lasttrip">No trips recorded today</div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="s-card">
+      <div class="s-card-lbl">Next RST No.</div>
+      <div class="s-card-val" id="d-rst" style="color:var(--primary);font-family:monospace;font-size:22px">&mdash;</div>
+      <div class="s-card-sub">Auto-assigned</div>
+    </div>
+    <div class="s-card">
+      <div class="s-card-lbl">This Month</div>
+      <div class="s-card-val" id="d-month">&mdash;</div>
+      <div class="s-card-sub" id="d-month-sub">Loading</div>
+    </div>
+  </div>
+
+  <div id="sync-bar" class="sync-bar sync-none">Checking sync status</div>
+
+  <button class="btn-p" onclick="goTo('add')">RECORD NEW TRIP</button>
+  <button class="btn-amber" id="btn-md" onclick="sendDailySummary()" style="display:none">SEND DAILY REPORT TO MD</button>
+  <button class="btn-o" id="btn-export" onclick="exportCSV()" style="display:none">EXPORT CSV</button>
+  <div class="gap"></div>
+
+  <div class="range-tabs">
+    <div class="range-tab active" id="rt-today"  onclick="setRange('today')">Today</div>
+    <div class="range-tab" id="rt-yest"           onclick="setRange('yesterday')">Yesterday</div>
+    <div class="range-tab" id="rt-week"           onclick="setRange('week')">This Week</div>
+    <div class="range-tab" id="rt-month"          onclick="setRange('month')">This Month</div>
+    <div class="range-tab" id="rt-all"            onclick="setRange('all')">All</div>
+  </div>
+
+  <div class="refresh-row" id="refresh-row" style="display:none">
+    <span class="refresh-ts" id="refresh-ts">Last updated: &mdash;</span>
+    <button class="refresh-btn" onclick="manualRefresh()">Refresh</button>
+  </div>
+
+  <div class="lwrap" id="trip-list"></div>
+</div>
+
+<!-- ADD TRIP -->
+<div id="screen-add" class="screen">
+  <div class="fhdr">
+    <button class="btn-back" onclick="goTo('dash')">&larr; Back</button>
+    <div class="fhdr-title">RECORD TRIP</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="fwrap">
+
+    <label class="flbl">RST / Slip Number</label>
+    <div class="rst-box">
+      <div class="rst-num" id="f-rst-display">&mdash;</div>
+      <div class="rst-lbl">Auto-assigned on submit</div>
+    </div>
+
+    <label class="flbl">Date</label>
+    <input class="finp finp-auto" id="f-date" type="text" readonly/>
+
+    <label class="flbl">Vehicle Number *</label>
+    <div class="veh-wrap">
+      <button class="veh-trigger" id="veh-trigger" onclick="toggleVehDrop()">Select vehicle&hellip;</button>
+      <div class="veh-dropdown" id="veh-dropdown">
+        <input class="veh-search-inp" id="veh-search" placeholder="Search number, type, driver&hellip;" oninput="filterVehicles()" autocomplete="off"/>
+        <div class="veh-list" id="veh-list"></div>
+      </div>
+    </div>
+
+    <div class="auto-row" id="auto-row" style="display:none">
+      <div class="auto-chip">
+        <div class="auto-chip-lbl">Type</div>
+        <div class="auto-chip-val" id="chip-type">&mdash;</div>
+      </div>
+      <div class="auto-chip" style="flex:2">
+        <div class="auto-chip-lbl">Driver</div>
+        <div class="auto-chip-val" id="chip-driver">&mdash;</div>
+      </div>
+    </div>
+
+    <div class="time-row">
+      <div>
+        <label class="flbl">Time IN</label>
+        <input class="finp" id="f-tin" type="time"/>
+        <button class="now-btn" onclick="setNow('tin')">Set Now</button>
+      </div>
+      <div>
+        <label class="flbl">Time OUT</label>
+        <input class="finp" id="f-tout" type="time"/>
+        <button class="now-btn" onclick="setNow('tout')">Set Now</button>
+      </div>
+    </div>
+
+    <label class="flbl">Gross Weight (KG) *</label>
+    <input class="finp finp-num" id="f-gross" type="number" inputmode="numeric" placeholder="0" oninput="calcNet()" min="0" max="99999"/>
+
+    <label class="flbl">Tare Weight (KG) *</label>
+    <input class="finp finp-num" id="f-tare" type="number" inputmode="numeric" placeholder="0" oninput="calcNet()" min="0" max="99999"/>
+
+    <div class="net-box">
+      <div class="net-lbl">Net Weight</div>
+      <div class="net-kg" id="net-kg">&mdash; KG</div>
+      <div class="net-mt" id="net-mt">&mdash; MT</div>
+    </div>
+
+    <div style="height:24px"></div>
+  </div>
+  <div class="fixed-bottom">
+    <button class="submit-btn" id="btn-submit" onclick="submitTrip()">SAVE TRIP</button>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL  = '/api/weighbridge';
+const MD_WHATSAPP = '';
+
+let VEHICLES = [
+  {num:'UP71G0376',type:'Compactor',driver:'Rajesh'},
+  {num:'UP71G0377',type:'Compactor',driver:'Rohit Kumar'},
+  {num:'UP71G0378',type:'Compactor',driver:'Ravi Kumar'},
+  {num:'UP70PT4525',type:'Compactor',driver:'Hardeep Singh'},
+  {num:'MAIPCAPBDJ6K98790',type:'Compactor',driver:'Susheel'},
+  {num:'ECE07620JR0015917',type:'JCB',driver:'Dilip Kumar'},
+  {num:'UP71AT8186',type:'JCB',driver:'Kuldeep'},
+  {num:'MBNBEBBBEKNG01659',type:'Bull',driver:'Raj Bahadur'},
+  {num:'UP71AB4405',type:'Bull',driver:'Shyam Bahadur'},
+  {num:'T052603265DL',type:'Tractor Trolly',driver:'Pradip Kumar'},
+  {num:'T052602039DL',type:'Tractor Trolly',driver:'Ram Vishal'},
+  {num:'UP71CT2559',type:'DP Bin Small',driver:'Anand Shukla'},
+  {num:'UP71CT2551',type:'DP Bin Small',driver:'Rajat Kumar'},
+  {num:'MAT804305N8D07858',type:'DP Bin Double',driver:'Pankaj'},
+  {num:'UP71G0371',type:'DP Bin Single',driver:'Sunil'},
+  {num:'UP71G0411',type:'Dumper',driver:'Guddu Pal'},
+  {num:'UP71CT2546',type:'Dumper',driver:'Riyaz Ali'},
+  {num:'UP71G0425',type:'Dumper',driver:'Arun Kumar'},
+  {num:'UP71G0424',type:'Dumper',driver:'Lal Bahadur'},
+  {num:'UP71CT2544',type:'Dumper',driver:'Ravi Kumar'},
+  {num:'UP71CT2545',type:'Dumper',driver:'Niyaz'},
+  {num:'UP71BT6195',type:'Dumper',driver:'Sanjay Kumar'},
+  {num:'UP71BT6196',type:'Dumper',driver:'Vimlesh Kumar'},
+  {num:'UP71CT3457',type:'Magic',driver:'Akash Kumar'},
+  {num:'UP71CT3458',type:'Magic',driver:'Ankit'},
+  {num:'UP71CT3459',type:'Magic',driver:'Vanshi Lal'},
+  {num:'UP71CT3460',type:'Magic',driver:'Kailash Kumar'},
+  {num:'UP71CT3461',type:'Magic',driver:'Santosh'},
+  {num:'UP71CT0439',type:'Magic',driver:'Ashwani'},
+  {num:'UP71CT0440',type:'Magic',driver:'Ashish'},
+  {num:'UP71CT0445',type:'Magic',driver:'Dileep Pal'},
+  {num:'UP71CT0447',type:'Magic',driver:'Arun Kumar'},
+  {num:'UP71CT0448',type:'Magic',driver:'Harishchandra'},
+  {num:'UP71CT0449',type:'Magic',driver:'Gaurav'},
+  {num:'UP71CT0450',type:'Magic',driver:'Amit Kumar'},
+  {num:'UP71G0379',type:'Magic',driver:'Imran Ahmad'},
+  {num:'UP71G0384',type:'Magic',driver:'Sumit'},
+  {num:'MA1FN2XURS6G11445',type:'Magic',driver:'Ram Kishor'},
+  {num:'MA1FN2XURS6C10162',type:'Magic',driver:'Talha Rahmaan'},
+  {num:'MA1FN2XURS6C10254',type:'Magic',driver:'Shaeem Ahmad'},
+  {num:'MA1FN2XURS6G11530',type:'Magic',driver:'Gulab Singh'},
+  {num:'MA1FN2XURS6G11466',type:'Magic',driver:'Dilshad Islam'},
+  {num:'KBCAZ23ALS3638814',type:'Poclain',driver:'—'},
+];
+
+let USERS = [
+  {id:'weighbridge',name:'Weighbridge Incharge',pin:'2222',role:'operator'},
+];
+
+let CU=null,TRIPS=[],PENDING=[],NEXT_RST=4652,RANGE='today',SEL_VEH=null;
+
+const $=id=>document.getElementById(id);
+const dateKey=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const tod=()=>dateKey();
+const nowTime=()=>{const n=new Date();return`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;};
+const fmtD=d=>{if(!d)return'—';const[y,m,day]=d.split('-');const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${day}-${mn[parseInt(m)-1]}-${y}`;};
+const fmtT=t=>{if(!t)return'—';const[h,m]=t.split(':');const hr=parseInt(h);return`${hr>12?hr-12:(hr||12)}:${m} ${hr>=12?'PM':'AM'}`;};
+const nFmt=n=>Number(n).toLocaleString('en-IN');
+const pillClass=type=>{if(!type)return'pill-other';const t=type.toLowerCase();if(t.includes('dumper'))return'pill-dumper';if(t.includes('compactor'))return'pill-compactor';if(t.includes('magic'))return'pill-magic';if(t.includes('tractor'))return'pill-tractor';if(t.includes('jcb'))return'pill-jcb';if(t.includes('bull'))return'pill-bull';if(t.includes('dp')||t.includes('bin'))return'pill-dp';return'pill-other';};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function activeUsers(){
+  USERS=[{id:'weighbridge',name:'Weighbridge Incharge',pin:'2222',role:'operator'}];
+  return USERS;
+}
+const rangeForFetch=()=>RANGE==='all'?'all':RANGE==='month'?'month':RANGE==='week'?'week':'today';
+function mergeTrips(incoming){const byId=new Map(TRIPS.map(t=>[String(t.id),t]));incoming.forEach(t=>byId.set(String(t.id),{...byId.get(String(t.id)),...t,synced:true}));TRIPS=[...byId.values()].sort((a,b)=>(b.rst||0)-(a.rst||0));save();}
+
+function save(){localStorage.setItem('wb_rst',String(NEXT_RST));}
+function load(){TRIPS=[];PENDING=[];localStorage.removeItem('wb_trips');localStorage.removeItem('wb_pending');const r=localStorage.getItem('wb_rst');if(r)NEXT_RST=parseInt(r);}
+
+let pinBuf='';
+function renderUserPicker(){
+  const section=document.querySelector('#screen-login .pin-section');
+  if(!section)return;
+  const items=activeUsers().map(u=>`
+    <button type="button" class="user-select-btn" data-login-user="${esc(u.id)}">
+      <span class="user-select-avatar">${esc((u.name||u.id||'?').charAt(0).toUpperCase())}</span>
+      <span class="user-select-info">
+        <strong>${esc(u.name||u.id)}</strong>
+        <em>User ID: ${esc(u.id)}${u.role==='admin'?' - Admin':''}</em>
+      </span>
+    </button>`).join('');
+  section.innerHTML=`
+    <div class="pin-label">Select User ID</div>
+    <div class="user-select-list">${items||'<div class="empty">No users configured</div>'}</div>
+    <div class="pin-error" id="pin-error"></div>`;
+}
+function selectUser(id){
+  const user=activeUsers().find(u=>u.id===id);
+  if(!user)return;
+  CU=user;
+  pinBuf='';
+  onLogin();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-login-user]');if(b)selectUser(b.dataset.loginUser);});
+function pinKey(k){if(pinBuf.length>=4)return;pinBuf+=k;updateDots();if(pinBuf.length===4)setTimeout(checkPin,120);}
+function pinDel(){pinBuf=pinBuf.slice(0,-1);updateDots();$('pin-error').textContent='';for(let i=0;i<4;i++)$('pd'+i).classList.remove('error');}
+function updateDots(){for(let i=0;i<4;i++){$('pd'+i).classList.toggle('filled',i<pinBuf.length);$('pd'+i).classList.remove('error');}}
+function checkPin(){const user=activeUsers().find(u=>u.pin===pinBuf);if(user){CU=user;pinBuf='';updateDots();$('pin-error').textContent='';onLogin();}else{for(let i=0;i<4;i++)$('pd'+i).classList.add('error');$('pin-error').textContent='Incorrect PIN. Please try again.';setTimeout(()=>{pinBuf='';updateDots();$('pin-error').textContent='';},1100);}}
+function onLogin(){$('dash-av').textContent=CU.name[0].toUpperCase();$('btn-md').style.display=CU.role==='admin'?'block':'none';$('btn-export').style.display=CU.role!=='operator'?'block':'none';$('refresh-row').style.display=CU.role!=='operator'?'flex':'none';$('warn-config').style.display=false?'block':'none';updateRST();fetchVehicles();goTo('dash');}
+function logout(){CU=null;SEL_VEH=null;renderUserPicker();goTo('login');}
+
+function goTo(s){document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));$('screen-'+(s==='login'?'login':s==='dash'?'dash':'add')).classList.add('active');if(s==='dash')renderDash();if(s==='add')initForm();window.scrollTo(0,0);}
+
+async function fetchRST(range=rangeForFetch()){if(false){updateRST();return;}try{const r=await fetch(SCRIPT_URL+'?action=getRST&range='+encodeURIComponent(range));const d=await r.json();if(d.rst){NEXT_RST=d.rst;localStorage.setItem('wb_rst',String(NEXT_RST));}updateRST();renderDash();$('refresh-ts').textContent='Updated: '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});}catch(e){updateRST();}}
+async function fetchVehicles(){if(false)return;try{const r=await fetch(SCRIPT_URL+'?action=getVehicles');const d=await r.json();if(d.vehicles&&d.vehicles.length)VEHICLES=d.vehicles;activeUsers();}catch(e){activeUsers();}}
+async function syncPending(){if(!PENDING.length)return;const batch=[...PENDING];try{const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'addTrips',trips:batch})});const d=await r.json();if(!d.ok)throw new Error(d.error||'Sync failed');const assigned=new Map((d.savedTrips||[]).map(t=>[String(t.id),t.rst]));const ids=new Set(batch.map(t=>String(t.id)));TRIPS=TRIPS.map(t=>ids.has(String(t.id))?{...t,rst:assigned.get(String(t.id))||t.rst,synced:true}:t);PENDING=PENDING.filter(p=>!ids.has(String(p.id)));if(d.nextRST)NEXT_RST=d.nextRST;save();updateSyncBar();setTimeout(()=>fetchRST('today'),1000);}catch(e){updateSyncBar();}}
+
+function updateRST(){$('f-rst-display').textContent=NEXT_RST||'—';$('d-rst').textContent=NEXT_RST?'#'+NEXT_RST:'—';}
+
+function initForm(){SEL_VEH=null;const vt=$('veh-trigger');vt.textContent='Select vehicle\u2026';vt.classList.remove('sel');$('auto-row').style.display='none';$('f-date').value=fmtD(tod());$('f-tin').value=nowTime();$('f-tout').value='';$('f-gross').value='';$('f-tare').value='';$('net-kg').textContent='— KG';$('net-mt').textContent='— MT';$('veh-dropdown').classList.remove('open');updateRST();setTimeout(()=>$('f-gross').focus(),350);}
+
+function toggleVehDrop(){const dd=$('veh-dropdown');if(dd.classList.contains('open')){dd.classList.remove('open');return;}dd.classList.add('open');$('veh-search').value='';renderVehList(VEHICLES);setTimeout(()=>$('veh-search').focus(),80);}
+function filterVehicles(){const q=$('veh-search').value.toLowerCase();renderVehList(VEHICLES.filter(v=>String(v.num||'').toLowerCase().includes(q)||String(v.type||'').toLowerCase().includes(q)||String(v.driver||'').toLowerCase().includes(q)));}
+function renderVehList(list){$('veh-list').innerHTML=list.length?list.map(v=>`<div class="veh-item" data-num="${esc(v.num)}"><div class="veh-num">${esc(v.num)}</div><div class="veh-sub">${esc(v.type)} &middot; ${esc(v.driver)}</div></div>`).join(''):'<div class="veh-item" style="color:var(--text3);font-size:12px">No vehicles found</div>';}
+document.addEventListener('click',e=>{const item=e.target.closest('.veh-item[data-num]');if(item)selectVehicle(item.dataset.num);});
+function selectVehicle(num){const veh=VEHICLES.find(v=>v.num===num);if(!veh)return;SEL_VEH=veh;const vt=$('veh-trigger');vt.textContent=veh.num;vt.classList.add('sel');$('chip-type').textContent=veh.type;$('chip-driver').textContent=veh.driver;$('auto-row').style.display='flex';$('veh-dropdown').classList.remove('open');setTimeout(()=>$('f-gross').focus(),100);}
+document.addEventListener('click',e=>{const wr=document.querySelector('.veh-wrap');if(wr&&!wr.contains(e.target))$('veh-dropdown').classList.remove('open');});
+
+function setNow(f){if(f==='tin')$('f-tin').value=nowTime();else $('f-tout').value=nowTime();}
+function calcNet(){const g=parseFloat($('f-gross').value)||0;const t=parseFloat($('f-tare').value)||0;const net=g-t;if(g>0&&t>0&&net>0){$('net-kg').textContent=nFmt(net)+' KG';$('net-mt').textContent=(net/1000).toFixed(3)+' MT';}else if(net<0){$('net-kg').textContent='Check values';$('net-mt').textContent='Gross must exceed Tare';}else{$('net-kg').textContent='— KG';$('net-mt').textContent='— MT';}}
+
+async function submitTrip(){if(!SEL_VEH){alert('Please select a vehicle.');return;}const gross=parseFloat($('f-gross').value);const tare=parseFloat($('f-tare').value);if(!gross||!tare){alert('Enter Gross KG and Tare KG.');return;}if(gross<=tare){alert('Gross KG must be greater than Tare KG.');return;}const net=gross-tare;const trip={id:Date.now().toString(),rst:NEXT_RST,date:tod(),tin:$('f-tin').value,tout:$('f-tout').value,veh:SEL_VEH.num,vtype:SEL_VEH.type,driver:SEL_VEH.driver,gross,tare,net,by:CU.id,synced:false,ts:new Date().toISOString()};try{const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'addTrips',trips:[trip]})});const d=await r.json();if(!d.ok)throw new Error(d.error||'Sync failed');if(d.savedTrips&&d.savedTrips[0]&&d.savedTrips[0].rst)trip.rst=d.savedTrips[0].rst;if(d.nextRST)NEXT_RST=d.nextRST;else NEXT_RST++;trip.synced=true;TRIPS.unshift(trip);save();const fl=$('flash');fl.style.display='block';setTimeout(()=>{fl.style.display='none';},2000);initForm();updateSyncBar();renderDash();}catch(e){alert('Could not save to Google Sheets. Please check internet and try again.');}}
+
+function setRange(r){RANGE=r;document.querySelectorAll('.range-tab').forEach(el=>el.classList.remove('active'));const map={today:'rt-today',yesterday:'rt-yest',week:'rt-week',month:'rt-month',all:'rt-all'};if(map[r])$(map[r]).classList.add('active');renderDash();}
+function filterTrips(trips){const today=tod();if(RANGE==='today')return trips.filter(t=>t.date===today);if(RANGE==='yesterday'){const d=new Date();d.setDate(d.getDate()-1);return trips.filter(t=>t.date===dateKey(d));}if(RANGE==='week'){const d=new Date();d.setDate(d.getDate()-7);return trips.filter(t=>t.date>=dateKey(d));}if(RANGE==='month')return trips.filter(t=>t.date.startsWith(tod().slice(0,7)));return trips;}
+
+function renderDash(){const todTrips=TRIPS.filter(t=>t.date===tod());const tNet=todTrips.reduce((s,t)=>s+t.net,0);const tGross=todTrips.reduce((s,t)=>s+t.gross,0);const tTare=todTrips.reduce((s,t)=>s+t.tare,0);const mTrips=TRIPS.filter(t=>t.date.startsWith(tod().slice(0,7)));const mNet=mTrips.reduce((s,t)=>s+t.net,0);$('d-total').textContent=(tNet/1000).toFixed(3)+' MT';$('d-cnt').textContent=todTrips.length+(todTrips.length===1?' trip':' trips')+' recorded';$('d-gross').textContent=nFmt(tGross)+' KG';$('d-tare').textContent=nFmt(tTare)+' KG';$('d-month').textContent=(mNet/1000).toFixed(3)+' MT';$('d-month-sub').textContent=mTrips.length+' trips this month';updateRST();if(todTrips.length>0){const last=todTrips[0];$('d-lasttrip').innerHTML=`Last entry: <strong>${esc(last.veh)}</strong> &rarr; <strong>${nFmt(last.net)} KG</strong> at <strong>${fmtT(last.tin)}</strong>`;}else{$('d-lasttrip').textContent='No trips recorded today';}updateSyncBar();const source=(CU&&CU.role==='operator')?todTrips:TRIPS;const filtered=filterTrips(source);const listEl=$('trip-list');if(!filtered.length){listEl.innerHTML='<div class="empty">No trips recorded</div>';return;}listEl.innerHTML=filtered.map(t=>`<div class="trip-card"><div class="trip-top"><div><div class="trip-veh">${esc(t.veh)}</div><div class="trip-meta"><span>${esc(t.driver)}</span><span class="type-pill ${pillClass(t.vtype)}">${esc(t.vtype)}</span><span class="sync-dot ${t.synced?'sd-ok':'sd-pend'}"></span></div></div><div><div class="trip-net-kg">${nFmt(t.net)} KG</div><div class="trip-net-mt">${(t.net/1000).toFixed(3)} MT</div></div></div><div class="trip-bottom"><span class="trip-rst">RST #${esc(t.rst)}</span><span class="trip-time">${fmtT(t.tin)} &rarr; ${fmtT(t.tout)}</span><span style="font-size:10px;color:var(--text3)">${fmtD(t.date)}</span></div></div>`).join('');}
+
+function updateSyncBar(){const el=$('sync-bar');if(false){el.className='sync-bar sync-none';el.textContent='Google Sheets not connected';}else if(!PENDING.length){el.className='sync-bar sync-ok';el.textContent='All trips synced to Google Sheets';}else{el.className='sync-bar sync-pending';el.textContent=`${PENDING.length} trip(s) pending sync \u2014 Tap to retry`;el.onclick=()=>syncPending().then(()=>{updateSyncBar();renderDash();});}}
+
+function exportCSV(){const data=filterTrips(TRIPS);const hdr='SL,Date,Time IN,Time OUT,RST No,Vehicle No,Vehicle Type,Driver,Gross KG,Tare KG,Net KG,Net MT\n';const rows=data.map((t,i)=>`${i+1},${t.date},${t.tin},${t.tout},${t.rst},${t.veh},${t.vtype},${t.driver},${t.gross},${t.tare},${t.net},${(t.net/1000).toFixed(3)}`).join('\n');const url=URL.createObjectURL(new Blob([hdr+rows],{type:'text/csv'}));const a=document.createElement('a');a.href=url;a.download=`Weighbridge_${tod()}.csv`;a.click();}
+
+function sendDailySummary(){const today=tod();const trips=TRIPS.filter(t=>t.date===today);const totalNet=trips.reduce((s,t)=>s+t.net,0);const byType={};trips.forEach(t=>{byType[t.vtype]=(byType[t.vtype]||0)+t.net;});const lines=Object.entries(byType).sort((a,b)=>b[1]-a[1]).map(([tp,kg])=>`- ${tp}: ${(kg/1000).toFixed(3)} MT`).join('\n');const msg=`*PINAKA INFRA \u2014 Weighbridge Report*\n${fmtD(today)}\n${'─'.repeat(24)}\n*Total Waste: ${(totalNet/1000).toFixed(3)} MT*\nTotal Trips: ${trips.length}\n${'─'.repeat(24)}\n*By Vehicle Type:*\n${lines}\n${'─'.repeat(24)}\n_Pinaka Infra \u00b7 Nagar Palika Parishad, Fatehpur_`;const url=MD_WHATSAPP?`https://wa.me/${MD_WHATSAPP}?text=`:'https://wa.me/?text=';window.open(url+encodeURIComponent(msg),'_blank');}
+
+async function manualRefresh(){$('refresh-ts').textContent='Refresh disabled for direct-save mode';renderDash();}
+
+load();
+updateRST();
+renderUserPicker();
+</script>
+</body>
+</html>
+
+
+

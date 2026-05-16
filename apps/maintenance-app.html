@@ -1,0 +1,936 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Pinaka Infra - Maintenance</title>
+<style>
+:root{
+  --bg:#F0F7F0;--s:#fff;--s2:#E8F5E9;--p:#1B5E20;--pp:#E8F5E9;--pb:#A5D6A7;
+  --t:#0D2010;--t2:#3A5C3E;--t3:#7A9B7A;--b:#C8E6C9;
+  --or:#E65100;--orl:#FFF3E0;--orb:#FFCC80;--rd:#C62828;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--t);font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;min-height:100vh;max-width:480px;margin:0 auto}
+.scr{display:none;min-height:100vh}.scr.on{display:block}
+
+/* TOP BAR */
+.tbar{background:var(--p);padding:14px 16px;box-shadow:0 4px 20px rgba(0,50,0,.15)}
+.tbar-row{display:flex;justify-content:space-between;align-items:center}
+.tbar-t{font-size:15px;font-weight:800;letter-spacing:2.5px;color:#fff}
+.tbar-s{font-size:9px;color:rgba(255,255,255,.55);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+
+/* HOME */
+.home-hdr{background:var(--p);padding:36px 20px 30px;text-align:center}
+.home-title{font-size:24px;font-weight:800;letter-spacing:3.5px;color:#fff;margin-bottom:6px}
+.home-sub{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:2px;text-transform:uppercase}
+.hbody{padding:24px 16px}
+
+/* BUTTONS */
+.btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;font-weight:800;font-size:13px;letter-spacing:1.5px;cursor:pointer;text-align:center;font-family:inherit}
+.btn:active{transform:scale(.98);opacity:.9}
+.btn:disabled{opacity:.72;cursor:not-allowed;transform:none}
+.bp{background:var(--p);color:#fff;box-shadow:0 4px 14px rgba(27,94,32,.3)}
+.bo{background:var(--s);color:var(--p);border:2px solid var(--p)!important}
+.bg{background:#25D366;color:#fff;box-shadow:0 4px 14px rgba(37,211,102,.3)}
+.bb{background:none;border:none;color:rgba(255,255,255,.85);font-size:13px;cursor:pointer;padding:0;font-family:inherit;font-weight:700}
+.gap{height:12px}
+
+/* FORM HEADER */
+.fhdr{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;background:var(--p);box-shadow:0 4px 20px rgba(0,50,0,.15)}
+.fht{font-weight:800;font-size:14px;color:#fff;letter-spacing:1.5px}
+
+/* FORM */
+.fw{padding:0 16px 150px}
+.fl{color:var(--t2);font-size:10px;letter-spacing:1.5px;font-weight:700;margin-bottom:6px;margin-top:22px;text-transform:uppercase;display:block}
+.fi{width:100%;background:var(--s);border:1.5px solid var(--b);border-radius:10px;padding:13px 14px;color:var(--t);font-size:15px;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none;transition:border-color .15s}
+.fi:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(27,94,32,.08)}
+.fi-n{font-size:22px;font-weight:800;color:var(--p);text-align:center}
+.fsel{width:100%;background:var(--s);border:1.5px solid var(--b);border-radius:10px;padding:13px 14px;color:var(--t);font-size:15px;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A9B7A' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;transition:border-color .15s}
+.fsel:focus{border-color:var(--p)}
+.fta{width:100%;background:var(--s);border:1.5px solid var(--b);border-radius:10px;padding:13px 14px;color:var(--t);font-size:14px;outline:none;font-family:inherit;resize:none;min-height:88px;line-height:1.6;transition:border-color .15s}
+.fta:focus{border-color:var(--p)}
+
+/* CATEGORY CARDS */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:20px 16px 8px}
+.cat{background:var(--s);border:2px solid var(--b);border-radius:14px;padding:22px 12px;text-align:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.cat:active{background:var(--pp);border-color:var(--p);transform:scale(.97)}
+.cat-bar{display:block;width:28px;height:3px;background:var(--pb);border-radius:2px;margin:0 auto 12px}
+.cat-l{font-size:12px;font-weight:800;color:var(--t);letter-spacing:.5px}
+.cat-s{font-size:10px;color:var(--t3);margin-top:4px}
+
+/* WHO BAR */
+.who{background:var(--pp);border:1px solid var(--pb);border-radius:10px;padding:12px 14px;margin:16px 16px 4px;font-size:13px;color:var(--t2)}
+.who strong{color:var(--p);font-weight:800}
+
+/* VEHICLE DROPDOWN */
+.vw{position:relative}
+.vbtn{width:100%;background:var(--s);border:1.5px solid var(--b);border-radius:10px;padding:13px 14px;color:var(--t3);font-size:14px;outline:none;font-family:inherit;text-align:left;cursor:pointer;font-weight:500;transition:border-color .15s}
+.vbtn.sel{color:var(--t);font-weight:800;font-family:monospace;font-size:15px;border-color:var(--p)}
+.vdd{display:none;position:absolute;top:100%;left:0;right:0;background:var(--s);border:1.5px solid var(--p);border-top:none;border-radius:0 0 10px 10px;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:230px;overflow:hidden;flex-direction:column}
+.vdd.open{display:flex}
+.vsi{width:100%;padding:11px 14px;border:none;border-bottom:1px solid var(--b);font-size:14px;outline:none;font-family:inherit;background:var(--s2);flex-shrink:0}
+.vlist{overflow-y:auto;flex:1}
+.vi{padding:11px 14px;border-bottom:1px solid var(--b);cursor:pointer}
+.vi:last-child{border-bottom:none}.vi:active{background:var(--pp)}
+.vn{font-weight:800;font-size:13px;color:var(--t);font-family:monospace}
+.vm{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* AUTO CHIPS */
+.chips{display:flex;gap:8px;margin-top:10px}
+.chip{flex:1;background:var(--pp);border:1px solid var(--pb);border-radius:8px;padding:10px;text-align:center}
+.chip-l{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;font-weight:700}
+.chip-v{font-size:12px;font-weight:800;color:var(--p);margin-top:4px;word-break:break-all}
+
+
+/* FIXED BOTTOM */
+.fbot{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(240,247,240,.97);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:14px 16px 20px;border-top:1px solid var(--b);z-index:200}
+.save-note{display:none;margin-top:8px;text-align:center;color:var(--p);font-size:11px;font-weight:800;letter-spacing:.8px}
+.save-note.on{display:block}
+
+/* TICKET */
+.tk{background:var(--s);border:2px solid var(--pb);border-radius:14px;margin:16px;padding:18px;box-shadow:0 2px 12px rgba(0,50,0,.10)}
+.tkh{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:1px solid var(--b);margin-bottom:14px}
+.tkid{font-family:monospace;font-size:13px;color:var(--p);font-weight:800;background:var(--pp);padding:5px 12px;border-radius:6px;border:1px solid var(--pb);letter-spacing:1px}
+.tkts{font-size:10px;color:var(--t3);text-align:right;line-height:1.6}
+.tkr{display:flex;justify-content:space-between;gap:10px;margin-bottom:10px;align-items:flex-start}
+.tkk{font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0;width:100px}
+.tkv{font-size:13px;color:var(--t);font-weight:600;text-align:right;flex:1;word-break:break-word}
+.tkamt{background:var(--p);border-radius:12px;padding:16px;text-align:center;margin-top:14px}
+.tkamt-l{font-size:9px;color:rgba(255,255,255,.55);letter-spacing:2.5px;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.tkamt-v{font-size:30px;font-weight:800;color:#fff;letter-spacing:-1px}
+.tkfoot{font-size:10px;color:var(--t3);text-align:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--b)}
+
+/* PILLS */
+.pill{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+.pv{background:#E8F5E9;color:#1B5E20;border:1px solid #A5D6A7}
+.pm{background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9}
+.pe{background:#FFF3E0;color:#E65100;border:1px solid #FFCC80}
+.pg{background:#F3E5F5;color:#6A1B9A;border:1px solid #CE93D8}
+.po{background:#E0F2F1;color:#00695C;border:1px solid #80CBC4}
+.stp{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:800;letter-spacing:.5px}
+.st-pend{background:var(--orl);color:var(--or);border:1px solid var(--orb)}
+.st-paid{background:#E8F5E9;color:#1B5E20;border:1px solid #A5D6A7}
+.ftag{background:var(--orl);color:var(--or);border:1px solid var(--orb);padding:2px 8px;border-radius:4px;font-size:9px;font-weight:800;margin-left:6px}
+
+/* LIST CARDS */
+.lcard{background:var(--s);border-radius:12px;padding:14px;margin:0 16px 10px;border:1px solid var(--b);box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.lc-top{display:flex;justify-content:space-between;align-items:flex-start}
+.lc-id{font-family:monospace;font-size:11px;color:var(--p);font-weight:800;background:var(--pp);padding:3px 8px;border-radius:4px;border:1px solid var(--pb)}
+.lc-amt{font-size:18px;font-weight:800;color:var(--p)}
+.lc-asset{font-size:13px;font-weight:700;color:var(--t);margin-top:6px}
+.lc-desc{font-size:11px;color:var(--t3);margin-top:3px;line-height:1.4}
+.lc-bot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--b)}
+
+/* TABS */
+.tab-row{display:flex;gap:8px;padding:12px 16px 4px}
+.tab{flex:1;padding:10px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;text-align:center;border:1.5px solid var(--b);background:var(--s);color:var(--t2);font-family:inherit}
+.tab.on{background:var(--p);color:#fff;border-color:var(--p)}
+
+/* STATUS BARS */
+.syncbar{margin:0 16px 12px;padding:10px 14px;border-radius:10px;font-size:11px;font-weight:600;border:1px solid var(--b);background:var(--s2);color:var(--t3)}
+.syncbar.canretry{cursor:pointer;color:var(--or);background:var(--orl);border-color:var(--orb)}
+.syncok{background:#E8F5E9;color:#1B5E20;border-color:#A5D6A7}
+.wbar{background:var(--orl);color:var(--or);border:1px solid var(--orb);padding:10px 14px;margin:0 16px 12px;border-radius:9px;font-size:11px;font-weight:600;text-align:center;display:none}
+.fbar{background:var(--orl);border:1px solid var(--orb);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:11px;color:var(--or);font-weight:600;display:none}
+
+/* FLASH */
+.flash{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#1B5E20;color:#fff;padding:14px 18px;text-align:center;font-weight:700;font-size:13px;z-index:999;border-radius:0 0 12px 12px;letter-spacing:.5px;display:none;box-shadow:0 4px 20px rgba(0,0,0,.2)}
+.flash.show{display:block}
+.empty{text-align:center;color:var(--t3);padding:52px 0;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.slbl{font-size:10px;font-weight:800;color:var(--t3);letter-spacing:2px;text-transform:uppercase;padding:16px 16px 8px}
+.ordiv{display:flex;align-items:center;gap:12px;margin:14px 0}
+.ordiv::before,.ordiv::after{content:'';flex:1;height:1px;background:var(--b)}
+.ordiv span{font-size:10px;color:var(--t3);font-weight:700;letter-spacing:1px}
+.switch-row{display:flex;align-items:center;justify-content:space-between;background:var(--s);border:1.5px solid var(--b);border-radius:10px;padding:12px 14px}
+.sw-label{font-size:13px;font-weight:800;color:var(--t2)}
+.sw{position:relative;width:50px;height:28px;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0}
+.sw span{position:absolute;cursor:pointer;inset:0;background:var(--b);border-radius:999px;transition:.18s}
+.sw span:before{content:'';position:absolute;height:22px;width:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.18s;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.sw input:checked + span{background:var(--p)}
+.sw input:checked + span:before{transform:translateX(22px)}
+.vsuggest{position:relative}
+.vsuggest-list{display:none;position:absolute;left:0;right:0;top:100%;background:var(--s);border:1.5px solid var(--p);border-top:none;border-radius:0 0 10px 10px;z-index:250;max-height:190px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.14)}
+.vsuggest-list.open{display:block}
+.vsuggest-item{padding:11px 14px;border-bottom:1px solid var(--b);cursor:pointer}
+.vsuggest-item:last-child{border-bottom:none}
+.vsuggest-name{font-size:13px;font-weight:800;color:var(--t)}
+.vsuggest-code{font-size:11px;color:var(--t3);margin-top:2px}
+</style>
+  <link rel="stylesheet" href="shared-theme.css">
+</head>
+<body>
+
+<div class="flash" id="flash">Ticket created successfully</div>
+
+<!-- â•â•â• HOME â•â•â• -->
+<div id="scr-home" class="scr on">
+  <div class="home-hdr">
+    <div class="home-title">MAINTENANCE</div>
+    <div class="home-sub">Pinaka Infra &middot; Nagar Palika Parishad, Fatehpur</div>
+  </div>
+  <div class="hbody">
+    <div id="wcfg" class="wbar">Google Sheets not connected. Saving is disabled until connected.</div>
+    <div id="sst" class="syncbar">Checking connection&hellip;</div>
+    <button class="btn bp" onclick="go('name')">RAISE A TICKET</button>
+    <div class="ordiv"><span>OR</span></div>
+    <button class="btn bo" onclick="go('history')">VIEW PENDING TICKETS</button>
+  </div>
+</div>
+
+<!-- â•â•â• NAME SELECT â•â•â• -->
+<div id="scr-name" class="scr">
+  <div class="fhdr">
+    <button class="bb" onclick="go('home')">&larr; Back</button>
+    <div class="fht">WHO ARE YOU?</div>
+    <div style="width:60px"></div>
+  </div>
+  <div style="padding:20px 16px">
+    <label class="fl">Select Your Name</label>
+    <select class="fsel" id="sel-name" onchange="onName()">
+      <option value="">-- Select name --</option>
+    </select>
+    <div class="fbar" id="fbar">Your name is not in the authorised list. This ticket will be flagged in the sheet.</div>
+    <button class="btn bp" id="btn-name" onclick="go('cat')" disabled style="margin-top:16px">PROCEED</button>
+  </div>
+</div>
+
+<!-- â•â•â• CATEGORY â•â•â• -->
+<div id="scr-cat" class="scr">
+  <div class="fhdr">
+    <button class="bb" onclick="go('name')">&larr; Back</button>
+    <div class="fht">SELECT TYPE</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="who">Raising ticket as: <strong id="who-name"></strong></div>
+  <div class="cat-grid">
+    <div class="cat" onclick="selCat('vehicle')">
+      <span class="cat-bar"></span>
+      <div class="cat-l">Vehicle</div>
+      <div class="cat-s">Fleet of 35</div>
+    </div>
+    <div class="cat" onclick="selCat('machinery')">
+      <span class="cat-bar"></span>
+      <div class="cat-l">MRF Machinery</div>
+      <div class="cat-s">Trommel, Conveyor</div>
+    </div>
+    <div class="cat" onclick="selCat('equipment')">
+      <span class="cat-bar"></span>
+      <div class="cat-l">Site Equipment</div>
+      <div class="cat-s">Generator, Pump</div>
+    </div>
+    <div class="cat" onclick="selCat('general')">
+      <span class="cat-bar"></span>
+      <div class="cat-l">General Expense</div>
+      <div class="cat-s">Purchase, Tools, Paint</div>
+    </div>
+    <div class="cat" onclick="selCat('office')">
+      <span class="cat-bar"></span>
+      <div class="cat-l">Office Expenses</div>
+      <div class="cat-s">Stationery, Travel, Utilities</div>
+    </div>
+  </div>
+</div>
+
+<!-- â•â•â• FORM â•â•â• -->
+<div id="scr-form" class="scr">
+  <div class="fhdr">
+    <button class="bb" onclick="go('cat')">&larr; Back</button>
+    <div class="fht" id="form-title">NEW TICKET</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="fw">
+
+    <!-- Vehicle fields -->
+    <div id="f-veh" style="display:none">
+      <label class="fl">Vehicle Number *</label>
+      <div class="vw">
+        <button class="vbtn" id="vbtn" onclick="togV()">Select vehicle&hellip;</button>
+        <div class="vdd" id="vdd">
+          <input class="vsi" id="vsi" placeholder="Search number, type or driver&hellip;" oninput="filV()" autocomplete="off"/>
+          <div class="vlist" id="vlist"></div>
+        </div>
+      </div>
+      <div class="chips" id="chips" style="display:none">
+        <div class="chip"><div class="chip-l">Type</div><div class="chip-v" id="chip-t"></div></div>
+        <div class="chip" style="flex:2"><div class="chip-l">Driver</div><div class="chip-v" id="chip-d"></div></div>
+      </div>
+    </div>
+
+    <!-- Machinery fields -->
+    <div id="f-mach" style="display:none">
+      <label class="fl">Machine *</label>
+      <select class="fsel" id="sel-mach">
+        <option value="">-- Select machine --</option>
+        <option>Trommel Screen &mdash; Malaka MRF</option>
+        <option>Conveyor Belt &mdash; Malaka MRF</option>
+        <option>Compost Pit Equipment</option>
+        <option>Shed Equipment &mdash; Malaka</option>
+        <option>Shed Equipment &mdash; Raddiya</option>
+        <option>Shed Equipment &mdash; Ajgawan</option>
+        <option>Shed Equipment &mdash; Mithnapur</option>
+        <option>Other (describe below)</option>
+      </select>
+    </div>
+
+    <!-- Equipment fields -->
+    <div id="f-equip" style="display:none">
+      <label class="fl">Equipment *</label>
+      <select class="fsel" id="sel-equip">
+        <option value="">-- Select equipment --</option>
+        <option>Generator</option>
+        <option>Water Pump</option>
+        <option>Welding Machine</option>
+        <option>Hand Tools</option>
+        <option>Cutting Machine</option>
+        <option>Other (describe below)</option>
+      </select>
+    </div>
+
+    <!-- Complaint type -->
+    <div id="f-ctype" style="display:none">
+      <label class="fl">Complaint Type *</label>
+      <select class="fsel" id="sel-ctype">
+        <option value="">-- Select type --</option>
+        <option>Breakdown &mdash; Stopped completely</option>
+        <option>Tyre Puncture / Tyre Change</option>
+        <option>Oil / Fluid Change</option>
+        <option>Battery Issue</option>
+        <option>Electrical Fault</option>
+        <option>Mechanical Fault</option>
+        <option>Body Damage</option>
+        <option>Routine Maintenance</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <!-- Office fields -->
+    <div id="f-office" style="display:none">
+      <label class="fl">Office Expense Type *</label>
+      <select class="fsel" id="sel-office">
+        <option value="">-- Select type --</option>
+        <option>Stationery &amp; Supplies</option>
+        <option>Fuel &amp; Travel</option>
+        <option>Utilities</option>
+        <option>Repair &amp; Maintenance</option>
+        <option>Staff Welfare</option>
+        <option>Miscellaneous</option>
+      </select>
+    </div>
+
+    <!-- GST bill -->
+    <label class="fl">Bill Type</label>
+    <div class="switch-row">
+      <div class="sw-label" id="gst-label">No Bill</div>
+      <label class="sw"><input type="checkbox" id="f-gst" onchange="onGstToggle()"><span></span></label>
+    </div>
+    <div id="f-vendor-wrap" style="display:none">
+      <label class="fl">Vendor Name *</label>
+      <div class="vsuggest">
+        <input class="fi" id="f-vendor" placeholder="Type vendor name&hellip;" autocomplete="off" oninput="onVendorInput()" onfocus="onVendorInput()"/>
+        <div class="vsuggest-list" id="vendor-list"></div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <label class="fl" id="lbl-desc">Description *</label>
+    <textarea class="fta" id="f-desc" placeholder="Describe what happened or what is needed&hellip;"></textarea>
+
+    <!-- Pre approval -->
+    <label class="fl">Pre Approval</label>
+    <select class="fsel" id="sel-pre">
+      <option value="">-- None --</option>
+      <option>Ritesh Kapoor</option>
+      <option>Kartikey Jaiswal</option>
+      <option>Dhirendra Singh</option>
+      <option>Sandeep Tiwari</option>
+      <option>Ravendra Singh</option>
+    </select>
+
+    <!-- Amount -->
+    <label class="fl">Amount Required (&#8377;) *</label>
+    <input class="fi fi-n" id="f-amt" type="number" inputmode="numeric" placeholder="0" min="0"/>
+
+
+    <div style="height:28px"></div>
+  </div>
+  <div class="fbot">
+    <button class="btn bp" id="btn-create-ticket" style="margin:0;padding:16px;font-size:14px;letter-spacing:2px" onclick="createTicket()">CREATE TICKET</button>
+    <div class="save-note" id="save-ticket-note">Saving to Google Sheets...</div>
+  </div>
+</div>
+
+<!-- â•â•â• TICKET PREVIEW â•â•â• -->
+<div id="scr-ticket" class="scr">
+  <div class="fhdr">
+    <button class="bb" onclick="go('home')">&larr; Home</button>
+    <div class="fht">TICKET CREATED</div>
+    <div style="width:60px"></div>
+  </div>
+  <div style="padding-bottom:150px">
+    <div class="tk" id="tk-preview"></div>
+  </div>
+  <div class="fbot">
+    <button class="btn bg" style="margin:0" onclick="sendWA()">SEND TO WHATSAPP GROUP</button>
+    <div class="gap"></div>
+    <button class="btn bp" onclick="go('name')">RAISE ANOTHER TICKET</button>
+  </div>
+</div>
+
+<!-- â•â•â• HISTORY â•â•â• -->
+<div id="scr-history" class="scr">
+  <div class="tbar">
+    <div class="tbar-row">
+      <div>
+        <div class="tbar-t">PENDING TICKETS</div>
+        <div class="tbar-s">Pinaka Infra &middot; Fatehpur</div>
+      </div>
+      <button class="bb" onclick="go('home')">Home</button>
+    </div>
+  </div>
+  <div class="tab-row">
+    <button class="tab on" id="tab-pend" onclick="setTab('pending')">Pending</button>
+  </div>
+  <div id="hist-list" style="padding-bottom:80px"></div>
+</div>
+
+<script>
+// â”€â”€ CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const SCRIPT_URL = '/api/maintenance';
+const WA_GROUP   = ''; // WhatsApp group number e.g. 919876543210
+const SHEETS_TIMEOUT_MS = 30000;
+
+// â”€â”€ AUTHORISED NAMES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const AUTH = [
+  'Ritesh Kapoor','Abhinav Singh','Aman Pratap Singh','Sandeep Tiwari',
+  'Gajendra','Jitendra Kumar','Mohd. Shahil','Sanjeev Kumar',
+  'Mohd. Adil Fareed','Shubham Singh','Sachin Singh','Saiyad Khalid Ali',
+  'Chhote Lal','Arvind Kumar Maurya','Abhishek Kumar','Utpal Pratap Singh',
+  'Vishal Singh','Yuvraj Singh','Mahendra Kumar','Mayank Dwivedi',
+  'Raghvendra Pratap Singh','Prabhat Kumar','Arvind Pal','Shiv Om Mishra','Priyanshu'
+];
+
+// â”€â”€ VEHICLES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const VEHS = [
+  {num:'UP71G0376',type:'Compactor',driver:'Rajesh'},
+  {num:'UP71G0377',type:'Compactor',driver:'Rohit Kumar'},
+  {num:'UP71G0378',type:'Compactor',driver:'Ravi Kumar'},
+  {num:'UP70PT4525',type:'Compactor',driver:'Hardeep Singh'},
+  {num:'MAIPCAPBDJ6K98790',type:'Compactor',driver:'Susheel'},
+  {num:'ECE07620JR0015917',type:'JCB',driver:'Dilip Kumar'},
+  {num:'UP71AT8186',type:'JCB',driver:'Kuldeep'},
+  {num:'MBNBEBBBEKNG01659',type:'Bull',driver:'Raj Bahadur'},
+  {num:'UP71AB4405',type:'Bull',driver:'Shyam Bahadur'},
+  {num:'T052603265DL',type:'Tractor Trolly',driver:'Pradip Kumar'},
+  {num:'T052602039DL',type:'Tractor Trolly',driver:'Ram Vishal'},
+  {num:'UP71CT2559',type:'DP Bin Small',driver:'Anand Shukla'},
+  {num:'UP71CT2551',type:'DP Bin Small',driver:'Rajat Kumar'},
+  {num:'MAT804305N8D07858',type:'DP Bin Double',driver:'Pankaj'},
+  {num:'UP71G0371',type:'DP Bin Single',driver:'Sunil'},
+  {num:'UP71G0411',type:'Dumper',driver:'Guddu Pal'},
+  {num:'UP71CT2546',type:'Dumper',driver:'Riyaz Ali'},
+  {num:'UP71G0425',type:'Dumper',driver:'Arun Kumar'},
+  {num:'UP71G0424',type:'Dumper',driver:'Lal Bahadur'},
+  {num:'UP71CT2544',type:'Dumper',driver:'Ravi Kumar'},
+  {num:'UP71CT2545',type:'Dumper',driver:'Niyaz'},
+  {num:'UP71BT6195',type:'Dumper',driver:'Sanjay Kumar'},
+  {num:'UP71BT6196',type:'Dumper',driver:'Vimlesh Kumar'},
+  {num:'UP71CT3457',type:'Magic',driver:'Akash Kumar'},
+  {num:'UP71CT3458',type:'Magic',driver:'Ankit'},
+  {num:'UP71CT3459',type:'Magic',driver:'Vanshi Lal'},
+  {num:'UP71CT3460',type:'Magic',driver:'Kailash Kumar'},
+  {num:'UP71CT3461',type:'Magic',driver:'Santosh'},
+  {num:'UP71CT0439',type:'Magic',driver:'Ashwani'},
+  {num:'UP71CT0440',type:'Magic',driver:'Ashish'},
+  {num:'UP71CT0445',type:'Magic',driver:'Dileep Pal'},
+  {num:'UP71CT0447',type:'Magic',driver:'Arun Kumar'},
+  {num:'UP71CT0448',type:'Magic',driver:'Harishchandra'},
+  {num:'UP71CT0449',type:'Magic',driver:'Gaurav'},
+  {num:'UP71CT0450',type:'Magic',driver:'Amit Kumar'},
+  {num:'UP71G0379',type:'Magic',driver:'Imran Ahmad'},
+  {num:'UP71G0384',type:'Magic',driver:'Sumit'},
+  {num:'MA1FN2XURS6G11445',type:'Magic',driver:'Ram Kishor'},
+  {num:'MA1FN2XURS6C10162',type:'Magic',driver:'Talha Rahmaan'},
+  {num:'MA1FN2XURS6C10254',type:'Magic',driver:'Shaeem Ahmad'},
+  {num:'MA1FN2XURS6G11530',type:'Magic',driver:'Gulab Singh'},
+  {num:'MA1FN2XURS6G11466',type:'Magic',driver:'Dilshad Islam'},
+  {num:'KBCAZ23ALS3638814',type:'Poclain',driver:'\u2014'}
+];
+
+// â”€â”€ STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+let TICKETS=[], PSYNC=[], NID=1, VENDORS=[], PAID_IDS=new Set();
+let CUR_NAME='', CUR_CAT='', CUR_TK=null, SEL_VEH=null, SEL_VENDOR=null;
+let HTAB='pending', SYNCING=false, FETCHING=false, CONFIG_LOADED=false, BACKEND_ERROR='';
+
+// â”€â”€ UTILS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const $ = id => document.getElementById(id);
+function tod() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+const nowT = () => { const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); };
+const fmtD = d => { if(!d) return '\u2014'; const[y,m,dy]=d.split('-'); const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return dy+'-'+mn[parseInt(m)-1]+'-'+y; };
+const nFmt = n => Number(n).toLocaleString('en-IN');
+const genID = () => 'MNT-' + String(NID).padStart(4,'0');
+const pill = c => {
+  const m={vehicle:'pv',machinery:'pm',equipment:'pe',general:'pg',office:'po'};
+  const l={vehicle:'Vehicle',machinery:'Machinery',equipment:'Equipment',general:'General',office:'Office'};
+  return '<span class="pill '+(m[c]||'pg')+'">'+l[c]+'</span>';
+};
+const flash = msg => { const f=$('flash'); f.textContent=msg; f.style.display='block'; setTimeout(()=>f.style.display='none',2200); };
+const isFileApp = () => location.protocol === 'file:';
+const isConfigured = () => SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+const apiUrl = params => SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+const isTodayTicket = t => t && t.date === tod();
+const isPaidKnown = t => t && (t.status === 'PAID' || PAID_IDS.has(t.id));
+function setTicketSaving(on) {
+  const btn=$('btn-create-ticket'), note=$('save-ticket-note');
+  if(btn){btn.disabled=!!on;btn.textContent=on?'SAVING...':'CREATE TICKET';}
+  if(note)note.classList.toggle('on',!!on);
+}
+function sheetTicket(t) {
+  return {
+    id:t.id, date:t.date, time:t.time, by:t.by, auth:t.auth,
+    cat:t.cat, asset:t.asset, ctype:t.ctype, desc:t.desc,
+    amount:t.amount, gst:t.gst === true, vendorName:t.vendorName || '', vendorCode:t.vendorCode || '',
+    preApproval:t.preApproval || '', status:t.status
+  };
+}
+function pruneOldVisibleTickets() {
+  TICKETS = TICKETS.filter(t=>isTodayTicket(t) && !isPaidKnown(t));
+  PSYNC = PSYNC.filter(t=>isTodayTicket(t) && !isPaidKnown(t));
+}
+
+// â”€â”€ STORAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function save() {
+  pruneOldVisibleTickets();
+  localStorage.setItem('mnt_i', String(NID));
+  localStorage.setItem('mnt_paid', JSON.stringify([...PAID_IDS]));
+}
+function load() {
+  TICKETS=[];PSYNC=[];
+  localStorage.removeItem('mnt_t');localStorage.removeItem('mnt_p');
+  const r=localStorage.getItem('mnt_i'), paid=localStorage.getItem('mnt_paid');
+  if(r) NID=parseInt(r);
+  if(paid) PAID_IDS=new Set(JSON.parse(paid));
+  pruneOldVisibleTickets();
+}
+
+// â”€â”€ NAVIGATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function go(s) {
+  document.querySelectorAll('.scr').forEach(e=>e.classList.remove('on'));
+  $('scr-'+s).classList.add('on');
+  window.scrollTo(0,0);
+  if(s==='home')    renderHome();
+  if(s==='name')    initName();
+  if(s==='history') {
+    if(isConfigured()) {
+      $('hist-list').innerHTML='<div class="empty">Checking latest payment status...</div>';
+      refreshTickets(false, true).then(()=>renderHist()).catch(()=>renderHist());
+    } else renderHist();
+  }
+}
+
+// â”€â”€ HOME â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function renderHome() {
+  const ok = isConfigured();
+  $('wcfg').style.display = ok ? 'none' : 'block';
+  const sb = $('sst');
+  sb.onclick = null;
+  if(!ok) { sb.textContent='Google Sheets not connected - saving is disabled'; sb.className='syncbar'; }
+  else if(SYNCING) { sb.textContent='Syncing tickets to Google Sheets...'; sb.className='syncbar'; }
+  else if(FETCHING) { sb.textContent='Fetching latest data from Google Sheets...'; sb.className='syncbar'; }
+  else if(BACKEND_ERROR) { sb.textContent=BACKEND_ERROR+' - tap to retry'; sb.className='syncbar canretry'; sb.onclick=retryBackend; }
+  else if(!PSYNC.length) { sb.textContent='All tickets synced to Google Sheets'; sb.className='syncbar syncok'; }
+  else { sb.textContent=PSYNC.length+' ticket(s) pending sync - tap to retry'; sb.className='syncbar canretry'; sb.onclick=retrySync; }
+}
+function retrySync(e) {
+  if(e) { e.preventDefault(); e.stopPropagation(); }
+  syncP(true);
+}
+function retryBackend(e) {
+  if(e) { e.preventDefault(); e.stopPropagation(); }
+  BACKEND_ERROR='';
+  loadBackendConfig().then(()=>refreshTickets(true));
+}
+
+// â”€â”€ NAME â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function initName() {
+  const sel = $('sel-name');
+  sel.innerHTML = '<option value="">-- Select name --</option>';
+  AUTH.forEach(n => { const o=document.createElement('option'); o.value=o.textContent=n; sel.appendChild(o); });
+  const ot=document.createElement('option'); ot.value='__OTHER__'; ot.textContent='Other (not in list)'; sel.appendChild(ot);
+  sel.value=''; $('fbar').style.display='none'; $('btn-name').disabled=true;
+}
+
+// BACKEND FETCH
+function normaliseTicket(t) {
+  const authVal = String(t.auth || '').toUpperCase();
+  return {
+    id:t.id || '', date:t.date || '', time:t.time || '', by:t.by || '',
+    auth:t.auth === true || authVal === 'YES', cat:t.cat || 'general',
+    asset:t.asset || '', ctype:t.ctype || '', desc:t.desc || '',
+    amount:parseFloat(t.amount) || 0, gst:t.gst === true || String(t.gst || '').toUpperCase() === 'YES',
+    vendorName:t.vendorName || '', vendorCode:t.vendorCode || '', preApproval:t.preApproval || '',
+    status:String(t.status || 'PENDING').toUpperCase(),
+    amtPaid:t.amtPaid == null ? null : parseFloat(t.amtPaid),
+    paidDate:t.paidDate || '', synced:true
+  };
+}
+function mergeTickets(remote) {
+  const map = new Map();
+  const remoteIds = new Set();
+  remote.map(normaliseTicket).filter(isTodayTicket).forEach(t=>{
+    if(t.id) {
+      remoteIds.add(t.id);
+      if(t.status === 'PAID') PAID_IDS.add(t.id);
+      map.set(t.id,t);
+    }
+  });
+  PSYNC = PSYNC.filter(t=>!remoteIds.has(t.id) && !PAID_IDS.has(t.id));
+  TICKETS.forEach(t=>{
+    if(!map.has(t.id)) map.set(t.id,t);
+  });
+  TICKETS = [...map.values()].filter(t=>!isPaidKnown(t)).sort((a,b)=>(b.id||'').localeCompare(a.id||'', undefined, {numeric:true}));
+}
+async function fetchJson(params) {
+  if(isFileApp()) return fetchJsonp(params);
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), SHEETS_TIMEOUT_MS);
+  try {
+    const r = await fetch(apiUrl(params), {method:'GET', signal:ctrl.signal, cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d = await r.json();
+    if(d.error) throw new Error(d.error);
+    return d;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+function fetchJsonp(params) {
+  return new Promise((resolve,reject)=>{
+    const cb = 'mntCb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const s = document.createElement('script');
+    const timer = setTimeout(done, 9000, new Error('Request timed out'));
+    function done(err, data) {
+      clearTimeout(timer);
+      delete window[cb];
+      if(s.parentNode) s.parentNode.removeChild(s);
+      err ? reject(err) : resolve(data);
+    }
+    window[cb] = data => {
+      if(data && data.error) done(new Error(data.error));
+      else done(null, data);
+    };
+    s.onerror = () => done(new Error('Network error'));
+    s.src = apiUrl({...params, callback:cb, _:Date.now()});
+    document.head.appendChild(s);
+  });
+}
+async function loadBackendConfig() {
+  if(!isConfigured()) return false;
+  try {
+    FETCHING=true; renderHome();
+    const d = await fetchJson({action:'getConfig'});
+    if(Array.isArray(d.names) && d.names.length) {
+      const topNames = ['Ritesh Kapoor','Abhinav Singh','Aman Pratap Singh','Sandeep Tiwari','Gajendra'];
+      const rest = d.names.filter(n => !topNames.includes(n));
+      AUTH.length = 0;
+      topNames.concat(rest).forEach(n => AUTH.push(n));
+    }
+    if(Array.isArray(d.vehicles) && d.vehicles.length) {
+      VEHS.length = 0;
+      d.vehicles.forEach(v => VEHS.push(v));
+    }
+    if(d.nextId && Number(d.nextId) > NID) NID = Number(d.nextId);
+    CONFIG_LOADED=true; save();
+    BACKEND_ERROR='';
+    return true;
+  } catch(e) {
+    BACKEND_ERROR = isFileApp()
+      ? 'Redeploy Apps Script to enable Sheets fetch'
+      : 'Could not fetch config from Sheets';
+    flash(BACKEND_ERROR);
+    return false;
+  } finally {
+    FETCHING=false; renderHome();
+  }
+}
+async function refreshTickets(showFlash, quiet) {
+  if(!isConfigured() || FETCHING) return false;
+  try {
+    FETCHING=true; renderHome();
+    const d = await fetchJson({action:'getTickets'});
+    if(Array.isArray(d.tickets)) {
+      mergeTickets(d.tickets);
+      save(); renderHist(); renderHome();
+      BACKEND_ERROR='';
+      if(showFlash) flash('Latest Sheets data loaded.');
+      return true;
+    }
+  } catch(e) {
+    if(!quiet) {
+      BACKEND_ERROR = isFileApp()
+        ? 'Redeploy Apps Script to enable Sheets fetch'
+        : (e && e.message ? 'Sheets error: '+e.message : 'Could not fetch tickets from Sheets');
+      if(showFlash) flash(BACKEND_ERROR);
+    }
+  } finally {
+    FETCHING=false; renderHome();
+  }
+  return false;
+}
+function onName() {
+  const v = $('sel-name').value;
+  $('btn-name').disabled = !v;
+  $('fbar').style.display = (v==='__OTHER__') ? 'block' : 'none';
+  if(v && v!=='__OTHER__') { CUR_NAME=v; $('who-name').textContent=v; }
+  else if(v==='__OTHER__') { CUR_NAME='Unauthorised'; $('who-name').textContent='Unauthorised (Flagged)'; }
+}
+
+// â”€â”€ CATEGORY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function selCat(c) {
+  CUR_CAT=c; SEL_VEH=null; SEL_VENDOR=null;
+  ['f-veh','f-mach','f-equip','f-ctype','f-office'].forEach(f=>$(f).style.display='none');
+  const titles = {vehicle:'VEHICLE TICKET',machinery:'MACHINERY TICKET',equipment:'EQUIPMENT TICKET',general:'GENERAL EXPENSE',office:'OFFICE EXPENSE'};
+  $('form-title').textContent = titles[c];
+  if(c==='vehicle')   { $('f-veh').style.display='block'; $('f-ctype').style.display='block'; $('lbl-desc').textContent='Complaint Description *'; }
+  if(c==='machinery') { $('f-mach').style.display='block'; $('f-ctype').style.display='block'; $('lbl-desc').textContent='Complaint Description *'; }
+  if(c==='equipment') { $('f-equip').style.display='block'; $('f-ctype').style.display='block'; $('lbl-desc').textContent='Complaint Description *'; }
+  if(c==='general')   { $('lbl-desc').textContent='What is this expense for? *'; }
+  if(c==='office')    { $('f-office').style.display='block'; $('lbl-desc').textContent='Office expense details *'; }
+  $('vbtn').textContent='Select vehicle\u2026'; $('vbtn').classList.remove('sel');
+  $('chips').style.display='none';
+  $('sel-mach').value=''; $('sel-equip').value=''; $('sel-ctype').value=''; $('sel-office').value=''; $('sel-pre').value='';
+  $('f-desc').value=''; $('f-amt').value=''; $('f-gst').checked=false; $('f-vendor').value=''; onGstToggle();
+  $('vdd').classList.remove('open'); $('vendor-list').classList.remove('open');
+  go('form');
+}
+function togV() {
+  const dd=$('vdd');
+  if(dd.classList.contains('open')) { dd.classList.remove('open'); return; }
+  dd.classList.add('open'); $('vsi').value=''; rVl(VEHS);
+  setTimeout(()=>$('vsi').focus(),80);
+}
+function filV() {
+  const q=$('vsi').value.toLowerCase();
+  rVl(VEHS.filter(v=>v.num.toLowerCase().includes(q)||v.type.toLowerCase().includes(q)||v.driver.toLowerCase().includes(q)));
+}
+function rVl(list) {
+  $('vlist').innerHTML = list.length
+    ? list.map(v=>'<div class="vi" onclick="selV(\''+v.num+'\')"><div class="vn">'+v.num+'</div><div class="vm">'+v.type+' &middot; '+v.driver+'</div></div>').join('')
+    : '<div class="vi" style="color:var(--t3);font-size:12px">No vehicles found</div>';
+}
+function selV(num) {
+  const v=VEHS.find(x=>x.num===num); if(!v) return;
+  SEL_VEH=v; $('vbtn').textContent=v.num; $('vbtn').classList.add('sel');
+  $('chip-t').textContent=v.type; $('chip-d').textContent=v.driver;
+  $('chips').style.display='flex'; $('vdd').classList.remove('open');
+}
+document.addEventListener('click', e => {
+  const w=document.querySelector('.vw');
+  if(w && !w.contains(e.target)) $('vdd').classList.remove('open');
+});
+
+function onGstToggle() {
+  const on = $('f-gst').checked;
+  $('gst-label').textContent = on ? 'Bill with GST' : 'No Bill';
+  $('f-vendor-wrap').style.display = on ? 'block' : 'none';
+  if(!on) { $('f-vendor').value=''; SEL_VENDOR=null; $('vendor-list').classList.remove('open'); }
+}
+function onVendorInput() {
+  SEL_VENDOR=null;
+  const q=$('f-vendor').value.trim().toLowerCase();
+  const box=$('vendor-list');
+  if(!q || !VENDORS.length) { box.classList.remove('open'); box.innerHTML=''; return; }
+  const list=VENDORS.filter(v=>v.name.toLowerCase().includes(q)).slice(0,8);
+  box.innerHTML=list.map(v=>'<div class="vsuggest-item" onclick="selectVendor(\''+v.code.replace(/'/g,'\\\'')+'\')"><div class="vsuggest-name">'+v.name+'</div><div class="vsuggest-code">'+v.code+'</div></div>').join('');
+  box.classList.toggle('open', !!list.length);
+}
+function selectVendor(code) {
+  const v=VENDORS.find(x=>x.code===code); if(!v) return;
+  SEL_VENDOR=v; $('f-vendor').value=v.name; $('vendor-list').classList.remove('open');
+}
+async function loadVendors() {
+  if(!isConfigured()) { VENDORS=[]; return; }
+  try {
+    const d = await fetchJson({action:'getVendors'});
+    VENDORS = Array.isArray(d.vendors) ? d.vendors.filter(v=>v.code && v.name) : [];
+  } catch(e) {
+    VENDORS = [];
+    BACKEND_ERROR = e && e.message && e.message.includes('Unknown action')
+      ? 'Backend is old - deploy new Apps Script and update SCRIPT_URL'
+      : 'Could not fetch vendor list from Sheets';
+    renderHome();
+  }
+}
+
+async function createTicket() {
+  if($('btn-create-ticket')&&$('btn-create-ticket').disabled) return;
+  const desc=$('f-desc').value.trim();
+  const amt=parseFloat($('f-amt').value);
+  if(!desc)          { alert('Please enter a description.'); return; }
+  if(!amt || amt<=0) { alert('Please enter the amount required.'); return; }
+  if(CUR_CAT==='vehicle' && !SEL_VEH) { alert('Please select a vehicle.'); return; }
+  if(CUR_CAT==='office' && !$('sel-office').value) { alert('Please select an office expense type.'); return; }
+  const gst = $('f-gst').checked;
+  const vendorName = $('f-vendor').value.trim();
+  if(gst && !vendorName) { alert('Please enter vendor name for GST bill.'); return; }
+
+  let asset='';
+  if(CUR_CAT==='vehicle')   asset=SEL_VEH?SEL_VEH.num+' ('+SEL_VEH.type+' \u2022 '+SEL_VEH.driver+')':'';
+  if(CUR_CAT==='machinery') asset=$('sel-mach').value||'MRF Machinery';
+  if(CUR_CAT==='equipment') asset=$('sel-equip').value||'Site Equipment';
+  if(CUR_CAT==='general')   asset='General Expense';
+  if(CUR_CAT==='office')    asset=$('sel-office').value;
+
+  const ctype = $('sel-ctype') ? $('sel-ctype').value : '';
+  const preApproval = $('sel-pre').value || '';
+  const matchedVendor = gst ? (SEL_VENDOR || VENDORS.find(v=>v.name.toLowerCase()===vendorName.toLowerCase())) : null;
+  const isAuth = AUTH.includes(CUR_NAME);
+
+  const tk = {
+    id:genID(), date:tod(), time:nowT(), by:CUR_NAME, auth:isAuth,
+    cat:CUR_CAT, asset, ctype, desc, amount:amt, gst,
+    vendorName:gst ? vendorName : '', vendorCode:matchedVendor ? matchedVendor.code : '',
+    preApproval, status:'PENDING', ts:new Date().toISOString()
+  };
+
+  if(!isConfigured()){alert('Google Sheets is not connected. Ticket was not saved.');return;}
+  setTicketSaving(true);
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(()=>ctrl.abort(), SHEETS_TIMEOUT_MS);
+    const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'addTickets',tickets:[sheetTicket(tk)]}),signal:ctrl.signal});
+    clearTimeout(timer);
+    const d=await r.json();
+    if(!d.ok) throw new Error(d.error || 'Save rejected');
+    tk.synced=true;
+    if(d.nextId) NID=d.nextId; else NID++;
+  } catch(e) {
+    setTicketSaving(false);
+    alert(e&&e.name==='AbortError'?'Google Sheets is taking too long to respond. Please try again.':'Could not save ticket to Google Sheets: '+(e&&e.message?e.message:'Please check internet and try again.'));
+    return;
+  }
+  setTicketSaving(false);
+  TICKETS.unshift(tk); CUR_TK=tk; save();
+  flash('Ticket '+tk.id+' created');
+  renderTk(tk); go('ticket');
+}
+
+// â”€â”€ RENDER TICKET â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function renderTk(t) {
+  const flag = !t.auth ? '<span class="ftag">FLAGGED</span>' : '';
+  let h = '<div class="tkh"><div><div class="tkid">'+t.id+'</div><div style="margin-top:8px">'+pill(t.cat)+flag+'</div></div><div class="tkts">'+fmtD(t.date)+'<br>'+t.time+'</div></div>';
+  h += '<div class="tkr"><div class="tkk">Raised By</div><div class="tkv">'+t.by+'</div></div>';
+  h += '<div class="tkr"><div class="tkk">Asset</div><div class="tkv">'+t.asset+'</div></div>';
+  if(t.ctype) h += '<div class="tkr"><div class="tkk">Complaint</div><div class="tkv">'+t.ctype+'</div></div>';
+  h += '<div class="tkr"><div class="tkk">Description</div><div class="tkv">'+t.desc+'</div></div>';
+  h += '<div class="tkr"><div class="tkk">Bill Type</div><div class="tkv">'+(t.gst?'GST Bill':'No Bill')+'</div></div>';
+  if(t.gst && t.vendorName) h += '<div class="tkr"><div class="tkk">Vendor</div><div class="tkv">'+t.vendorName+(t.vendorCode?' ('+t.vendorCode+')':'')+'</div></div>';
+  if(t.preApproval) h += '<div class="tkr"><div class="tkk">Pre Approval</div><div class="tkv">'+t.preApproval+'</div></div>';
+  h += '<div class="tkamt"><div class="tkamt-l">Amount Required</div><div class="tkamt-v">&#8377; '+nFmt(t.amount)+'</div></div>';
+  h += '<div class="tkfoot">Pinaka Infra &middot; Nagar Palika Parishad, Fatehpur &middot; Status: <strong>'+t.status+'</strong></div>';
+  $('tk-preview').innerHTML=h;
+}
+
+// â”€â”€ WHATSAPP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function sendWA() {
+  if(!CUR_TK) return;
+  const t=CUR_TK;
+  let m='*PINAKA INFRA \u2014 Maintenance Ticket*\n';
+  m+='Ticket ID: *'+t.id+'*\n';
+  m+='Date: '+fmtD(t.date)+' '+t.time+'\n';
+  m+='\u2500'.repeat(24)+'\n';
+  m+='Raised By: '+t.by+'\n';
+  m+='Category: '+t.cat.charAt(0).toUpperCase()+t.cat.slice(1)+'\n';
+  m+='Asset: '+t.asset+'\n';
+  if(t.ctype) m+='Complaint: '+t.ctype+'\n';
+  m+='Description: '+t.desc+'\n';
+  m+='Bill: '+(t.gst?'GST Bill':'No Bill')+'\n';
+  if(t.gst && t.vendorName) m+='Vendor: '+t.vendorName+(t.vendorCode?' ('+t.vendorCode+')':'')+'\n';
+  if(t.preApproval) m+='Pre Approval: '+t.preApproval+'\n';
+  m+='\u2500'.repeat(24)+'\n';
+  m+='*Amount Required: \u20B9'+nFmt(t.amount)+'*\n';
+  m+='_Pinaka Infra \u00b7 Fatehpur MSW_';
+  const url=WA_GROUP?'https://wa.me/'+WA_GROUP+'?text=':'https://wa.me/?text=';
+  window.open(url+encodeURIComponent(m),'_blank');
+}
+
+// â”€â”€ HISTORY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function setTab(t) {
+  HTAB=t;
+  ['pend'].forEach(x=>$('tab-'+x).classList.remove('on'));
+  $('tab-pend').classList.add('on');
+  renderHist();
+}
+function renderHist() {
+  let list = TICKETS.filter(t=>isTodayTicket(t) && t.status==='PENDING' && !PAID_IDS.has(t.id));
+  const el=$('hist-list');
+  if(!list.length) { el.innerHTML='<div class="empty">No tickets found</div>'; return; }
+  el.innerHTML='<div class="slbl">'+list.length+' ticket(s)</div>'+list.map(t=>{
+    const stClass='st-pend';
+    return '<div class="lcard">'+
+      '<div class="lc-top">'+
+      '<div><div class="lc-id">'+t.id+'</div><div class="lc-asset">'+t.asset+'</div><div class="lc-desc">'+t.desc.slice(0,60)+(t.desc.length>60?'\u2026':'')+'</div></div>'+
+      '<div style="text-align:right"><div class="lc-amt">&#8377;'+nFmt(t.amount)+'</div><div style="margin-top:6px"><span class="stp '+stClass+'">'+t.status+'</span></div></div>'+
+      '</div>'+
+      '<div class="lc-bot"><span style="font-size:10px;color:var(--t3)">'+t.by+'</span>'+pill(t.cat)+'<span style="font-size:10px;color:var(--t3)">'+fmtD(t.date)+'</span></div>'+
+      '</div>';
+  }).join('');
+}
+
+// â”€â”€ SYNC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async function syncP(showStatus) {
+  if(SYNCING || !PSYNC.length || !isConfigured()) return;
+  SYNCING=true;
+  if(showStatus) renderHome();
+  const batch=[...PSYNC];
+  const payload={action:'addTickets',tickets:batch.map(sheetTicket)};
+  const markSynced=(nextId)=>{
+    const ids=new Set(batch.map(t=>t.id));
+    TICKETS=TICKETS.map(t=>ids.has(t.id)?{...t,synced:true}:t);
+    PSYNC=PSYNC.filter(t=>!ids.has(t.id));
+    if(nextId) NID=nextId;
+    SYNCING=false;
+    save(); renderHome(); refreshTickets(false);
+  };
+  try {
+    if(isFileApp()) {
+      await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)});
+      markSynced();
+      return;
+    }
+    const ctrl = new AbortController();
+    const timer = setTimeout(()=>ctrl.abort(), SHEETS_TIMEOUT_MS);
+    const r=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),signal:ctrl.signal});
+    clearTimeout(timer);
+    const d=await r.json();
+    if(d.ok) markSynced(d.nextId);
+    else throw new Error(d.error || 'Sync rejected');
+  } catch(e) {
+    try {
+      await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)});
+      markSynced();
+    } catch(_e) {
+      SYNCING=false;
+      renderHome();
+      flash('Sync failed. Check internet and tap retry.');
+    }
+  }
+}
+
+// â”€â”€ INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+load();
+renderHome();
+$('sst').addEventListener('touchend', retrySync, {passive:false});
+setTimeout(async ()=>{
+  await loadBackendConfig();
+  await loadVendors();
+}, 700);
+</script>
+</body>
+</html>
+

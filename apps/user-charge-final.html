@@ -1,0 +1,1312 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Pinaka Infra · Collection</title>
+<style>
+:root{
+  --bg:#F0F7F0;--surface:#FFFFFF;--surface2:#E8F5E9;
+  --primary:#1B5E20;--primary-mid:#2E7D32;--primary-light:#43A047;
+  --primary-pale:#E8F5E9;--primary-border:#A5D6A7;
+  --text:#0D2010;--text2:#3A5C3E;--text3:#7A9B7A;
+  --border:#C8E6C9;--border2:#A5D6A7;
+  --orange:#E65100;--orange-light:#FFF3E0;--orange-border:#FFCC80;
+  --red:#C62828;--red-bg:#FFEBEE;
+  --blue:#1565C0;--blue-bg:#E3F2FD;--blue-border:#90CAF9;
+  --brown:#795548;
+  --shadow:0 2px 12px rgba(0,50,0,.1);--shadow2:0 4px 24px rgba(0,50,0,.15);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;min-height:100vh;max-width:480px;margin:0 auto}
+.screen{display:none;min-height:100vh}.screen.active{display:block}
+.hdr{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--primary);box-shadow:var(--shadow2)}
+.logo{font-size:15px;font-weight:800;letter-spacing:3px;color:#fff}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.65);letter-spacing:1.5px;margin-top:2px;text-transform:uppercase}
+.av{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+.login-header{background:var(--primary);padding:32px 20px 28px;text-align:center}
+.login-title{font-size:22px;font-weight:800;letter-spacing:3px;color:#fff;margin-bottom:6px}
+.login-tag{font-size:12px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.75);margin-bottom:2px}
+.login-sub{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:1px;text-transform:uppercase}
+.pin-section{padding:28px 24px}
+.pin-label{text-align:center;color:var(--text3);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px;font-weight:600}
+.pin-dots{display:flex;justify-content:center;gap:14px;margin-bottom:28px}
+.pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--border2);background:var(--surface);transition:all .2s}
+.pin-dot.filled{background:var(--primary);border-color:var(--primary)}
+.pin-dot.error{background:var(--red);border-color:var(--red)}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:280px;margin:0 auto}
+.pin-key{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:18px 10px;text-align:center;font-size:22px;font-weight:700;cursor:pointer;color:var(--text);box-shadow:0 2px 6px rgba(0,0,0,.06);transition:all .1s;-webkit-user-select:none;user-select:none}
+.pin-key:active{background:var(--primary-pale);border-color:var(--primary);transform:scale(.96)}
+.pin-key-del{font-size:18px;color:var(--text3)}
+.pin-key-empty{background:transparent;border:none;box-shadow:none;cursor:default}
+.pin-key-empty:active{background:transparent;transform:none}
+.pin-error{text-align:center;color:var(--red);font-size:12px;font-weight:600;min-height:20px;margin-top:12px}
+.session-exp-msg{text-align:center;color:var(--orange);font-size:11px;font-weight:600;min-height:16px;margin-bottom:8px;padding:0 10px;display:none}
+.session-exp-msg.show{display:block}
+.user-select-list{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.user-select-btn{width:100%;display:flex;align-items:center;gap:12px;border:1px solid var(--border);background:#fff;border-radius:14px;padding:14px;text-align:left;box-shadow:0 4px 12px rgba(0,0,0,.06);cursor:pointer}
+.user-select-btn:active{transform:scale(.99)}
+.user-select-avatar{width:40px;height:40px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;flex:0 0 40px}
+.user-select-info{display:flex;flex-direction:column;gap:3px;min-width:0}
+.user-select-info strong{font-size:15px;color:var(--text)}
+.user-select-info em{font-style:normal;font-size:12px;color:var(--text3)}
+.stat-box{background:var(--primary);margin:14px 16px;border-radius:16px;padding:20px;box-shadow:var(--shadow2)}
+.stat-big{font-size:40px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1}
+.stat-lbl{font-size:10px;color:rgba(255,255,255,.65);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.stat-cnt{color:rgba(255,255,255,.55);font-size:11px;margin-top:4px}
+.mini-row{display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dg{background:#69F0AE}.db{background:#82B1FF}
+.mini-lbl{font-size:11px;color:rgba(255,255,255,.6)}
+.mini-val{font-weight:700;font-size:13px;color:#fff}
+.stat-info{margin-top:14px;padding:10px 12px;background:rgba(0,0,0,.2);border-radius:8px;font-size:11px;color:rgba(255,255,255,.6)}
+.stat-info span{color:#fff;font-weight:700}
+.sync-bar{display:flex;justify-content:space-between;align-items:center;margin:0 16px 12px;padding:10px 14px;border-radius:10px;font-size:12px;font-weight:600;border:1px solid}
+.sync-ok{background:#E8F5E9;color:#1B5E20;border-color:#A5D6A7}
+.sync-pending{background:var(--orange-light);color:var(--orange);border-color:var(--orange-border);cursor:pointer}
+.sync-none{background:var(--surface2);color:var(--text3);border-color:var(--border)}
+.btn-p{display:block;width:calc(100% - 32px);margin:0 16px;padding:15px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-weight:800;font-size:13px;letter-spacing:1.5px;cursor:pointer;text-align:center;font-family:inherit;box-shadow:0 4px 14px rgba(27,94,32,.35)}
+.btn-p:disabled{opacity:.5;cursor:not-allowed}
+.btn-o{display:block;width:calc(100% - 32px);margin:0 16px;padding:14px;background:var(--surface);color:var(--primary);border:2px solid var(--primary);border-radius:12px;font-weight:800;font-size:13px;letter-spacing:1px;cursor:pointer;text-align:center;font-family:inherit}
+.btn-wa{display:block;width:calc(100% - 32px);margin:0 16px;padding:14px;background:#25D366;color:#fff;border:none;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;text-align:center;font-family:inherit}
+.btn-print{display:block;width:calc(100% - 32px);margin:0 16px;padding:14px;background:var(--primary-pale);color:var(--primary);border:1.5px solid var(--primary-border);border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;text-align:center;font-family:inherit}
+.btn-back{background:none;border:none;color:rgba(255,255,255,.85);font-size:14px;cursor:pointer;padding:0;font-family:inherit;font-weight:600}
+.btn-md{display:block;width:calc(100% - 32px);margin:10px 16px;padding:14px;background:#FFC107;color:#5D4037;border:none;border-radius:12px;font-weight:800;font-size:13px;letter-spacing:1px;cursor:pointer;text-align:center;font-family:inherit;box-shadow:0 4px 14px rgba(255,193,7,.35)}
+.btn-exp{display:block;width:calc(100% - 32px);margin:10px 16px;padding:13px;background:var(--surface);color:var(--primary);border:2px solid var(--primary-border);border-radius:12px;font-weight:700;font-size:12px;letter-spacing:.5px;cursor:pointer;text-align:center;font-family:inherit}
+.tabs{display:flex;gap:8px;padding:16px 16px 10px}
+.tab{flex:1;padding:9px;text-align:center;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--text2);border:1.5px solid var(--border)}
+.tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.card{background:var(--surface);border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid var(--border);display:flex;align-items:center;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,.04);cursor:pointer}
+.card:active{background:var(--primary-pale)}
+.cname{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.csub{color:var(--text3);font-size:11px;margin-top:2px}
+.crct{color:var(--text3);font-size:10px;font-family:monospace;margin-top:3px}
+.cright{text-align:right;flex-shrink:0}
+.camt{color:var(--primary);font-weight:800;font-size:18px}
+.pill{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;margin-top:3px}
+.pc{background:#E8F5E9;color:#1B5E20;border:1px solid #A5D6A7}
+.pu{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+.sync-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-left:4px;vertical-align:middle}
+.sd-ok{background:#2E7D32}.sd-pend{background:var(--orange)}
+.ctime{color:var(--text3);font-size:10px;margin-top:3px}
+.fhdr{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:var(--primary)}
+.fhdr-title{font-weight:800;font-size:15px;color:#fff;letter-spacing:.5px}
+.fwrap{padding:0 16px 120px}
+.flbl{color:var(--text2);font-size:11px;letter-spacing:1px;font-weight:700;margin-bottom:6px;margin-top:20px;text-transform:uppercase;display:block}
+.finp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;color:var(--text);font-size:15px;outline:none;font-family:inherit;appearance:none;-webkit-appearance:none}
+.finp:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(27,94,32,.1)}
+.famt{font-size:28px;font-weight:800;color:var(--primary)}
+.trow{display:flex;gap:8px}
+.tog{flex:1;padding:12px;text-align:center;border-radius:10px;background:var(--surface);color:var(--text2);border:1.5px solid var(--border);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.tog.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.swrap{padding:24px 16px 0;text-align:center}
+.sicon{font-size:48px}
+.stitle{color:var(--primary);font-weight:800;font-size:20px;margin-top:8px}
+.ssub{color:var(--text3);font-size:12px;margin-top:4px}
+.rbox{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:20px;margin:14px 16px;box-shadow:var(--shadow)}
+.rno{text-align:center;font-family:monospace;font-size:13px;color:var(--primary);letter-spacing:3px;margin-bottom:14px;padding:10px;background:var(--primary-pale);border-radius:8px;word-break:break-all;font-weight:800;border:1px solid var(--primary-border)}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.rrow:last-child{border-bottom:none}
+.rlbl{color:var(--text3);font-size:12px}
+.rval{color:var(--text);font-size:12px;font-weight:600;text-align:right;max-width:65%}
+.rhi{color:var(--primary);font-weight:800;font-size:16px}
+.sync-status-receipt{margin:0 16px 14px;padding:11px 14px;border-radius:9px;text-align:center;font-size:12px;font-weight:700;border:1px solid}
+.ssr-ok{background:#E8F5E9;color:#1B5E20;border-color:#A5D6A7}
+.ssr-pend{background:var(--orange-light);color:var(--orange);border-color:var(--orange-border)}
+.receipt-btns{display:flex;flex-direction:column;gap:10px;padding:0 0 40px}
+.empty{text-align:center;color:var(--text3);padding:48px 0;font-size:13px}
+.lwrap{padding:0 16px 80px}
+.logout-lbl{font-size:9px;color:rgba(255,255,255,.5);margin-top:3px;text-align:center}
+.gap{height:12px}
+.fixed-amt-box{background:var(--primary-pale);border:2px solid var(--primary-border);border-radius:12px;padding:18px;text-align:center;margin-top:8px}
+.fixed-amt-num{font-size:32px;font-weight:800;color:var(--primary);letter-spacing:-1px}
+.fixed-amt-lbl{font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+.dup-warn{background:#FFF8E1;border:1.5px solid #FFD54F;color:#E65100;padding:11px 13px;border-radius:10px;font-size:12px;font-weight:600;margin-top:10px;display:none}
+.dup-warn.show{display:block}
+.search-box{position:relative;margin:10px 16px 0}
+.search-inp{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:11px 14px 11px 38px;font-size:13px;outline:none;font-family:inherit}
+.search-inp:focus{border-color:var(--primary)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--border);border:none;border-radius:50%;width:22px;height:22px;font-size:14px;color:var(--text2);cursor:pointer;line-height:1;display:none}
+.search-clear.show{display:block}
+.range-tabs{display:flex;gap:6px;padding:8px 16px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.range-tab{flex-shrink:0;padding:7px 14px;border-radius:18px;font-size:12px;font-weight:700;cursor:pointer;background:var(--surface);color:var(--text2);border:1.5px solid var(--border);white-space:nowrap}
+.range-tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.target-bar{margin:0 16px 12px;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.target-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.target-lbl{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-weight:700}
+.target-val{font-size:12px;color:var(--text2);font-weight:700}
+.target-pct{font-size:13px;font-weight:800;color:var(--primary)}
+.target-bar-bg{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.target-bar-fill{height:100%;background:linear-gradient(90deg,var(--primary-mid),var(--primary-light));border-radius:4px;transition:width .4s ease}
+.target-bar-fill.over{background:linear-gradient(90deg,#43A047,#66BB6A)}
+.admin-badge{display:inline-block;padding:2px 8px;border-radius:4px;background:#FFC107;color:#5D4037;font-size:9px;font-weight:800;letter-spacing:1px;margin-left:6px}
+.accountant-badge{display:inline-block;padding:2px 8px;border-radius:4px;background:#BCAAA4;color:#3E2723;font-size:9px;font-weight:800;letter-spacing:1px;margin-left:6px}
+.autocomp{position:relative}
+.autocomp-list{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1.5px solid var(--border);border-top:none;border-radius:0 0 10px 10px;max-height:180px;overflow-y:auto;z-index:50;display:none;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.autocomp-list.show{display:block}
+.autocomp-item{padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px}
+.autocomp-item:hover,.autocomp-item.active{background:var(--primary-pale)}
+.autocomp-item:last-child{border-bottom:none}
+.autocomp-name{font-weight:700;color:var(--text)}
+.autocomp-meta{font-size:10px;color:var(--text3);margin-top:2px}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 12px}
+.summary-card{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.summary-card-lbl{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.summary-card-val{font-size:18px;font-weight:800;color:var(--text)}
+.summary-card-sub{font-size:10px;color:var(--text3);margin-top:2px}
+.zone-bd{margin:0 16px 12px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px}
+.zone-bd-title{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+.zone-bd-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12px}
+.zone-bd-name{color:var(--text2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zone-bd-val{font-weight:700;color:var(--primary);margin-left:10px}
+.warn-bar{background:var(--orange-light);color:var(--orange);border:1px solid var(--orange-border);padding:10px 14px;margin:10px 16px;border-radius:9px;font-size:12px;font-weight:600;text-align:center}
+.spinner{display:inline-block;width:11px;height:11px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* REFRESH ROW */
+.refresh-row{display:none;justify-content:space-between;align-items:center;margin:0 16px 8px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:9px}
+.refresh-row.show{display:flex}
+.refresh-ts{font-size:10px;color:var(--text3);font-weight:600}
+.refresh-btn{background:none;border:none;font-size:16px;cursor:pointer;padding:2px 6px;border-radius:6px;color:var(--primary)}
+.refresh-btn:active{background:var(--primary-pale)}
+/* WARD COVERAGE */
+.ward-cov{margin:0 16px 12px;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px}
+.ward-cov-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ward-cov-title{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-weight:700}
+.ward-cov-count{font-size:11px;font-weight:800;color:var(--primary)}
+.ward-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px}
+.ward-row:last-child{border-bottom:none}
+.ward-status{font-size:13px;flex-shrink:0;width:20px}
+.ward-name{flex:1;color:var(--text2);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ward-amt{color:var(--primary);font-weight:700;font-size:11px;flex-shrink:0}
+.ward-amt-none{color:var(--text3);font-size:11px;flex-shrink:0}
+/* PRINT */
+@media print{
+  @page{margin:0;size:58mm auto}
+  html,body{background:#fff;margin:0;padding:0;width:58mm}
+  .screen{display:none!important}
+  #print-receipt{display:block!important}
+  *{box-shadow:none!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+#print-receipt{display:none;width:58mm;padding:2mm 3mm 6mm;box-sizing:border-box;font-family:"Courier New","Lucida Console",monospace;font-size:11px;line-height:1.45;color:#000;font-weight:600}
+.pr-c{text-align:center}
+.pr-b{font-weight:900}
+.pr-eq{text-align:center;letter-spacing:0;font-weight:900;margin:0;line-height:1}
+.pr-dash{text-align:center;letter-spacing:0;margin:1px 0;line-height:1}
+.pr-org{font-size:16px;font-weight:900;letter-spacing:1px;margin-top:1px}
+.pr-city{font-size:15px;font-weight:900;letter-spacing:2px;margin-top:1px}
+.pr-sub{font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:1px}
+.pr-title{font-size:11px;font-weight:900;letter-spacing:0.5px;margin:1px 0 2px}
+.pr-row{display:flex;font-size:11px;margin:0;line-height:1.5}
+.pr-row .pr-key{flex-shrink:0;font-weight:700}
+.pr-row .pr-val{flex:1;text-align:right;font-weight:700;word-break:break-word}
+.pr-amt-box{text-align:center;margin:3px 0 1px;padding:3px 0;border-top:2px solid #000;border-bottom:2px solid #000}
+.pr-amt-lbl{font-size:9px;letter-spacing:2px;font-weight:700}
+.pr-amt-num{font-size:18px;font-weight:900;letter-spacing:1px;line-height:1.1;margin:1px 0}
+.pr-amt-mode{font-size:10px;font-weight:700;letter-spacing:0.5px}
+.pr-foot{text-align:center;font-size:9.5px;margin-top:2px;line-height:1.5}
+.pr-foot-bold{font-weight:900;font-size:10.5px;letter-spacing:0.5px}
+</style>
+  <link rel="stylesheet" href="shared-theme.css">
+</head>
+<body>
+
+<!-- PRINT RECEIPT (hidden, used by printReceipt()) -->
+<div id="print-receipt">
+  <div class="pr-eq">================================</div>
+  <div class="pr-c pr-org">NAGAR PALIKA PARISHAD</div>
+  <div class="pr-c pr-city">FATEHPUR</div>
+  <div class="pr-dash">--------------------------------</div>
+  <div class="pr-c pr-sub">PINAKA INFRA (MSW)</div>
+  <div class="pr-c pr-title">USER CHARGE RECEIPT</div>
+  <div class="pr-eq">================================</div>
+  <div class="pr-row"><span class="pr-key">Receipt No</span><span class="pr-val" id="pr-rno"></span></div>
+  <div class="pr-row"><span class="pr-key">Date</span><span class="pr-val" id="pr-date"></span></div>
+  <div class="pr-row"><span class="pr-key">Time</span><span class="pr-val" id="pr-time"></span></div>
+  <div class="pr-dash">--------------------------------</div>
+  <div class="pr-row"><span class="pr-key">Name</span><span class="pr-val" id="pr-name"></span></div>
+  <div id="pr-addr-row" class="pr-row"><span class="pr-key">Address</span><span class="pr-val" id="pr-addr"></span></div>
+  <div id="pr-mob-row" class="pr-row"><span class="pr-key">Mobile</span><span class="pr-val" id="pr-mob"></span></div>
+  <div class="pr-row"><span class="pr-key">Zone</span><span class="pr-val" id="pr-zone"></span></div>
+  <div class="pr-row"><span class="pr-key">Type</span><span class="pr-val" id="pr-cat"></span></div>
+  <div class="pr-amt-box">
+    <div class="pr-amt-lbl">AMOUNT PAID</div>
+    <div class="pr-amt-num" id="pr-amt"></div>
+    <div class="pr-amt-mode" id="pr-mode"></div>
+  </div>
+  <div class="pr-row"><span class="pr-key">Collected by</span><span class="pr-val" id="pr-collector"></span></div>
+  <div id="pr-rem-row" style="display:none" class="pr-row"><span class="pr-key">Remarks</span><span class="pr-val" id="pr-rem"></span></div>
+  <div class="pr-eq">================================</div>
+  <div class="pr-foot pr-foot-bold">Thank you for your payment</div>
+  <div class="pr-foot">Keep Fatehpur Clean &amp; Green</div>
+  <div class="pr-foot" style="margin-top:3px">Please retain this receipt for your records.</div>
+  <div class="pr-eq" style="margin-top:3px">================================</div>
+  <div class="pr-foot" style="font-size:8.5px">Computer-generated receipt</div>
+  <div style="height:6mm"></div>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div id="screen-login" class="screen active">
+  <div class="login-header">
+    <div class="login-title">USER CHARGE</div>
+    <div class="login-tag">PINAKA INFRA</div>
+    <div class="login-sub">Nagar Palika Parishad &middot; Fatehpur</div>
+  </div>
+  <div class="pin-section">
+    <div class="session-exp-msg" id="session-exp-msg"></div>
+    <div class="pin-label">Select User ID</div>
+    <div class="user-select-list"><div class="empty">Loading users...</div></div>
+    <div class="pin-error" id="pin-error"></div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="screen-dash" class="screen">
+  <div class="hdr">
+    <div>
+      <div class="logo">PINAKA INFRA
+        <span id="admin-badge" class="admin-badge" style="display:none">ADMIN</span>
+        <span id="accountant-badge" class="accountant-badge" style="display:none">ACCT</span>
+      </div>
+      <div class="logo-sub">User Charge Collection</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="text-align:center;cursor:pointer" onclick="logout()">
+        <div class="av" id="dash-av"></div>
+        <div class="logout-lbl">LOGOUT</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="warn-config" style="display:none" class="warn-bar">⚠️ Google Sheets not configured. Saving is disabled.</div>
+
+  <div class="stat-box">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div class="stat-lbl">TODAY'S TOTAL</div>
+        <div class="stat-big" id="d-total">₹0</div>
+        <div class="stat-cnt" id="d-cnt">0 entries collected</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+        <div class="mini-row"><div class="dot dg"></div><span class="mini-lbl">Cash</span><span class="mini-val" id="d-cash">₹0</span></div>
+        <div class="mini-row"><div class="dot db"></div><span class="mini-lbl">UPI</span><span class="mini-val" id="d-upi">₹0</span></div>
+      </div>
+    </div>
+    <div class="stat-info" id="d-supbar"></div>
+  </div>
+
+  <div class="target-bar" id="target-bar" style="display:none">
+    <div class="target-row">
+      <div class="target-lbl">DAILY TARGET</div>
+      <div class="target-pct" id="target-pct">0%</div>
+    </div>
+    <div class="target-bar-bg"><div class="target-bar-fill" id="target-bar-fill" style="width:0%"></div></div>
+    <div class="target-row" style="margin:6px 0 0"><div class="target-val" id="target-val">₹0 / ₹3,000</div><div class="target-val" id="target-rem"></div></div>
+  </div>
+
+  <div class="summary-grid" id="summary-grid" style="display:none">
+    <div class="summary-card"><div class="summary-card-lbl">RESIDENTIAL</div><div class="summary-card-val" id="d-res-val">₹0</div><div class="summary-card-sub" id="d-res-cnt">0 entries</div></div>
+    <div class="summary-card"><div class="summary-card-lbl">COMMERCIAL</div><div class="summary-card-val" id="d-com-val">₹0</div><div class="summary-card-sub" id="d-com-cnt">0 entries</div></div>
+  </div>
+
+  <div class="zone-bd" id="zone-bd" style="display:none">
+    <div class="zone-bd-title">ZONE-WISE BREAKDOWN (TOP 5)</div>
+    <div id="zone-bd-list"></div>
+  </div>
+
+  <!-- Ward Coverage — Admin/Accountant only -->
+  <div class="ward-cov" id="ward-coverage" style="display:none">
+    <div class="ward-cov-header">
+      <div class="ward-cov-title">WARD COVERAGE — TODAY</div>
+      <div class="ward-cov-count" id="ward-cov-count"></div>
+    </div>
+    <div id="ward-cov-list"></div>
+  </div>
+
+  <!-- Refresh row — Admin/Accountant only -->
+  <div class="refresh-row" id="refresh-row">
+    <span class="refresh-ts" id="refresh-ts">Last updated: —</span>
+    <button class="refresh-btn" id="btn-refresh" onclick="manualRefresh()" title="Refresh data">🔄</button>
+  </div>
+
+  <div id="sync-bar" class="sync-bar sync-none">✅ All entries synced to Google Sheets</div>
+
+  <button class="btn-p" onclick="goTo('add')" id="btn-add-entry">+ ADD COLLECTION ENTRY</button>
+  <button class="btn-md" id="btn-md" onclick="sendDailySummary()" style="display:none">📤 SEND DAILY REPORT TO MD</button>
+  <button class="btn-exp" id="btn-export" onclick="exportCSV()" style="display:none">📥 EXPORT CSV</button>
+
+  <div class="range-tabs">
+    <div class="range-tab active" id="rt-today" onclick="setRange('today')">Today</div>
+    <div class="range-tab" id="rt-yest" onclick="setRange('yesterday')">Yesterday</div>
+    <div class="range-tab" id="rt-week" onclick="setRange('week')">This Week</div>
+    <div class="range-tab" id="rt-month" onclick="setRange('month')">This Month</div>
+    <div class="range-tab" id="rt-all" onclick="setRange('all')">All</div>
+  </div>
+
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input class="search-inp" id="search-inp" placeholder="Search name, mobile, zone, receipt, collector..." oninput="onSearch()" autocomplete="off"/>
+    <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+  </div>
+
+  <div class="lwrap" id="entry-list"></div>
+</div>
+
+<!-- ══ ADD ENTRY ══ -->
+<div id="screen-add" class="screen">
+  <div class="fhdr">
+    <button class="btn-back" onclick="goTo('dash')">← Back</button>
+    <div class="fhdr-title">NEW COLLECTION</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="fwrap">
+    <label class="flbl">Type</label>
+    <div class="trow">
+      <button class="tog active" id="tog-res" onclick="setCat('Residential')">Residential</button>
+      <button class="tog" id="tog-com" onclick="setCat('Commercial')">Commercial</button>
+    </div>
+    <label class="flbl">Name / Shop Name *</label>
+    <div class="autocomp">
+      <input class="finp" id="f-name" placeholder="Enter full name" autocomplete="off" oninput="onNameInput()" onfocus="onNameInput()" onblur="setTimeout(closeAutocomp,200)"/>
+      <div class="autocomp-list" id="autocomp-list"></div>
+    </div>
+    <div class="dup-warn" id="dup-warn">⚠️ This name or mobile was collected within last 7 days. You can still continue.</div>
+    <label class="flbl">Address / Area</label>
+    <input class="finp" id="f-addr" placeholder="House no, lane, area" autocomplete="off"/>
+    <label class="flbl">Mobile Number</label>
+    <input class="finp" id="f-mob" type="tel" placeholder="10-digit mobile" inputmode="numeric" oninput="checkDuplicate()"/>
+    <label class="flbl">Zone / Ward *</label>
+    <select class="finp" id="f-zone"></select>
+    <label class="flbl">Amount (₹) *</label>
+    <input class="finp famt" id="f-amt" type="number" placeholder="Enter amount" inputmode="numeric"/>
+    <label class="flbl">Payment Mode</label>
+    <div class="trow">
+      <button class="tog active" id="tog-cash" onclick="setMode('Cash')">💵 Cash</button>
+      <button class="tog" id="tog-upi" onclick="setMode('UPI')">📱 UPI</button>
+    </div>
+    <label class="flbl">Remarks</label>
+    <input class="finp" id="f-rem" placeholder="e.g. pending, refused..." autocomplete="off"/>
+    <div class="gap"></div><div class="gap"></div>
+    <button class="btn-p" id="submit-btn" onclick="submitEntry()">✓ CONFIRM &amp; GENERATE RECEIPT</button>
+  </div>
+</div>
+
+<!-- ══ RECEIPT ══ -->
+<div id="screen-receipt" class="screen">
+  <div class="swrap">
+    <div class="sicon" id="r-icon">✅</div>
+    <div class="stitle" id="r-title">Collection Recorded</div>
+    <div class="ssub" id="r-sync-sub">Syncing...</div>
+  </div>
+  <div id="ssr" class="sync-status-receipt ssr-pend"><span class="spinner"></span> Sending to Google Sheets...</div>
+  <div class="rbox" id="rbox-content"></div>
+  <div class="receipt-btns">
+    <button class="btn-print" onclick="printReceipt()">🖨️ PRINT RECEIPT</button>
+    <button class="btn-wa" onclick="shareWhatsApp()">💬 SHARE ON WHATSAPP</button>
+    <button class="btn-p" id="btn-add-another" onclick="goTo('add')">+ Add Another Entry</button>
+    <button class="btn-o" onclick="goTo('dash')">← Back to Dashboard</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// PINAKA INFRA — Collection App v6
+// Paste your GAS URL below after deployment
+// ═══════════════════════════════════════════════════════
+const SCRIPT_URL = "/api/user-charge";
+
+// ─── DEFAULT CONFIG (overridden by GAS Settings sheet) ───
+let COLLECTORS = [
+  {id:"uc-collector", name:"User Charge Collection", pin:"3333", color:"#1B5E20", target:3000, admin:false},
+];
+let MD_WHATSAPP = "";
+let FIXED_AMT   = {"Residential":50, "Commercial":100};
+
+// ─── COMPLETE WARD LIST (34 wards) ───────────────────────
+const ALL_ZONES = [
+  "Ajgawa - W1",
+  "Awas Vikas - W2",
+  "Buxpur - W3",
+  "Khambapur - W4",
+  "⏳ Gadhiwa - W5 [Map Pending]",
+  "⏳ Andauli - W6 [Map Pending]",
+  "Hariharganj - W7",
+  "Jhaupur - W8",
+  "Ramganj Pakka Talab - W9",
+  "Arabpur - W10",
+  "Naseerpur - W11",
+  "Radhanagar - W12",
+  "Raddiya - W13",
+  "Abu Nagar - W14",
+  "Maswani - W15",
+  "Asti - W16",
+  "W17",
+  "W18",
+  "Murain Tola - W19",
+  "Saiyadwara - W20",
+  "Sadipur - W21",
+  "Isaipurwa - W22",
+  "Deviganj - W23",
+  "Amar Jai - W24",
+  "Chaudhrana - W25",
+  "⏳ Piranpur - W26 [Map Pending]",
+  "Collector Ganj - W27",
+  "Mahajari - W28",
+  "Krishna Vihar - W29",
+  "Kheldar - W30",
+  "Chandiyana - W31",
+  "Pani - W32",
+  "Civil Lines - W33",
+  "Ahmad Ganj - W34",
+  "Commercial - Civil Lines",
+  "Commercial - ITI Road",
+  "Commercial - Collectorganj",
+  "Commercial - Maswani",
+  "Commercial - Awas Vikas",
+  "Commercial - Unwa"
+];
+
+// Ward coverage list (residential wards only)
+const ALL_WARDS_LIST = [
+  {key:"W1",  label:"Ajgawa - W1",              pending:false},
+  {key:"W2",  label:"Awas Vikas - W2",          pending:false},
+  {key:"W3",  label:"Buxpur - W3",              pending:false},
+  {key:"W4",  label:"Khambapur - W4",           pending:false},
+  {key:"W5",  label:"Gadhiwa - W5",             pending:true},
+  {key:"W6",  label:"Andauli - W6",             pending:true},
+  {key:"W7",  label:"Hariharganj - W7",         pending:false},
+  {key:"W8",  label:"Jhaupur - W8",             pending:false},
+  {key:"W9",  label:"Ramganj Pakka Talab - W9", pending:false},
+  {key:"W10", label:"Arabpur - W10",            pending:false},
+  {key:"W11", label:"Naseerpur - W11",          pending:false},
+  {key:"W12", label:"Radhanagar - W12",         pending:false},
+  {key:"W13", label:"Raddiya - W13",            pending:false},
+  {key:"W14", label:"Abu Nagar - W14",          pending:false},
+  {key:"W15", label:"Maswani - W15",            pending:false},
+  {key:"W16", label:"Asti - W16",               pending:false},
+  {key:"W17", label:"W17",                      pending:false},
+  {key:"W18", label:"W18",                      pending:false},
+  {key:"W19", label:"Murain Tola - W19",        pending:false},
+  {key:"W20", label:"Saiyadwara - W20",         pending:false},
+  {key:"W21", label:"Sadipur - W21",            pending:false},
+  {key:"W22", label:"Isaipurwa - W22",          pending:false},
+  {key:"W23", label:"Deviganj - W23",           pending:false},
+  {key:"W24", label:"Amar Jai - W24",           pending:false},
+  {key:"W25", label:"Chaudhrana - W25",         pending:false},
+  {key:"W26", label:"Piranpur - W26",           pending:true},
+  {key:"W27", label:"Collector Ganj - W27",     pending:false},
+  {key:"W28", label:"Mahajari - W28",           pending:false},
+  {key:"W29", label:"Krishna Vihar - W29",      pending:false},
+  {key:"W30", label:"Kheldar - W30",            pending:false},
+  {key:"W31", label:"Chandiyana - W31",         pending:false},
+  {key:"W32", label:"Pani - W32",               pending:false},
+  {key:"W33", label:"Civil Lines - W33",        pending:false},
+  {key:"W34", label:"Ahmad Ganj - W34",         pending:false},
+];
+
+// ─── STATE ───────────────────────────────────────────────
+let CUR = null, ENTRIES = [], CAT = "Residential", MODE = "Cash", LAST = null;
+let PIN_BUF = "", RANGE = "today", SEARCH = "";
+let RETRY_TIMER = null, ADMIN_TIMER = null;
+
+const isConfigured = () => SCRIPT_URL && SCRIPT_URL !== "PASTE_YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+function saveE(){/* Collection entries are sent directly to Sheets and not stored on staff devices. */}
+function fmt(n){ return Number(n).toLocaleString("en-IN"); }
+function tod(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmtD(d){
+  if(!d)return "";
+  const p = String(d).split("-");
+  if(p.length<3)return d;
+  return p[2].padStart(2,"0")+" "+(MONTHS_SHORT[parseInt(p[1])-1]||p[1])+" "+p[0];
+}
+function fmtT(t){
+  if(!t)return "";
+  const s = String(t).trim();
+  const m = s.match(/^(\d{1,2}):(\d{2})(?:\s*([AaPp][Mm]))?$/);
+  if(!m)return s;
+  return m[1].padStart(2,"0")+":"+m[2]+(m[3]?" "+m[3].toUpperCase():"");
+}
+function escapeHtml(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+
+function activeCollectors(list){
+  return (Array.isArray(list)?list:[]).filter(c=>{
+    const id=String(c&&c.id||"").trim().toLowerCase();
+    const name=String(c&&c.name||"").trim().toLowerCase();
+    return id!=="admin" && id!=="satyendra" && name!=="admin" && name!=="satyendra";
+  }).map(c=>({...c, admin:false, accountant:false}));
+}
+
+function clearRemovedCollectorSession(){
+  const saved=String(localStorage.getItem("pi_c")||"").trim().toLowerCase();
+  if(saved==="admin" || saved==="satyendra"){
+    localStorage.removeItem("pi_c");
+    localStorage.removeItem("pi_last_act");
+  }
+}
+
+// Extract ward key like "W1" from zone string
+function extractWardKey(zone){
+  const m = String(zone).match(/\bW(\d+)\b/);
+  return m ? "W"+m[1] : null;
+}
+
+// ─── SESSION MANAGEMENT ──────────────────────────────────
+const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours ms
+
+function touchSession(){
+  if(CUR) localStorage.setItem("pi_last_act", String(Date.now()));
+}
+function isSessionExpired(){
+  const last = parseInt(localStorage.getItem("pi_last_act")||"0");
+  if(!last) return false;
+  return (Date.now() - last) > SESSION_DURATION;
+}
+function checkSessionExpiry(){
+  if(!CUR) return;
+  if(isSessionExpired()){
+    const name = CUR.name;
+    CUR = null;
+    localStorage.removeItem("pi_c");
+    localStorage.removeItem("pi_last_act");
+    PIN_BUF = "";
+    renderCollectorPicker();
+    const msg = document.getElementById("session-exp-msg");
+    msg.textContent = "Session expired for " + name + ". Select your user ID.";
+    msg.classList.add("show");
+    document.getElementById("pin-error").textContent = "";
+    goTo("login");
+  }
+}
+
+// ─── PIN PAD ─────────────────────────────────────────────
+function renderCollectorPicker(){
+  const section=document.querySelector("#screen-login .pin-section");
+  if(!section)return;
+  COLLECTORS=activeCollectors(COLLECTORS);
+  const items=COLLECTORS.map(c=>`
+    <button type="button" class="user-select-btn" data-login-collector="${escapeHtml(c.id)}">
+      <span class="user-select-avatar" style="background:${escapeHtml(c.color||"#1B5E20")}">${escapeHtml((c.name||c.id||"?").charAt(0).toUpperCase())}</span>
+      <span class="user-select-info">
+        <strong>${escapeHtml(c.name||c.id)}</strong>
+        <em>User ID: ${escapeHtml(c.id)}${c.admin?" - Admin":""}</em>
+      </span>
+    </button>`).join("");
+  section.innerHTML=`
+    <div class="session-exp-msg" id="session-exp-msg"></div>
+    <div class="pin-label">Select User ID</div>
+    <div class="user-select-list">${items||'<div class="empty">No collectors configured</div>'}</div>
+    <div class="pin-error" id="pin-error"></div>`;
+}
+function selectCollector(id){
+  const c=activeCollectors(COLLECTORS).find(x=>x.id===id);
+  if(!c)return;
+  CUR=c;
+  localStorage.setItem("pi_c",c.id);
+  touchSession();
+  PIN_BUF="";
+  clearSessionExpMsg();
+  postLoginSync();
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-login-collector]");if(b)selectCollector(b.dataset.loginCollector);});
+function updateDots(err){
+  const show4 = COLLECTORS.some(c=>c.pin.length===4);
+  for(let i=0;i<4;i++){
+    const d=document.getElementById("pd"+i);
+    if(!d)continue;
+    d.style.display=(i<3||show4)?"block":"none";
+    d.className="pin-dot"+(err?" error":i<PIN_BUF.length?" filled":"");
+  }
+  document.getElementById("pd3").style.display = PIN_BUF.length>=3?"block":"none";
+}
+function pinKey(n){
+  if(PIN_BUF.length>=4)return;
+  PIN_BUF+=String(n);
+  updateDots(false);
+  document.getElementById("pin-error").textContent="";
+  // Try 3-digit match
+  if(PIN_BUF.length===3){
+    const c=activeCollectors(COLLECTORS).find(x=>x.pin===PIN_BUF);
+    if(c){setTimeout(()=>{ CUR=c; localStorage.setItem("pi_c",c.id); touchSession(); PIN_BUF=""; updateDots(false); clearSessionExpMsg(); postLoginSync(); },200); return;}
+    return;
+  }
+  // Try 4-digit match
+  if(PIN_BUF.length===4){
+    const c=activeCollectors(COLLECTORS).find(x=>x.pin===PIN_BUF);
+    if(c){ setTimeout(()=>{ CUR=c; localStorage.setItem("pi_c",c.id); touchSession(); PIN_BUF=""; updateDots(false); clearSessionExpMsg(); postLoginSync(); },200); }
+    else { updateDots(true); document.getElementById("pin-error").textContent="Wrong passcode. Try again."; setTimeout(()=>{PIN_BUF="";updateDots(false);document.getElementById("pin-error").textContent="";},900); }
+  }
+}
+function pinDel(){if(PIN_BUF.length>0){PIN_BUF=PIN_BUF.slice(0,-1);updateDots(false);}}
+function clearSessionExpMsg(){const el=document.getElementById("session-exp-msg");if(el){el.textContent="";el.classList.remove("show");}}
+
+// ─── SYNC ────────────────────────────────────────────────
+async function syncEntry(entry){
+  if(!isConfigured())return false;
+  try{
+    const payload={entry:{
+      rno:entry.rno, date:entry.date, time:entry.time,
+      cid:entry.cid, cname:entry.sname,
+      cat:entry.cat, zone:entry.zone,
+      payer:entry.name, address:entry.addr||"", amount:entry.amt, mode:entry.mode,
+      mobile:entry.mob||"", notes:entry.rem||""
+    }};
+    // No mode:"no-cors" — we read the real response to confirm success
+    const res = await fetch(SCRIPT_URL,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(!data.ok) return false;
+    const idx=ENTRIES.findIndex(e=>e.id===entry.id);
+    if(idx!==-1){ENTRIES[idx].synced=true;saveE();}
+    return true;
+  }catch(e){return false;}
+}
+
+async function flushPending(){
+  if(!isConfigured())return;
+  const pending=ENTRIES.filter(e=>!e.synced);
+  for(const e of pending) await syncEntry(e);
+  renderDash();
+}
+
+// Auto-retry timer: every 3 minutes, try to sync pending entries
+function startRetryTimer(){
+  if(RETRY_TIMER) return;
+  RETRY_TIMER = setInterval(async()=>{
+    const pending = ENTRIES.filter(e=>!e.synced);
+    if(pending.length===0) return;
+    for(const e of pending) await syncEntry(e);
+    renderDash();
+  }, 3*60*1000);
+}
+
+// ─── RECEIPT NUMBER (server-assigned) ────────────────────
+// Fallback local generator (used only if server call fails)
+function genRnoLocal(){
+  const dt = tod().replace(/-/g,"").slice(2);
+  let px;
+  if(CUR.id==="x")px="COL3";
+  else px=CUR.id.slice(0,3).toUpperCase();
+  const n=ENTRIES.filter(e=>e.cid===CUR.id&&e.date===tod()).length+1;
+  return "PI-"+dt+"-"+px+"-"+String(n).padStart(3,"0");
+}
+async function getServerRno(){
+  if(!isConfigured()) return genRnoLocal();
+  try{
+    const url = SCRIPT_URL+"?action=nextRno&cid="+encodeURIComponent(CUR.id)+"&date="+tod();
+    const res = await fetch(url,{method:"GET"});
+    const data = await res.json();
+    if(data.ok && data.rno) return data.rno;
+    return genRnoLocal();
+  }catch(e){ return genRnoLocal(); }
+}
+
+// ─── CLOUD LOAD ──────────────────────────────────────────
+function toIstDateStr(input){
+  if(!input)return "";
+  if(typeof input==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(input))return input;
+  let d = input instanceof Date ? input : new Date(input);
+  if(isNaN(d.getTime())) return String(input).slice(0,10);
+  return d.toLocaleString("en-CA",{timeZone:"Asia/Kolkata",year:"numeric",month:"2-digit",day:"2-digit"});
+}
+
+async function cloudLoad(cid, isAdmin){
+  if(!isConfigured())return null;
+  try{
+    const now = new Date();
+    const month = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+    let url = SCRIPT_URL+"?action=list&month="+month;
+    if(!isAdmin) url += "&cid="+encodeURIComponent(cid);
+    const res = await fetch(url,{method:"GET"});
+    const data = await res.json();
+    if(!data.ok) return null;
+    return data.entries.map(e=>({
+      id:e.rno, cid:e.cid, sname:e.cname,
+      date:toIstDateStr(e.date), time:e.time,
+      rno:e.rno, name:e.payer, addr:e.address||"", mob:e.mobile||"",
+      zone:e.zone, cat:e.cat,
+      amt:Number(e.amount)||0, mode:e.mode,
+      rem:e.notes||"", synced:true
+    }));
+  }catch(err){return null;}
+}
+
+function mergeEntries(cloud, local){
+  const cloudRnos = new Set(cloud.map(e=>e.rno));
+  const localUnsynced = local.filter(e=>!e.synced&&!cloudRnos.has(e.rno));
+  const merged = [...localUnsynced,...cloud];
+  merged.sort((a,b)=>((b.date||"")+" "+(b.time||"")).localeCompare((a.date||"")+" "+(a.time||"")));
+  return merged;
+}
+
+// Loading overlay
+function showLoading(msg){
+  let el=document.getElementById("cloud-loading");
+  if(!el){
+    el=document.createElement("div");
+    el.id="cloud-loading";
+    el.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:14px;font-family:inherit";
+    el.innerHTML='<div style="width:48px;height:48px;border:4px solid #C8E6C9;border-top-color:#1B5E20;border-radius:50%;animation:spin 1s linear infinite"></div><div id="cloud-loading-msg" style="color:#1B5E20;font-weight:700;font-size:14px;letter-spacing:1px"></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
+    document.body.appendChild(el);
+  }
+  document.getElementById("cloud-loading-msg").textContent=msg||"Loading...";
+  el.style.display="flex";
+}
+function hideLoading(){const el=document.getElementById("cloud-loading");if(el)el.style.display="none";}
+
+// Called after successful PIN entry
+async function postLoginSync(){
+  if(!isConfigured()){renderDash();goTo("dash");startRetryTimer();return;}
+  renderDash();
+  goTo("dash");
+}
+
+// ─── ADMIN REFRESH ───────────────────────────────────────
+function startAdminTimer(){
+  if(ADMIN_TIMER) clearInterval(ADMIN_TIMER);
+  ADMIN_TIMER = setInterval(async()=>{
+    if(!CUR||!CUR.admin) return;
+    await refreshAdminData(false);
+  }, 5*60*1000);
+}
+async function refreshAdminData(showLoader){
+  if(!isConfigured()) return;
+  if(showLoader) showLoading("Refreshing...");
+  const cloud = await cloudLoad(CUR.id,true);
+  if(showLoader) hideLoading();
+  if(cloud!==null){
+    ENTRIES=cloud;
+    renderDash();
+    updateRefreshTs();
+  }
+}
+function updateRefreshTs(){
+  const el=document.getElementById("refresh-ts");
+  if(el) el.textContent="Updated: "+new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
+}
+async function manualRefresh(){
+  if(!CUR||!CUR.admin) return;
+  const btn=document.getElementById("btn-refresh");
+  if(btn){btn.textContent="⏳";btn.disabled=true;}
+  await refreshAdminData(false);
+  if(btn){btn.textContent="🔄";btn.disabled=false;}
+  updateRefreshTs();
+}
+
+// ─── CONFIG LOAD ─────────────────────────────────────────
+async function loadConfig(){
+  if(!isConfigured()) return;
+  try{
+    const res = await fetch(SCRIPT_URL+"?action=config",{method:"GET"});
+    const data = await res.json();
+    if(!data.ok||!data.config) return;
+    const c = data.config;
+    if(c.amount_residential) FIXED_AMT.Residential=Number(c.amount_residential)||50;
+    if(c.amount_commercial)  FIXED_AMT.Commercial =Number(c.amount_commercial)||100;
+    if(typeof c.md_whatsapp==="string") MD_WHATSAPP=c.md_whatsapp;
+    if(Array.isArray(c.collectors)&&c.collectors.length>0){
+      const sheetCols=activeCollectors(c.collectors.filter(x=>x&&x.id&&x.pin).map(x=>({
+        id:x.id, name:x.name||x.id, pin:String(x.pin),
+        color:x.color||"#1B5E20", target:Number(x.target)||3000, admin:false
+      })));
+      COLLECTORS=sheetCols;
+    }
+    try{localStorage.setItem("pi_cfg",JSON.stringify({COLLECTORS,FIXED_AMT,MD_WHATSAPP}));}catch(e){}
+  }catch(err){
+    try{
+      const cached=JSON.parse(localStorage.getItem("pi_cfg")||"null");
+      if(cached){
+        if(cached.COLLECTORS) COLLECTORS=activeCollectors(cached.COLLECTORS);
+        if(cached.FIXED_AMT)  FIXED_AMT=cached.FIXED_AMT;
+        if(typeof cached.MD_WHATSAPP!=="undefined") MD_WHATSAPP=cached.MD_WHATSAPP;
+      }
+    }catch(e){}
+  }
+}
+
+// ─── APP INIT ────────────────────────────────────────────
+async function load(){
+  ENTRIES=[];try{localStorage.removeItem("pi_e");}catch(e){}
+  try{
+    const cached=JSON.parse(localStorage.getItem("pi_cfg")||"null");
+    if(cached){
+      if(cached.COLLECTORS) COLLECTORS=activeCollectors(cached.COLLECTORS);
+      if(cached.FIXED_AMT)  FIXED_AMT=cached.FIXED_AMT;
+      if(typeof cached.MD_WHATSAPP!=="undefined") MD_WHATSAPP=cached.MD_WHATSAPP;
+    }
+  }catch(e){}
+  COLLECTORS=activeCollectors(COLLECTORS);
+  clearRemovedCollectorSession();
+  renderCollectorPicker();
+  goTo("login");
+  loadConfig().then(renderCollectorPicker);
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────
+function goTo(sc){
+  if(sc!=="login") checkSessionExpiry();
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("screen-"+sc).classList.add("active");
+  window.scrollTo(0,0);
+  if(sc==="add") renderForm();
+  if(sc==="dash"){renderDash();touchSession();}
+}
+
+function logout(){
+  if(!confirm("Logout from "+CUR.name+"?"))return;
+  if(ADMIN_TIMER){clearInterval(ADMIN_TIMER);ADMIN_TIMER=null;}
+  localStorage.removeItem("pi_c");
+  localStorage.removeItem("pi_last_act");
+  CUR=null; PIN_BUF=""; renderCollectorPicker();
+  clearSessionExpMsg();
+  goTo("login");
+}
+
+// ─── DATE RANGE ──────────────────────────────────────────
+function getDateRange(range){
+  const today=new Date();today.setHours(0,0,0,0);
+  if(range==="today")    return {start:today,end:new Date(today.getTime()+86400000-1)};
+  if(range==="yesterday"){const y=new Date(today.getTime()-86400000);return{start:y,end:new Date(today.getTime()-1)};}
+  if(range==="week"){const ws=new Date(today);ws.setDate(today.getDate()-today.getDay());return{start:ws,end:new Date(today.getTime()+86400000-1)};}
+  if(range==="month"){return{start:new Date(today.getFullYear(),today.getMonth(),1),end:new Date(today.getTime()+86400000-1)};}
+  return {start:new Date(0),end:new Date(today.getTime()+86400000-1)};
+}
+function inRange(entry,range){
+  if(range==="all")return true;
+  const r=getDateRange(range);
+  const ed=new Date((entry.date||"")+"T00:00:00");
+  return ed>=r.start&&ed<=r.end;
+}
+function getMyEntries(){ return CUR&&CUR.admin?ENTRIES:ENTRIES.filter(e=>e.cid===CUR.id); }
+function applySearch(list){
+  if(!SEARCH)return list;
+  const q=SEARCH.toLowerCase();
+  return list.filter(e=>
+    (e.name||"").toLowerCase().includes(q)||
+    (e.mob||"").includes(q)||
+    (e.zone||"").toLowerCase().includes(q)||
+    (e.rno||"").toLowerCase().includes(q)||
+    (e.sname||"").toLowerCase().includes(q)
+  );
+}
+
+// ─── DASHBOARD ───────────────────────────────────────────
+function renderDash(){
+  if(!CUR)return;
+  const isAdmin=!!CUR.admin;
+  const isAcct=!!CUR.accountant;
+  const all=getMyEntries();
+  const todays=all.filter(e=>e.date===tod());
+  const tt=todays.reduce((s,e)=>s+Number(e.amt),0);
+  const ct=todays.filter(e=>e.mode==="Cash").reduce((s,e)=>s+Number(e.amt),0);
+  const ut=todays.filter(e=>e.mode==="UPI").reduce((s,e)=>s+Number(e.amt),0);
+  const mypending=isAdmin?0:ENTRIES.filter(e=>!e.synced&&e.cid===CUR.id).length;
+
+  // Header badges
+  document.getElementById("dash-av").textContent=CUR.name[0];
+  document.getElementById("dash-av").style.background=CUR.color;
+  document.getElementById("admin-badge").style.display=(isAdmin&&!isAcct)?"inline-block":"none";
+  document.getElementById("accountant-badge").style.display=isAcct?"inline-block":"none";
+
+  // Stat box
+  document.getElementById("d-total").textContent="₹"+fmt(tt);
+  document.getElementById("d-cnt").textContent=todays.length+(todays.length===1?" entry":" entries")+(isAdmin?" · all collectors":" collected");
+  document.getElementById("d-cash").textContent="₹"+fmt(ct);
+  document.getElementById("d-upi").textContent="₹"+fmt(ut);
+  document.getElementById("d-supbar").innerHTML=(isAdmin?"Admin View — All Collectors":("Collector: <span>"+CUR.name+"</span>"))+" &nbsp;·&nbsp; "+fmtD(tod());
+
+  // Target bar
+  const tb=document.getElementById("target-bar");
+  if(!isAdmin&&CUR.target>0){
+    tb.style.display="block";
+    const pct=Math.min(100,Math.round((tt/CUR.target)*100));
+    document.getElementById("target-pct").textContent=pct+"%";
+    const fill=document.getElementById("target-bar-fill");
+    fill.style.width=Math.min(100,pct)+"%";
+    fill.className="target-bar-fill"+(tt>=CUR.target?" over":"");
+    document.getElementById("target-val").textContent="₹"+fmt(tt)+" / ₹"+fmt(CUR.target);
+    const rem=CUR.target-tt;
+    document.getElementById("target-rem").textContent=rem>0?("₹"+fmt(rem)+" to go"):"✓ Target hit!";
+  }else{ tb.style.display="none"; }
+
+  // Summary grid
+  const sg=document.getElementById("summary-grid");
+  if(todays.length>0){
+    sg.style.display="grid";
+    const res=todays.filter(e=>e.cat==="Residential");
+    const com=todays.filter(e=>e.cat==="Commercial");
+    document.getElementById("d-res-val").textContent="₹"+fmt(res.reduce((s,e)=>s+Number(e.amt),0));
+    document.getElementById("d-res-cnt").textContent=res.length+(res.length===1?" entry":" entries");
+    document.getElementById("d-com-val").textContent="₹"+fmt(com.reduce((s,e)=>s+Number(e.amt),0));
+    document.getElementById("d-com-cnt").textContent=com.length+(com.length===1?" entry":" entries");
+  }else{ sg.style.display="none"; }
+
+  // Zone breakdown top 5
+  const zb=document.getElementById("zone-bd");
+  if(todays.length>0){
+    const byZone={};
+    todays.forEach(e=>{byZone[e.zone]=(byZone[e.zone]||0)+Number(e.amt);});
+    const sorted=Object.entries(byZone).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    if(sorted.length>0){
+      zb.style.display="block";
+      document.getElementById("zone-bd-list").innerHTML=sorted.map(([z,v])=>`<div class="zone-bd-row"><div class="zone-bd-name">${escapeHtml(z)}</div><div class="zone-bd-val">₹${fmt(v)}</div></div>`).join("");
+    }else{zb.style.display="none";}
+  }else{zb.style.display="none";}
+
+  // Ward coverage (admin/accountant only)
+  if(isAdmin){ renderWardCoverage(todays); }
+  else{ document.getElementById("ward-coverage").style.display="none"; }
+
+  // Refresh row (admin/accountant)
+  const rrow=document.getElementById("refresh-row");
+  if(isAdmin){ rrow.classList.add("show"); }
+  else{ rrow.classList.remove("show"); }
+
+  // Sync bar
+  document.getElementById("warn-config").style.display=isConfigured()?"none":"block";
+  const sb=document.getElementById("sync-bar");
+  if(!isConfigured()){sb.className="sync-bar sync-none";sb.innerHTML="⚠️ Not connected to Google Sheets";sb.onclick=null;}
+  else if(mypending>=4){sb.className="sync-bar sync-pending";sb.innerHTML="⚠️ "+mypending+" not synced — <strong>Tap to sync now</strong>";sb.onclick=flushPending;}
+  else if(mypending>0){sb.className="sync-bar sync-pending";sb.textContent="⚠️ "+mypending+" entr"+(mypending===1?"y":"ies")+" not synced — Tap to sync";sb.onclick=flushPending;}
+  else{sb.className="sync-bar sync-ok";sb.textContent="✅ All synced to Google Sheets";sb.onclick=null;}
+
+  // Buttons
+  document.getElementById("btn-add-entry").style.display=isAdmin?"none":"block";
+  document.getElementById("btn-md").style.display=(isAdmin&&!isAcct)?"block":"none";
+  document.getElementById("btn-export").style.display=isAdmin?"block":"none";
+
+  // Range tabs
+  ["today","yesterday","week","month","all"].forEach(r=>{
+    const el=document.getElementById("rt-"+(r==="yesterday"?"yest":r));
+    if(el) el.className="range-tab"+(RANGE===r?" active":"");
+  });
+
+  // Entry list
+  let list=all.filter(e=>inRange(e,RANGE));
+  list=applySearch(list);
+  list.sort((a,b)=>((b.date||"")+" "+(b.time||"")).localeCompare((a.date||"")+" "+(a.time||"")));
+  const el=document.getElementById("entry-list");
+  if(!list.length){
+    const msg=SEARCH?"No matches found. Try different keywords.":"No entries in this range. Tap + to add one.";
+    el.innerHTML='<div class="empty">'+msg+'</div>';
+    return;
+  }
+  el.innerHTML=list.map(e=>`<div class="card" onclick="openEntry('${(e.rno||"").replace(/'/g,"\\'")}')"><div style="flex:1;min-width:0"><div class="cname">${escapeHtml(e.name)}</div><div class="csub">${escapeHtml(e.zone)} · ${e.cat}${isAdmin?" · "+escapeHtml(e.sname||""):""}</div><div class="crct">${escapeHtml(e.rno||"")}<span class="sync-dot ${e.synced?"sd-ok":"sd-pend"}"></span></div></div><div class="cright"><div class="camt">₹${fmt(e.amt)}</div><div class="pill ${e.mode==="Cash"?"pc":"pu"}">${e.mode}</div><div class="ctime">${fmtD(e.date)} · ${fmtT(e.time)}</div></div></div>`).join("");
+}
+
+// Ward coverage render
+function renderWardCoverage(todays){
+  const el=document.getElementById("ward-coverage");
+  if(!el) return;
+  const wardAmts={};
+  (todays||[]).forEach(e=>{
+    const k=extractWardKey(e.zone);
+    if(k) wardAmts[k]=(wardAmts[k]||0)+Number(e.amt);
+  });
+  const covered=ALL_WARDS_LIST.filter(w=>wardAmts[w.key]>0).sort((a,b)=>(wardAmts[b.key]||0)-(wardAmts[a.key]||0));
+  const uncovered=ALL_WARDS_LIST.filter(w=>!wardAmts[w.key]);
+  const sorted=[...covered,...uncovered];
+  document.getElementById("ward-cov-count").textContent=covered.length+"/"+ALL_WARDS_LIST.length+" wards";
+  document.getElementById("ward-cov-list").innerHTML=sorted.map(w=>{
+    const amt=wardAmts[w.key]||0;
+    const isCov=amt>0;
+    const icon=isCov?"✅":w.pending?"⏳":"⚠️";
+    return `<div class="ward-row"><span class="ward-status">${icon}</span><span class="ward-name">${escapeHtml(w.label)}</span>${isCov?`<span class="ward-amt">₹${fmt(amt)}</span>`:'<span class="ward-amt-none">—</span>'}</div>`;
+  }).join("");
+  el.style.display="block";
+}
+
+function setRange(r){RANGE=r;renderDash();}
+function onSearch(){
+  SEARCH=document.getElementById("search-inp").value.trim();
+  document.getElementById("search-clear").className="search-clear"+(SEARCH?" show":"");
+  renderDash();
+}
+function clearSearch(){document.getElementById("search-inp").value="";SEARCH="";document.getElementById("search-clear").className="search-clear";renderDash();}
+
+function openEntry(rno){
+  const e=ENTRIES.find(x=>x.rno===rno);
+  if(!e)return;
+  LAST=e;
+  document.getElementById("r-icon").textContent="📄";
+  document.getElementById("r-title").textContent="Receipt";
+  document.getElementById("r-sync-sub").textContent="Viewing past entry";
+  document.getElementById("ssr").style.display="none";
+  document.getElementById("btn-add-another").style.display="none";
+  renderReceipt(e);
+  goTo("receipt");
+}
+
+// ─── CSV EXPORT ──────────────────────────────────────────
+function exportCSV(){
+  let list=getMyEntries().filter(e=>inRange(e,RANGE));
+  list=applySearch(list);
+  list.sort((a,b)=>((a.date||"")+" "+(a.time||"")).localeCompare((b.date||"")+" "+(b.time||"")));
+  const headers=["Receipt No","Date","Time","Collector","Category","Zone","Payer Name","Address","Amount","Payment Mode","Mobile","Remarks","Synced"];
+  const rows=list.map(e=>[e.rno,fmtD(e.date),fmtT(e.time),e.sname||e.cid,e.cat,e.zone,e.name,e.addr||"",e.amt,e.mode,e.mob||"",e.rem||"",e.synced?"Yes":"No"]);
+  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v||"").replace(/"/g,'""')+'"').join(",")).join("\n");
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  const now=new Date();
+  a.download="Pinaka_"+now.getFullYear()+String(now.getMonth()+1).padStart(2,"0")+String(now.getDate()).padStart(2,"0")+".csv";
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ─── FORM ────────────────────────────────────────────────
+function renderForm(){
+  if(!CUR)return;
+  CAT="Residential";MODE="Cash";
+  ["f-name","f-addr","f-mob","f-amt","f-rem"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("f-zone").innerHTML=ALL_ZONES.map(z=>`<option value="${escapeHtml(z)}">${escapeHtml(z)}</option>`).join("");
+  setCat("Residential");setMode("Cash");
+  document.getElementById("dup-warn").classList.remove("show");
+  closeAutocomp();
+  const btn=document.getElementById("submit-btn");
+  btn.disabled=false;btn.textContent="✓ CONFIRM & GENERATE RECEIPT";
+}
+function setCat(c){CAT=c;document.getElementById("tog-res").className="tog"+(c==="Residential"?" active":"");document.getElementById("tog-com").className="tog"+(c==="Commercial"?" active":"");}
+function setMode(m){MODE=m;document.getElementById("tog-cash").className="tog"+(m==="Cash"?" active":"");document.getElementById("tog-upi").className="tog"+(m==="UPI"?" active":"");}
+
+// Autocomplete
+function getPayerHistory(){
+  const seen=new Map();
+  [...ENTRIES].sort((a,b)=>((b.date||"")+" "+(b.time||"")).localeCompare((a.date||"")+" "+(a.time||""))).forEach(e=>{
+    const k=(e.name||"").toLowerCase().trim();
+    if(k&&!seen.has(k)) seen.set(k,{name:e.name,addr:e.addr||"",mob:e.mob||"",zone:e.zone||"",cat:e.cat||"Residential"});
+  });
+  return Array.from(seen.values());
+}
+function onNameInput(){
+  const v=document.getElementById("f-name").value.trim().toLowerCase();
+  const list=document.getElementById("autocomp-list");
+  if(v.length<2){list.classList.remove("show");list.innerHTML="";return;}
+  const matches=getPayerHistory().filter(p=>p.name.toLowerCase().includes(v)).slice(0,6);
+  if(matches.length===0){list.classList.remove("show");return;}
+  list.innerHTML=matches.map((p,i)=>`<div class="autocomp-item" onclick="pickPayer(${i})"><div class="autocomp-name">${escapeHtml(p.name)}</div><div class="autocomp-meta">${escapeHtml(p.zone)}${p.mob?" · "+escapeHtml(p.mob):""}${p.addr?" · "+escapeHtml(p.addr):""}</div></div>`).join("");
+  window._AC_MATCHES=matches;
+  list.classList.add("show");
+  checkDuplicate();
+}
+function pickPayer(i){
+  const p=window._AC_MATCHES[i];if(!p)return;
+  document.getElementById("f-name").value=p.name;
+  document.getElementById("f-addr").value=p.addr;
+  document.getElementById("f-mob").value=p.mob;
+  if(p.zone){const z=document.getElementById("f-zone");for(let o of z.options){if(o.value===p.zone){z.value=p.zone;break;}}}
+  if(p.cat)setCat(p.cat);
+  closeAutocomp();checkDuplicate();
+}
+function closeAutocomp(){document.getElementById("autocomp-list").classList.remove("show");}
+
+// 7-day duplicate check (existing behavior, name or mobile)
+function checkDuplicate(){
+  const name=document.getElementById("f-name").value.trim().toLowerCase();
+  const mob=document.getElementById("f-mob").value.trim();
+  const warn=document.getElementById("dup-warn");
+  if(!name&&!mob){warn.classList.remove("show");return;}
+  const sevenAgo=new Date();sevenAgo.setDate(sevenAgo.getDate()-7);sevenAgo.setHours(0,0,0,0);
+  const dup=ENTRIES.find(e=>{
+    if(new Date((e.date||"")+"T00:00:00")<sevenAgo)return false;
+    return (name&&(e.name||"").toLowerCase().trim()===name)||(mob&&mob.length>=6&&(e.mob||"").trim()===mob);
+  });
+  warn.classList.toggle("show",!!dup);
+}
+
+// 10-minute same payer+zone duplicate check (new)
+function isDuplicate10min(name, zone){
+  if(!name||!zone) return false;
+  const tenAgo=Date.now()-(10*60*1000);
+  const nl=name.toLowerCase().trim();
+  return ENTRIES.some(e=>typeof e.id==="number"&&e.id>tenAgo&&(e.name||"").toLowerCase().trim()===nl&&e.zone===zone);
+}
+
+// ─── SUBMIT ──────────────────────────────────────────────
+async function submitEntry(){
+  const name=document.getElementById("f-name").value.trim();
+  const zone=document.getElementById("f-zone").value;
+  const amt=parseInt(document.getElementById("f-amt").value)||0;
+  if(!name){alert("Please enter Name / Shop Name.");return;}
+  if(!amt){alert("Please enter Amount.");return;}
+
+  // 10-min duplicate warning
+  if(isDuplicate10min(name,zone)){
+    const proceed=confirm("⚠️ Possible duplicate\n\nSame payer in the same ward within the last 10 minutes.\n\nContinue anyway?");
+    if(!proceed)return;
+  }
+
+  // Disable button + spinner
+  const btn=document.getElementById("submit-btn");
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span> Saving...';
+
+  // Get server-assigned receipt number
+  const rno=await getServerRno();
+
+  const entry={
+    id:Date.now(), cid:CUR.id, sname:CUR.name,
+    date:tod(),
+    time:new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"}),
+    rno, name,
+    addr:document.getElementById("f-addr").value.trim(),
+    mob:document.getElementById("f-mob").value.trim(),
+    zone, cat:CAT, amt, mode:MODE,
+    rem:document.getElementById("f-rem").value.trim(),
+    synced:false
+  };
+  if(!isConfigured()){
+    btn.disabled=false;btn.textContent="✓ CONFIRM & GENERATE RECEIPT";
+    alert("Google Sheets is not connected. Entry was not saved.");
+    return;
+  }
+  const ok=await syncEntry(entry);
+  if(!ok){
+    btn.disabled=false;btn.textContent="✓ CONFIRM & GENERATE RECEIPT";
+    alert("Could not save to Google Sheets. Please check internet and try again.");
+    return;
+  }
+  entry.synced=true;
+  ENTRIES.unshift(entry);LAST=entry;
+
+  // Navigate to receipt
+  document.getElementById("r-icon").textContent="✅";
+  document.getElementById("r-title").textContent="Collection Recorded";
+  document.getElementById("r-sync-sub").textContent="Syncing...";
+  document.getElementById("ssr").style.display="block";
+  document.getElementById("ssr").className="sync-status-receipt ssr-pend";
+  document.getElementById("ssr").innerHTML='<span class="spinner"></span> Sending to Google Sheets...';
+  document.getElementById("btn-add-another").style.display="block";
+  renderReceipt(entry);
+  goTo("receipt");
+
+  // Re-enable button after navigation
+  btn.disabled=false;btn.textContent="✓ CONFIRM & GENERATE RECEIPT";
+
+  // Confirmed save
+  const ssr=document.getElementById("ssr");
+  const rsub=document.getElementById("r-sync-sub");
+  ssr.className="sync-status-receipt ssr-ok";ssr.textContent="✅ Saved to Google Sheets";rsub.textContent="Saved successfully.";
+}
+
+// ─── RECEIPT RENDER ──────────────────────────────────────
+function renderReceipt(e){
+  const rows=[
+    ["Name",e.name,false],["Address",e.addr||"—",false],["Mobile",e.mob||"—",false],
+    ["Zone",e.zone,false],["Type",e.cat,false],["Amount","₹"+fmt(e.amt),true],
+    ["Mode",e.mode,false],["Date",fmtD(e.date)+" · "+fmtT(e.time),false],["Collector",e.sname,false]
+  ];
+  if(e.rem)rows.push(["Remarks",e.rem,false]);
+  document.getElementById("rbox-content").innerHTML=`<div class="rno">${escapeHtml(e.rno||"")}</div>`+rows.map(([l,v,hi])=>`<div class="rrow"><span class="rlbl">${l}</span><span class="${hi?"rhi":"rval"}">${escapeHtml(String(v))}</span></div>`).join("");
+}
+
+// ─── PRINT ───────────────────────────────────────────────
+function printReceipt(){
+  if(!LAST)return;
+  const e=LAST;
+  const addrRow=(e.addr&&e.addr.trim())?`<div class="r"><span class="k">Address</span><span class="v">${escapeHtml(e.addr)}</span></div>`:"";
+  const mobRow=(e.mob&&e.mob.trim())?`<div class="r"><span class="k">Mobile</span><span class="v">${escapeHtml(e.mob)}</span></div>`:"";
+  const remRow=(e.rem&&e.rem.trim())?`<div class="r"><span class="k">Remarks</span><span class="v">${escapeHtml(e.rem)}</span></div>`:"";
+  const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Receipt ${escapeHtml(e.rno||"")}</title>
+<style>@page{size:58mm auto;margin:0}*{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}html,body{width:58mm;background:#fff;color:#000;font-family:"Courier New","Lucida Console",monospace;font-weight:700}body{padding:2mm 3mm 8mm}.eq{text-align:center;font-size:11px;font-weight:900;line-height:1}.dash{text-align:center;font-size:11px;margin:1px 0;line-height:1}.org{text-align:center;font-size:17px;font-weight:900;letter-spacing:1.5px;margin:1px 0}.city{text-align:center;font-size:16px;font-weight:900;letter-spacing:3px;margin:1px 0 2px}.sub{text-align:center;font-size:11px;letter-spacing:0.5px;margin:1px 0}.title{text-align:center;font-size:12px;font-weight:900;letter-spacing:1px;margin:1px 0 2px}.r{display:flex;font-size:11px;font-weight:700;margin:1px 0;line-height:1.55}.k{flex:0 0 38%}.v{flex:1;text-align:right;word-break:break-word}.box{text-align:center;margin:4px 0 2px;padding:4px 0;border-top:2px solid #000;border-bottom:2px solid #000}.box-l{font-size:10px;font-weight:700;letter-spacing:2px}.box-n{font-size:20px;font-weight:900;letter-spacing:1px;margin:2px 0;line-height:1.1}.box-m{font-size:11px;font-weight:700;letter-spacing:0.5px}.foot{text-align:center;font-size:10px;font-weight:700;margin-top:2px;line-height:1.5}.foot-b{font-weight:900;font-size:11px;margin-top:2px}.tail{text-align:center;font-size:9px;font-weight:600;margin-top:2px}</style>
+</head><body>
+<div class="eq">================================</div>
+<div class="org">NAGAR PALIKA PARISHAD</div>
+<div class="city">FATEHPUR</div>
+<div class="dash">--------------------------------</div>
+<div class="sub">PINAKA INFRA (MSW)</div>
+<div class="title">USER CHARGE RECEIPT</div>
+<div class="eq">================================</div>
+<div class="r"><span class="k">Receipt No</span><span class="v">${escapeHtml(e.rno||"")}</span></div>
+<div class="r"><span class="k">Date</span><span class="v">${fmtD(e.date)}</span></div>
+<div class="r"><span class="k">Time</span><span class="v">${fmtT(e.time)}</span></div>
+<div class="dash">--------------------------------</div>
+<div class="r"><span class="k">Name</span><span class="v">${escapeHtml(e.name)}</span></div>
+${addrRow}${mobRow}
+<div class="r"><span class="k">Zone</span><span class="v">${escapeHtml(e.zone)}</span></div>
+<div class="r"><span class="k">Type</span><span class="v">${e.cat}</span></div>
+<div class="box"><div class="box-l">AMOUNT PAID</div><div class="box-n">Rs.${fmt(e.amt)}/-</div><div class="box-m">Mode: ${e.mode}</div></div>
+<div class="r"><span class="k">Collected by</span><span class="v">${escapeHtml(e.sname)}</span></div>
+${remRow}
+<div class="eq">================================</div>
+<div class="foot foot-b">Thank you for your payment</div>
+<div class="foot">Keep Fatehpur Clean &amp; Green</div>
+<div class="foot" style="margin-top:3px">Please retain this receipt for your records.</div>
+<div class="eq" style="margin-top:3px">================================</div>
+<div class="tail">Computer-generated receipt</div>
+<div style="height:8mm"></div>
+</body></html>`;
+  const w=window.open("","_blank","width=400,height=700");
+  if(!w){alert("Please allow pop-ups to print receipt.");return;}
+  w.document.open();w.document.write(html);w.document.close();
+  const doPrint=()=>{try{w.focus();w.print();setTimeout(()=>{try{w.close();}catch(e){}},1000);}catch(err){alert("Print failed: "+err.message);}};
+  if(w.document.readyState==="complete"){setTimeout(doPrint,200);}else{w.onload=()=>setTimeout(doPrint,200);setTimeout(doPrint,600);}
+}
+
+// ─── WHATSAPP INDIVIDUAL RECEIPT ─────────────────────────
+function shareWhatsApp(){
+  if(!LAST)return;
+  const e=LAST;
+  const msg=`*PINAKA INFRA*\n*User Charge Receipt*\n━━━━━━━━━━━━━━━━\nReceipt No: ${e.rno}\nDate: ${fmtD(e.date)}  ${fmtT(e.time)}\n━━━━━━━━━━━━━━━━\nName: ${e.name}\nAddress: ${e.addr||"—"}\nMobile: ${e.mob||"—"}\nZone: ${e.zone}\nType: ${e.cat}\n━━━━━━━━━━━━━━━━\n*Amount: ₹${fmt(e.amt)}*\nPayment: ${e.mode}\n━━━━━━━━━━━━━━━━\nCollected by: ${e.sname}${e.rem?"\nRemarks: "+e.rem:""}\n━━━━━━━━━━━━━━━━\n_Nagar Palika Parishad, Fatehpur_\n_Pinaka Infra MSW Project_`;
+  const url=MD_WHATSAPP?("https://wa.me/"+MD_WHATSAPP+"?text="):"https://wa.me/?text=";
+  window.open(url+encodeURIComponent(msg),"_blank");
+}
+
+// ─── MD DAILY SUMMARY ────────────────────────────────────
+function sendDailySummary(){
+  const todays=ENTRIES.filter(e=>e.date===tod());
+  const today=fmtD(tod());
+  const total=todays.reduce((s,e)=>s+Number(e.amt),0);
+  const cash=todays.filter(e=>e.mode==="Cash").reduce((s,e)=>s+Number(e.amt),0);
+  const upi=todays.filter(e=>e.mode==="UPI").reduce((s,e)=>s+Number(e.amt),0);
+
+  const byCol={};
+  for(const e of todays){
+    if(!byCol[e.cid])byCol[e.cid]={name:e.sname||e.cid,count:0,total:0};
+    byCol[e.cid].count++;byCol[e.cid].total+=Number(e.amt);
+  }
+  for(const c of COLLECTORS){
+    if(c.admin)continue;
+    if(!byCol[c.id])byCol[c.id]={name:c.name,count:0,total:0};
+  }
+
+  const res=todays.filter(e=>e.cat==="Residential");
+  const com=todays.filter(e=>e.cat==="Commercial");
+
+  // Ward coverage
+  const wardAmts={};
+  todays.forEach(e=>{const k=extractWardKey(e.zone);if(k)wardAmts[k]=(wardAmts[k]||0)+Number(e.amt);});
+  const covWards=ALL_WARDS_LIST.filter(w=>wardAmts[w.key]>0).sort((a,b)=>(wardAmts[b.key]||0)-(wardAmts[a.key]||0));
+  const uncWards=ALL_WARDS_LIST.filter(w=>!wardAmts[w.key]);
+
+  let msg=`*PINAKA INFRA - Daily Report*\n_${today}_\n━━━━━━━━━━━━━━━━\n`;
+  msg+=`*Total: ₹${fmt(total)}* (${todays.length} entries)\nCash: ₹${fmt(cash)}  |  UPI: ₹${fmt(upi)}\n`;
+  msg+=`━━━━━━━━━━━━━━━━\n*By Collector:*\n`;
+  Object.values(byCol).sort((a,b)=>b.total-a.total).forEach(c=>{msg+=`• ${c.name}: ${c.count} entries · ₹${fmt(c.total)}\n`;});
+  msg+=`━━━━━━━━━━━━━━━━\n*By Category:*\n`;
+  msg+=`• Residential: ${res.length} · ₹${fmt(res.reduce((s,e)=>s+Number(e.amt),0))}\n`;
+  msg+=`• Commercial: ${com.length} · ₹${fmt(com.reduce((s,e)=>s+Number(e.amt),0))}\n`;
+  msg+=`━━━━━━━━━━━━━━━━\n*Ward Coverage (${covWards.length}/${ALL_WARDS_LIST.length}):*\n`;
+  if(covWards.length>0) msg+=covWards.map(w=>`✅ ${w.label}`).join("\n")+"\n";
+  if(uncWards.length>0) msg+=uncWards.map(w=>`⚠️ ${w.label}`).join("\n")+"\n";
+  msg+=`━━━━━━━━━━━━━━━━\n_Generated: ${new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})}_\n_Nagar Palika Parishad, Fatehpur_`;
+
+  const url=MD_WHATSAPP?("https://wa.me/"+MD_WHATSAPP+"?text="):"https://wa.me/?text=";
+  window.open(url+encodeURIComponent(msg),"_blank");
+}
+
+load();
+</script>
+</body>
+</html>
+
+
+

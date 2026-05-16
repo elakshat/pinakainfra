@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MSW Complaint Portal | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/complaints/assets/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="/complaints" aria-label="MSW Complaint Portal">
+          <span class="brand-mark">MSW</span>
+          <span>
+            <strong>MSW Complaint Portal</strong>
+            <small class="font-hi">प्रशासन डैशबोर्ड</small>
+          </span>
+        </a>
+        <nav class="top-nav" aria-label="Primary">
+          <a href="/complaints">Citizen</a>
+          <a class="active" href="/complaints/admin.html">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page page-wide">
+      <section class="toolbar">
+        <div>
+          <h1>Admin dashboard</h1>
+          <p class="muted">Review complaints, assign officers, and update status.</p>
+        </div>
+        <span class="mode-pill" id="backend-mode">Starting...</span>
+      </section>
+
+      <section id="login-section" class="panel login-panel">
+        <h2>Admin login</h2>
+        <div class="field">
+          <label for="admin-mobile">Admin mobile</label>
+          <input type="tel" id="admin-mobile" maxlength="10" inputmode="numeric" />
+          <p class="error hidden" id="err-login"></p>
+        </div>
+        <button type="button" class="btn" id="btn-send-otp">Login</button>
+        <p class="hint">Admin mobile is configured in <code>js/config.js</code>.</p>
+      </section>
+
+      <section id="dashboard" class="hidden">
+        <div class="dashboard-head">
+          <div class="stats" id="stats-bar"></div>
+          <button type="button" class="btn btn-secondary" id="btn-logout">Logout</button>
+        </div>
+
+        <section class="panel filter-panel">
+          <div class="field">
+            <label for="filter-from">From</label>
+            <input type="date" id="filter-from" />
+          </div>
+          <div class="field">
+            <label for="filter-to">To</label>
+            <input type="date" id="filter-to" />
+          </div>
+          <button type="button" class="btn btn-secondary" id="filter-clear">Clear</button>
+        </section>
+
+        <div id="complaint-list" class="complaint-list"></div>
+      </section>
+    </main>
+
+    <div id="admin-otp-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+      <div class="modal">
+        <h2>Admin OTP</h2>
+        <p class="hint" id="admin-otp-help">Demo mode: enter any 6 digits.</p>
+        <form id="admin-otp-form" class="otp-form">
+          <input type="text" id="admin-otp-input" maxlength="6" inputmode="numeric" aria-label="OTP" />
+          <p class="error hidden" id="err-admin-otp"></p>
+          <div class="button-row">
+            <button type="button" class="btn btn-secondary" id="admin-otp-cancel">Cancel</button>
+            <button type="submit" class="btn">Verify</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="recaptcha-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="/complaints/js/config.js"></script>
+    <script src="/complaints/js/otp.js"></script>
+    <script src="/complaints/js/store.js"></script>
+    <script src="/complaints/js/admin.js"></script>
+  </body>
+</html>

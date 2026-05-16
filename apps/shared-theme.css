@@ -1,0 +1,620 @@
+/* Pinaka Infra shared operations theme.
+   This file intentionally overrides only visual styling, not app behavior. */
+:root {
+  --pinaka-green-900: #0f3d2a;
+  --pinaka-green-800: #14532d;
+  --pinaka-green-700: #166534;
+  --pinaka-green-600: #15803d;
+  --pinaka-green-100: #dcfce7;
+  --pinaka-green-50: #f0fdf4;
+  --pinaka-ink: #17211b;
+  --pinaka-muted: #66736b;
+  --pinaka-line: #dce5df;
+  --pinaka-panel: #ffffff;
+  --pinaka-page: #f5f8f6;
+  --pinaka-blue: #2563eb;
+  --pinaka-amber: #b7791f;
+  --pinaka-red: #dc2626;
+  --pinaka-shadow: 0 10px 26px rgba(16, 42, 28, .08);
+  --pinaka-radius: 8px;
+
+  --primary: var(--pinaka-green-700) !important;
+  --primary-pale: var(--pinaka-green-50) !important;
+  --primary-border: #a7d7b5 !important;
+  --bg: var(--pinaka-page) !important;
+  --surface: var(--pinaka-panel) !important;
+  --surface2: #eef4f0 !important;
+  --border: var(--pinaka-line) !important;
+  --border2: #cbd8d0 !important;
+  --text: var(--pinaka-ink) !important;
+  --text2: #33463b !important;
+  --text3: var(--pinaka-muted) !important;
+  --shadow2: var(--pinaka-shadow) !important;
+
+  --gd: var(--pinaka-green-700) !important;
+  --gb: var(--pinaka-page) !important;
+  --gbr: var(--pinaka-line) !important;
+  --td: var(--pinaka-ink) !important;
+  --tm: #33463b !important;
+  --tmu: var(--pinaka-muted) !important;
+  --r: var(--pinaka-radius) !important;
+  --sh: var(--pinaka-shadow) !important;
+
+  --p: var(--pinaka-green-700) !important;
+  --pp: var(--pinaka-green-50) !important;
+  --pb: #a7d7b5 !important;
+  --s: var(--pinaka-panel) !important;
+  --s2: #eef4f0 !important;
+  --t: var(--pinaka-ink) !important;
+  --t2: #33463b !important;
+  --t3: var(--pinaka-muted) !important;
+  --b: var(--pinaka-line) !important;
+  --rd: var(--pinaka-red) !important;
+}
+
+* {
+  letter-spacing: 0 !important;
+}
+
+html,
+body {
+  background: var(--pinaka-page) !important;
+  color: var(--pinaka-ink) !important;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif !important;
+}
+
+body {
+  max-width: 860px !important;
+  margin: 0 auto !important;
+}
+
+.app {
+  max-width: 860px !important;
+}
+
+.screen,
+.scr,
+.sc {
+  background: var(--pinaka-page) !important;
+}
+
+.hdr,
+.tbar,
+.fhdr,
+.login-header,
+.home-hdr,
+.prev-head {
+  background: linear-gradient(180deg, var(--pinaka-green-800), var(--pinaka-green-700)) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.08) inset, 0 8px 20px rgba(15,61,42,.16) !important;
+}
+
+.hdr,
+.tbar,
+.fhdr {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  min-height: 64px !important;
+  padding: 12px 16px !important;
+}
+
+.hdr-title,
+.hdr-t,
+.tbar-t,
+.fht,
+.login-title,
+.home-title,
+.home-t,
+.brand-title {
+  font-weight: 800 !important;
+}
+
+.hdr-sub,
+.hdr-s,
+.tbar-s,
+.login-sub,
+.login-tag,
+.home-sub,
+.home-s {
+  color: rgba(255,255,255,.72) !important;
+  text-transform: none !important;
+}
+
+.home-s {
+  color: var(--pinaka-muted) !important;
+}
+
+.login-header,
+.home-hdr {
+  border-radius: 0 0 18px 18px !important;
+}
+
+.pin-section,
+.hbody,
+.home-acts,
+.auth-opts,
+.form-w,
+.fw {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit !important;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Fuel app visual alignment with the Maintenance app. */
+.fuel-maintenance-ui .login-logos,
+.fuel-maintenance-ui .hdr-logos {
+  display: none !important;
+}
+
+.fuel-maintenance-ui .login-tag {
+  display: none !important;
+}
+
+.fuel-maintenance-ui .login-header {
+  padding: 36px 20px 30px !important;
+}
+
+.fuel-maintenance-ui .login-title {
+  font-size: 24px !important;
+  line-height: 1.18 !important;
+  margin-top: 0 !important;
+}
+
+.fuel-maintenance-ui .login-sub {
+  color: rgba(255,255,255,.72) !important;
+  font-size: 12px !important;
+  letter-spacing: 0 !important;
+  margin-top: 8px !important;
+  text-transform: none !important;
+}
+
+.fuel-maintenance-ui .hdr {
+  gap: 12px !important;
+}
+
+.fuel-maintenance-ui .logo {
+  font-size: 18px !important;
+  line-height: 1.15 !important;
+}
+
+.fuel-maintenance-ui .logo-sub {
+  color: rgba(255,255,255,.72) !important;
+  font-size: 11px !important;
+  letter-spacing: 0 !important;
+  margin-top: 3px !important;
+}
+
+/* Staff Joining visual alignment with the Maintenance app. */
+.joining-maintenance-ui .logos,
+.joining-maintenance-ui .logo,
+.joining-maintenance-ui .logo-sep {
+  display: none !important;
+}
+
+.joining-maintenance-ui #scHome .home-txt {
+  background: linear-gradient(180deg, var(--pinaka-green-800), var(--pinaka-green-700)) !important;
+  border-radius: 0 0 18px 18px !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.08) inset, 0 8px 20px rgba(15,61,42,.16) !important;
+  margin: 0 0 24px !important;
+  padding: 36px 20px 30px !important;
+  text-align: center !important;
+}
+
+.joining-maintenance-ui #scHome .home-t {
+  color: #fff !important;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  line-height: 1.18 !important;
+}
+
+.joining-maintenance-ui #scHome .home-s {
+  color: rgba(255,255,255,.72) !important;
+  font-size: 12px !important;
+  margin-top: 8px !important;
+}
+
+.joining-maintenance-ui .hdr {
+  gap: 12px !important;
+}
+
+.btn,
+.btn-p,
+.btn-o,
+.btn-wa,
+.btn-csv,
+.btn-print,
+.btn-exp,
+.btn-md,
+.btn-sub,
+.btn-sm,
+.modal-btn-save,
+.modal-btn-cancel,
+.admin-action-btn,
+.admin-del-btn,
+.hdr-back,
+.btn-back,
+.bb,
+.fpill,
+.tab,
+.modal-tog,
+.tog,
+.cat,
+.auth-btn,
+.user-select-btn {
+  border-radius: var(--pinaka-radius) !important;
+  min-height: 44px !important;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease !important;
+}
+
+.btn-p,
+.btn-sub,
+.btn.bp,
+.bp.btn,
+.modal-btn-save,
+.btn-sm.green {
+  background: var(--pinaka-green-700) !important;
+  border-color: var(--pinaka-green-700) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(22,101,52,.18) !important;
+}
+
+.btn-o,
+.btn.bo,
+.bo.btn,
+.btn-print,
+.btn-exp,
+.btn-csv,
+.modal-btn-cancel,
+.btn-sm,
+.auth-btn,
+.user-select-btn {
+  background: var(--pinaka-panel) !important;
+  border: 1px solid var(--pinaka-line) !important;
+  color: var(--pinaka-green-800) !important;
+  box-shadow: 0 4px 12px rgba(16,42,28,.05) !important;
+}
+
+.btn-wa,
+.bg {
+  background: #1f9d55 !important;
+  color: #fff !important;
+  border: 1px solid #1f9d55 !important;
+}
+
+.btn-csv {
+  color: var(--pinaka-blue) !important;
+}
+
+.btn-md,
+.btn-amber {
+  background: #fff8e1 !important;
+  color: #805400 !important;
+  border: 1px solid #f2d27c !important;
+}
+
+.btn:active,
+.btn-p:active,
+.btn-o:active,
+.btn-wa:active,
+.btn-csv:active,
+.btn-print:active,
+.btn-exp:active,
+.btn-md:active,
+.btn-sub:active,
+.btn-sm:active,
+.auth-btn:active,
+.user-select-btn:active,
+.cat:active,
+.tab:active {
+  transform: scale(.99) !important;
+}
+
+.tab,
+.tab-row .tab,
+.tab-bar .tab,
+.tabs .tab,
+.fpill,
+.range-tab {
+  background: var(--pinaka-panel) !important;
+  border: 1px solid var(--pinaka-line) !important;
+  color: var(--pinaka-muted) !important;
+  box-shadow: none !important;
+}
+
+.tab.active,
+.tab.on,
+.fpill.on,
+.range-tab.active,
+.modal-tog.active {
+  background: var(--pinaka-green-700) !important;
+  border-color: var(--pinaka-green-700) !important;
+  color: #fff !important;
+}
+
+.stat-box,
+.tkamt {
+  background: linear-gradient(180deg, var(--pinaka-green-800), var(--pinaka-green-700)) !important;
+  border-radius: var(--pinaka-radius) !important;
+  box-shadow: var(--pinaka-shadow) !important;
+}
+
+.stat-mini,
+.stat-info {
+  border-radius: var(--pinaka-radius) !important;
+  background: rgba(255,255,255,.14) !important;
+}
+
+.card,
+.vcard,
+.lcard,
+.log-card,
+.trip-card,
+.tk,
+.prev-card,
+.scard,
+.cat,
+.admin-row,
+.receipt-box,
+.vehicle-info,
+.running-box,
+.card-list > *,
+.summary-card,
+.info-card,
+.user-select-btn,
+.auth-btn {
+  background: var(--pinaka-panel) !important;
+  border: 1px solid var(--pinaka-line) !important;
+  border-radius: var(--pinaka-radius) !important;
+  box-shadow: var(--pinaka-shadow) !important;
+}
+
+.user-select-list,
+.auth-opts {
+  gap: 10px !important;
+}
+
+.user-select-btn,
+.auth-btn {
+  width: 100% !important;
+  padding: 14px !important;
+  align-items: center !important;
+}
+
+.user-select-avatar,
+.auth-av,
+.sav,
+.hdr-logo-img,
+.login-logo,
+.login-logo-wrap {
+  border-radius: var(--pinaka-radius) !important;
+}
+
+.user-select-avatar,
+.auth-av,
+.sav,
+.suc-icon {
+  background: var(--pinaka-green-700) !important;
+  color: #fff !important;
+}
+
+.fld,
+.field,
+.form-field {
+  margin-bottom: 14px !important;
+}
+
+.flbl,
+.fl,
+.modal-flbl,
+.field label,
+.sec,
+.slbl {
+  color: var(--pinaka-muted) !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+}
+
+input,
+select,
+textarea,
+.finp,
+.fsel,
+.ftxt,
+.fi,
+.fsel,
+.fta,
+.vbtn,
+.vsi,
+.search-inp,
+.modal-inp,
+.veh-trigger,
+.veh-search {
+  background: var(--pinaka-panel) !important;
+  border: 1px solid var(--pinaka-line) !important;
+  border-radius: var(--pinaka-radius) !important;
+  color: var(--pinaka-ink) !important;
+  min-height: 44px !important;
+  box-shadow: none !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.finp:focus,
+.fsel:focus,
+.ftxt:focus,
+.fi:focus,
+.fta:focus,
+.vbtn:focus,
+.search-inp:focus,
+.modal-inp:focus,
+.veh-search:focus {
+  border-color: var(--pinaka-green-600) !important;
+  outline: 3px solid rgba(22,128,60,.14) !important;
+}
+
+.search-box {
+  border-radius: var(--pinaka-radius) !important;
+}
+
+.modal {
+  border-radius: 14px 14px 0 0 !important;
+  background: var(--pinaka-panel) !important;
+}
+
+.modal-overlay {
+  background: rgba(10, 20, 14, .46) !important;
+}
+
+.syncbar,
+.sync-bar,
+.who,
+.wbar,
+.fbar,
+.pend-box,
+.dup-warn {
+  border-radius: var(--pinaka-radius) !important;
+  border: 1px solid var(--pinaka-line) !important;
+}
+
+.syncok,
+.sync-ok,
+.age-ok,
+.ba,
+.st-paid,
+.vs-ok,
+.sd-ok,
+.eff-ok {
+  color: #166534 !important;
+}
+
+.st-pend,
+.vs-pend,
+.sync-pending {
+  color: var(--pinaka-amber) !important;
+}
+
+.pin-error,
+.error,
+.age-no,
+.br,
+.lc-flag,
+.eff-danger {
+  color: var(--pinaka-red) !important;
+}
+
+.empty {
+  color: var(--pinaka-muted) !important;
+  text-transform: none !important;
+}
+
+.mrf-connect-card {
+  margin-top: 18px;
+  padding: 14px;
+  background: var(--pinaka-panel);
+  border: 1px solid var(--pinaka-line);
+  border-radius: var(--pinaka-radius);
+  box-shadow: var(--pinaka-shadow);
+}
+
+.mrf-connect-title {
+  color: var(--pinaka-ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mrf-connect-sub {
+  margin-top: 4px;
+  color: var(--pinaka-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.mrf-url-input {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.mrf-connect-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.mrf-connect-btn {
+  min-height: 40px;
+  border: 1px solid var(--pinaka-line);
+  border-radius: var(--pinaka-radius);
+  background: var(--pinaka-panel);
+  color: var(--pinaka-green-800);
+  font-weight: 800;
+}
+
+.mrf-connect-btn.primary {
+  background: var(--pinaka-green-700);
+  border-color: var(--pinaka-green-700);
+  color: #fff;
+}
+
+.mrf-connect-btn.danger {
+  color: var(--pinaka-red);
+}
+
+.mrf-debug-result {
+  display: none;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: var(--pinaka-radius);
+  background: var(--pinaka-green-50);
+  border: 1px solid #a7d7b5;
+  color: var(--pinaka-green-800);
+  font-size: 12px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mrf-debug-result.error {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: var(--pinaka-red) !important;
+}
+
+.fbot,
+.flash {
+  max-width: 860px !important;
+}
+
+.fbot {
+  background: rgba(245,248,246,.96) !important;
+  border-top: 1px solid var(--pinaka-line) !important;
+}
+
+@media (min-width: 720px) {
+  .cat-grid,
+  .stat-grid,
+  .f2 {
+    gap: 14px !important;
+  }
+
+  .hbody,
+  .home-acts,
+  .auth-opts,
+  .form-w,
+  .fw,
+  .pin-section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}

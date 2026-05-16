@@ -1,0 +1,595 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Pinaka Infra â€” Staff Joining</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+:root{--gd:#1B5E20;--gb:#F0F7F0;--gbr:#C8E6C9;--td:#1A1A1A;--tm:#4A4A4A;--tmu:#888;--r:10px;--sh:0 2px 12px rgba(27,94,32,.09)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100vh;background:var(--gb);font-family:'DM Sans',sans-serif;color:var(--td)}
+.app{max-width:480px;margin:0 auto;min-height:100vh}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:100;background:var(--gd);color:#fff;padding:13px 16px;display:flex;align-items:center;gap:12px}
+.hdr.hide{display:none}
+.hdr-back{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:0;width:28px;flex-shrink:0}
+.hdr-body{flex:1;min-width:0}
+.hdr-title{font-size:15px;font-weight:700}
+.hdr-sub{font-size:11px;opacity:.72;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* SCREENS */
+.sc{display:none}.sc.on{display:block}
+
+/* HOME */
+.home-txt{text-align:center;padding:0 16px 32px}
+.home-t{font-size:21px;font-weight:700;color:var(--gd)}
+.home-s{font-size:13px;color:var(--tmu);margin-top:5px}
+.home-acts{padding:0 16px;display:flex;flex-direction:column;gap:12px}
+
+/* BUTTONS */
+.btn{width:100%;border:none;border-radius:var(--r);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s;display:flex;align-items:center;justify-content:space-between;padding:15px 18px}
+.btn:active{opacity:.8}
+.btn-p{background:var(--gd);color:#fff}
+.btn-o{background:#fff;color:var(--gd);border:1.5px solid var(--gbr)}
+.btn-sub{background:var(--gd);color:#fff;width:calc(100% - 32px);margin:12px 16px 24px;border:none;border-radius:var(--r);padding:16px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;text-align:center;display:block;transition:opacity .15s}
+.btn-sub:active{opacity:.8}
+.btn-sub:disabled{opacity:.5;cursor:not-allowed}
+
+/* AUTH */
+.auth-note{margin:16px;padding:12px 14px;background:#fff;border:1px solid var(--gbr);border-radius:var(--r);font-size:13px;color:var(--tm);line-height:1.5}
+.auth-opts{padding:4px 16px 40px;display:flex;flex-direction:column;gap:10px}
+.auth-btn{background:#fff;border:1.5px solid var(--gbr);border-radius:var(--r);padding:15px 16px;font-family:inherit;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:14px;text-align:left;width:100%}
+.auth-btn:active,.auth-btn.sel{border-color:var(--gd);background:var(--gb)}
+.auth-av{width:42px;height:42px;border-radius:50%;background:var(--gd);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.auth-n{font-size:14px;font-weight:600;color:var(--td)}
+.auth-r{font-size:12px;color:var(--tmu);margin-top:2px}
+
+/* FORM */
+.form-w{padding:8px 0 100px}
+.fld{margin:0 16px 14px}
+.flbl{font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--tmu);text-transform:uppercase;display:block;margin-bottom:6px}
+.flbl .req{color:#E53935;margin-left:2px}
+.flbl .opt{color:var(--tmu);font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:4px}
+.finp,.fsel,.ftxt{width:100%;background:#fff;border:1.5px solid var(--gbr);border-radius:8px;padding:12px 14px;font-family:inherit;font-size:14px;color:var(--td);outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none}
+.finp:focus,.fsel:focus,.ftxt:focus{border-color:var(--gd)}
+.finp.err{border-color:#E53935}
+.ftxt{resize:none;min-height:72px;line-height:1.5}
+.fhint{font-size:11px;color:var(--tmu);margin-top:4px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 14px}
+.f2 .fld{margin:0}
+.age-box{font-size:12px;font-weight:600;margin-top:5px;min-height:18px}
+.age-ok{color:var(--gd)}.age-no{color:#E53935}
+.sec{font-size:11px;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.8px;padding:18px 16px 8px;border-top:1px solid var(--gbr);margin-top:4px}
+.sec.first{border-top:none;margin-top:0}
+
+/* PREVIEW */
+.prev-card{margin:14px 16px;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.prev-head{background:var(--gd);color:#fff;padding:16px 18px}
+.prev-tag{font-size:11px;opacity:.7;letter-spacing:1px;text-transform:uppercase}
+.prev-name{font-size:20px;font-weight:700;margin-top:3px}
+.prev-sub{font-size:13px;opacity:.82;margin-top:4px}
+.prev-body{background:#fff;border:1px solid var(--gbr);border-top:none}
+.psec{font-size:10px;font-weight:700;color:var(--gd);text-transform:uppercase;letter-spacing:.8px;padding:9px 16px 4px;background:var(--gb);border-top:1px solid var(--gbr)}
+.pr{display:flex;gap:10px;padding:9px 16px;border-bottom:1px solid var(--gb)}
+.pr:last-child{border-bottom:none}
+.pk{font-size:11px;font-weight:600;color:var(--tmu);min-width:94px;text-transform:uppercase;letter-spacing:.3px;padding-top:1px;flex-shrink:0}
+.pv{font-size:13px;font-weight:500;color:var(--td);flex:1;word-break:break-word}
+.prev-acts{padding:0 16px 20px;display:flex;flex-direction:column;gap:10px}
+
+/* SUCCESS */
+.suc-w{padding:36px 16px 24px;text-align:center}
+.suc-icon{width:72px;height:72px;border-radius:50%;background:var(--gd);color:#fff;font-size:30px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+.suc-tag{font-size:11px;color:var(--tmu);letter-spacing:1px;text-transform:uppercase}
+.suc-name{font-size:22px;font-weight:700;color:var(--gd);margin:8px 0 4px}
+.suc-sub{font-size:13px;color:var(--tmu);margin-top:4px}
+.pend-box{background:#FFF8E1;border:1px solid #FFE082;border-radius:var(--r);padding:14px 16px;margin:20px 0;text-align:left}
+.pend-t{font-size:12px;font-weight:700;color:#E65100;margin-bottom:5px}
+.pend-s{font-size:12px;color:var(--tm);line-height:1.6}
+.suc-div{width:48px;height:2px;background:var(--gbr);margin:20px auto}
+.suc-acts{display:flex;flex-direction:column;gap:10px}
+
+/* STAFF */
+.fbar{display:flex;gap:8px;padding:12px 16px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.fbar::-webkit-scrollbar{display:none}
+.fpill{background:#fff;border:1.5px solid var(--gbr);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--tm);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;font-family:inherit}
+.fpill.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+.scount{padding:2px 16px 8px;font-size:12px;color:var(--tmu)}
+.slist{padding-bottom:32px}
+.scard{background:#fff;border:1px solid var(--gbr);border-radius:var(--r);margin:6px 16px;padding:14px 16px}
+.stop{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.sav{width:40px;height:40px;border-radius:50%;background:var(--gd);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.sav.pav{background:#E65100}.sav.rav{background:#B71C1C}
+.sinf{flex:1;min-width:0}
+.scode{font-size:11px;color:var(--tmu);font-weight:600}
+.sname{font-size:14px;font-weight:700;color:var(--td);margin-top:1px}
+.sdesig{font-size:12px;color:var(--tm);margin-top:2px}
+.sloc{font-size:11px;color:var(--tmu);margin-top:2px}
+.sbot{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--gb)}
+.smob{font-size:12px;color:var(--tm)}
+.sdoj{font-size:11px;color:var(--tmu)}
+.bdg{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;letter-spacing:.5px}
+.bp{background:#FFF3E0;color:#E65100}
+.ba{background:#E8F5E9;color:#1B5E20}
+.br{background:#FFEBEE;color:#B71C1C}
+
+/* LOADER */
+.ldr{text-align:center;padding:48px 16px}
+.spin{width:30px;height:30px;border:3px solid var(--gbr);border-top-color:var(--gd);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ldr-t{font-size:13px;color:var(--tmu)}
+.empty{text-align:center;padding:48px 20px;color:var(--tmu);font-size:14px;line-height:1.6}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1A1A;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap;max-width:calc(100% - 40px);text-align:center}
+.toast.show{opacity:1}
+</style>
+  <link rel="stylesheet" href="shared-theme.css">
+</head>
+<body class="joining-maintenance-ui">
+<div class="app">
+
+<!-- HEADER -->
+<div class="hdr hide" id="hdr">
+  <button class="hdr-back" id="btnBack">&#8592;</button>
+  <div class="hdr-body">
+    <div class="hdr-title" id="hdrT">Pinaka Infra</div>
+    <div class="hdr-sub"  id="hdrS">Staff Joining Register</div>
+  </div>
+</div>
+
+<!-- HOME -->
+<div class="sc on" id="scHome">
+  <div class="home-txt" style="padding-top:48px">
+    <div class="home-t">Staff Joining Register</div>
+    <div class="home-s">Pinaka Infra &middot; Fatehpur MSW</div>
+  </div>
+  <div class="home-acts">
+    <button class="btn btn-p" onclick="goAddAuth()"><span>Add New Joiner</span><span>+</span></button>
+    <button class="btn btn-o" onclick="goViewAuth()"><span>View All Staff</span><span>&#8594;</span></button>
+  </div>
+</div>
+
+<!-- ADD AUTH -->
+<div class="sc" id="scAddAuth">
+  <div class="auth-note">Only authorised managers can add a new joiner. Select your name to continue.</div>
+  <div class="auth-opts">
+    <button class="auth-btn" onclick="pickAdd(this,'Ritesh Kapoor','Project Head')">
+      <div class="auth-av">RK</div><div><div class="auth-n">Ritesh Kapoor</div><div class="auth-r">Project Head</div></div>
+    </button>
+    <button class="auth-btn" onclick="pickAdd(this,'Abhinav Singh','Project Manager')">
+      <div class="auth-av">AS</div><div><div class="auth-n">Abhinav Singh</div><div class="auth-r">Project Manager</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="sc" id="scForm">
+  <div class="form-w" id="formWrap"></div>
+  <button class="btn-sub" onclick="goPreview()">Review &amp; Confirm &#8594;</button>
+</div>
+
+<!-- PREVIEW -->
+<div class="sc" id="scPreview">
+  <div id="prevWrap"></div>
+  <div class="prev-acts">
+    <button class="btn btn-p" id="btnSub" onclick="doSubmit()"><span>Confirm &amp; Submit</span><span>&#10003;</span></button>
+    <button class="btn btn-o" onclick="goBack()"><span>Edit Details</span><span>&#8592;</span></button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="sc" id="scSuccess">
+  <div class="suc-w">
+    <div class="suc-icon">&#10003;</div>
+    <div class="suc-tag">Form Submitted</div>
+    <div class="suc-name" id="sucName"></div>
+    <div class="suc-sub"  id="sucSub"></div>
+    <div class="pend-box">
+      <div class="pend-t">Pending &mdash; Satyendra's Action Required</div>
+      <div class="pend-s">Record saved with status PENDING.<br>Satyendra will assign Employee Code (FNP-XXXX) and Date of Joining after verification.<br>Status shows ACTIVE once code is entered in the sheet.</div>
+    </div>
+    <div class="suc-div"></div>
+    <div class="suc-acts">
+      <button class="btn btn-p" onclick="startFresh()"><span>Add Another Joiner</span><span>+</span></button>
+      <button class="btn btn-o" onclick="goHome()"><span>Back to Home</span><span>&#8962;</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW AUTH -->
+<div class="sc" id="scViewAuth">
+  <div class="auth-note">Staff directory is restricted. Select your name to continue.</div>
+  <div class="auth-opts">
+    <button class="auth-btn" onclick="pickView(this,'Ritesh Kapoor')">
+      <div class="auth-av">RK</div><div><div class="auth-n">Ritesh Kapoor</div><div class="auth-r">Project Head</div></div>
+    </button>
+    <button class="auth-btn" onclick="pickView(this,'Abhinav Singh')">
+      <div class="auth-av">AS</div><div><div class="auth-n">Abhinav Singh</div><div class="auth-r">Project Manager</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- STAFF LIST -->
+<div class="sc" id="scStaff">
+  <div class="fbar">
+    <button class="fpill on" onclick="filt('All',this)">All</button>
+    <button class="fpill" onclick="filt('PENDING',this)">Pending</button>
+    <button class="fpill" onclick="filt('ACTIVE',this)">Active</button>
+    <button class="fpill" onclick="filt('Office',this)">Office</button>
+    <button class="fpill" onclick="filt('Ward Operations',this)">Ward</button>
+    <button class="fpill" onclick="filt('MRF',this)">MRF</button>
+    <button class="fpill" onclick="filt('C&T (Collection & Transport)',this)">C&amp;T</button>
+    <button class="fpill" onclick="filt('Secondary Operations',this)">Secondary</button>
+    <button class="fpill" onclick="filt('Parking',this)">Parking</button>
+  </div>
+  <div class="scount" id="sCount"></div>
+  <div class="slist"  id="sList"></div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// â”€â”€ CONFIG â”€â”€
+const SURL = '/api/joining';
+
+// â”€â”€ STATIC DATA â”€â”€
+const DESIGS = ['Project Head','Project Manager','Accountant','Fuel Incharge','Weighbridge Operator','Sr. Mechanic','Mechanic','Foreman','Supervisor','Asst. Supervisor','MRF Supervisor','Parking Supervisor','C&T Supervisor','Driver','Helper','Guard','Other'];
+const DEPTS  = ['Office','Ward Operations','MRF','C&T (Collection & Transport)','Secondary Operations','Parking'];
+
+// â”€â”€ STATE â”€â”€
+let S = { sub: null, form: {}, staff: [], filter: 'All' };
+let stack = ['scHome'];
+
+// â”€â”€ NAVIGATION â”€â”€
+function show(id, title, sub, back) {
+  document.querySelectorAll('.sc').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  const h = document.getElementById('hdr');
+  if (title) {
+    h.classList.remove('hide');
+    document.getElementById('hdrT').textContent = title;
+    document.getElementById('hdrS').textContent = sub || 'Pinaka Infra \u00b7 Fatehpur MSW';
+    document.getElementById('btnBack').style.display = back ? '' : 'none';
+  } else { h.classList.add('hide'); }
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  stack = ['scHome']; S.sub = null; S.form = {};
+  show('scHome');
+}
+
+function goBack() {
+  if (stack.length <= 1) { goHome(); return; }
+  stack.pop();
+  const p = stack[stack.length - 1];
+  if      (p === 'scHome')     goHome();
+  else if (p === 'scAddAuth')  _addAuth();
+  else if (p === 'scForm')     _form();
+  else if (p === 'scViewAuth') _viewAuth();
+  else goHome();
+}
+
+// â”€â”€ ADD FLOW â”€â”€
+function goAddAuth() { stack.push('scAddAuth'); _addAuth(); }
+function _addAuth() {
+  document.querySelectorAll('#scAddAuth .auth-btn').forEach(b => b.classList.remove('sel'));
+  show('scAddAuth', 'Who is adding this joiner?', null, true);
+}
+
+function pickAdd(btn, name) {
+  document.querySelectorAll('#scAddAuth .auth-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  S.sub = name; S.form = {};
+  setTimeout(() => { stack.push('scForm'); _form(); }, 180);
+}
+
+function _form() {
+  buildForm();
+  show('scForm', 'New Joiner Details', 'Submitted by: ' + S.sub, true);
+}
+
+function buildForm() {
+  const f = S.form;
+  const dOpts = DESIGS.map(d => `<option value="${d}" ${f.designation===d?'selected':''}>${d}</option>`).join('');
+  const pOpts = DEPTS.map(d  => `<option value="${d}" ${f.department===d?'selected':''}>${d}</option>`).join('');
+
+  document.getElementById('formWrap').innerHTML = `
+    <div class="sec first">Personal Information</div>
+    <div class="fld"><label class="flbl">Full Name <span class="req">*</span></label>
+      <input class="finp" id="fName" type="text" value="${x(f.name||'')}" placeholder="Enter full name"></div>
+    <div class="fld"><label class="flbl">Father's Name <span class="req">*</span></label>
+      <input class="finp" id="fFather" type="text" value="${x(f.fatherName||'')}" placeholder="Enter father's name"></div>
+    <div class="f2">
+      <div class="fld"><label class="flbl">Mobile <span class="req">*</span></label>
+        <input class="finp" id="fMob" type="tel" maxlength="10" value="${x(f.mobile||'')}" placeholder="10-digit"></div>
+      <div class="fld"><label class="flbl">Date of Birth <span class="req">*</span></label>
+        <input class="finp" id="fDob" type="date" value="${f.dob||''}" onchange="onDob()">
+        <div class="age-box" id="ageBox"></div></div>
+    </div>
+    <div class="fld"><label class="flbl">Aadhar Number</label>
+      <input class="finp" id="fAadhar" type="text" maxlength="12" inputmode="numeric" value="${x(f.aadhar||'')}" placeholder="12-digit Aadhar"></div>
+    <div class="fld"><label class="flbl">Home Address</label>
+      <textarea class="ftxt" id="fAddr" placeholder="Village, District, State">${x(f.address||'')}</textarea></div>
+
+    <div class="sec">Role &amp; Assignment</div>
+    <div class="f2">
+      <div class="fld"><label class="flbl">Designation <span class="req">*</span></label>
+        <select class="fsel" id="fDesig"><option value="">Select...</option>${dOpts}</select></div>
+      <div class="fld"><label class="flbl">Department <span class="req">*</span></label>
+        <select class="fsel" id="fDept"><option value="">Select...</option>${pOpts}</select></div>
+    </div>
+    <div class="fld"><label class="flbl">Location / Post <span class="req">*</span></label>
+      <input class="finp" id="fLoc" type="text" value="${x(f.location||'')}" placeholder="e.g. Malaka MRF, Ward 12-22-23"></div>
+    <div class="fld"><label class="flbl">Replacing <span class="opt">(optional â€” if replacing someone)</span></label>
+      <input class="finp" id="fRep" type="text" value="${x(f.replacing||'')}" placeholder="Name of person being replaced"></div>
+
+    <div class="sec">Compensation</div>
+    <div class="fld"><label class="flbl">Monthly Salary â€” In-Hand (&#8377;) <span class="req">*</span></label>
+      <input class="finp" id="fSal" type="number" inputmode="numeric" value="${f.salary||''}" placeholder="Amount in Rupees"></div>
+
+    <div class="sec">Bank Details</div>
+    <div class="fld"><label class="flbl">Account Number <span class="req">*</span></label>
+      <input class="finp" id="fAcc" type="text" inputmode="numeric" value="${x(f.bankAccount||'')}" placeholder="Bank account number"></div>
+    <div class="f2">
+      <div class="fld"><label class="flbl">IFSC Code <span class="req">*</span></label>
+        <input class="finp" id="fIfsc" type="text" maxlength="11" value="${x(f.ifsc||'')}" placeholder="e.g. SBIN0001234" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="fld"><label class="flbl">Bank Name <span class="req">*</span></label>
+        <input class="finp" id="fBank" type="text" value="${x(f.bankName||'')}" placeholder="e.g. SBI"></div>
+    </div>
+    <div class="fld"><label class="flbl">Branch Name <span class="req">*</span></label>
+      <input class="finp" id="fBranch" type="text" value="${x(f.branchName||'')}" placeholder="e.g. Civil Lines, Fatehpur"></div>
+
+    <div class="sec">PF Details</div>
+    <div class="fld"><label class="flbl">UAN Number <span class="opt">(optional)</span></label>
+      <input class="finp" id="fUan" type="text" maxlength="12" inputmode="numeric" value="${x(f.uan||'')}" placeholder="12-digit UAN"></div>
+
+    <div class="sec">Emergency Contact</div>
+    <div class="fld"><label class="flbl">Contact Name</label>
+      <input class="finp" id="fEcN" type="text" value="${x(f.ecName||'')}" placeholder="Name of emergency contact"></div>
+    <div class="fld"><label class="flbl">Contact Mobile</label>
+      <input class="finp" id="fEcM" type="tel" maxlength="10" value="${x(f.ecMobile||'')}" placeholder="10-digit number"></div>
+    <div style="height:20px"></div>`;
+
+  if (f.dob) onDob();
+}
+
+// â”€â”€ AGE â”€â”€
+function age(dob) {
+  const t = new Date(), b = new Date(dob);
+  let a = t.getFullYear() - b.getFullYear();
+  const m = t.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--;
+  return a;
+}
+
+function onDob() {
+  const dob = document.getElementById('fDob').value;
+  const box = document.getElementById('ageBox');
+  const inp = document.getElementById('fDob');
+  if (!dob || !box) return;
+  const a = age(dob);
+  if (a < 18) {
+    box.innerHTML = `<span class="age-no">Age: ${a} yr &mdash; Must be 18+. Cannot submit.</span>`;
+    inp.classList.add('err');
+  } else {
+    box.innerHTML = `<span class="age-ok">Age: ${a} years</span>`;
+    inp.classList.remove('err');
+  }
+}
+
+// â”€â”€ COLLECT â”€â”€
+function g(id) { const e = document.getElementById(id); return e ? e.value.trim() : ''; }
+
+function collect() {
+  S.form = {
+    name: g('fName'), fatherName: g('fFather'), mobile: g('fMob'),
+    dob: g('fDob'), aadhar: g('fAadhar'), address: g('fAddr'),
+    designation: g('fDesig'), department: g('fDept'),
+    location: g('fLoc'), replacing: g('fRep'),
+    salary: g('fSal'),
+    bankAccount: g('fAcc'), ifsc: g('fIfsc'), bankName: g('fBank'), branchName: g('fBranch'),
+    uan: g('fUan'), ecName: g('fEcN'), ecMobile: g('fEcM'),
+    submittedBy: S.sub
+  };
+}
+
+// â”€â”€ VALIDATE â”€â”€
+function validate() {
+  collect();
+  const f = S.form;
+  if (!f.name)                               { toast('Enter employee full name'); return false; }
+  if (!f.fatherName)                         { toast("Enter father's name"); return false; }
+  if (!/^\d{10}$/.test(f.mobile))            { toast('Enter valid 10-digit mobile'); return false; }
+  if (!f.dob)                                { toast('Enter date of birth'); return false; }
+  if (age(f.dob) < 18)                       { toast('Cannot submit \u2014 employee is under 18'); return false; }
+  if (!f.designation)                        { toast('Select a designation'); return false; }
+  if (!f.department)                         { toast('Select a department'); return false; }
+  if (!f.location)                           { toast('Enter location / post'); return false; }
+  if (!f.salary || isNaN(Number(f.salary)))  { toast('Enter monthly in-hand salary'); return false; }
+  if (!f.bankAccount)                        { toast('Enter bank account number'); return false; }
+  if (!f.ifsc)                               { toast('Enter IFSC code'); return false; }
+  if (!f.bankName)                           { toast('Enter bank name'); return false; }
+  if (!f.branchName)                         { toast('Enter branch name'); return false; }
+  return true;
+}
+
+// â”€â”€ PREVIEW â”€â”€
+function goPreview() {
+  if (!validate()) return;
+  stack.push('scPreview');
+  buildPreview();
+  show('scPreview', 'Review Details', 'Check before submitting', true);
+}
+
+function fd(d) {
+  if (!d) return '\u2014';
+  const p = d.split('-'), m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return p.length === 3 ? p[2]+'-'+m[+p[1]-1]+'-'+p[0] : d;
+}
+
+function pr(k, v) { return `<div class="pr"><div class="pk">${k}</div><div class="pv">${x(v||'\u2014')}</div></div>`; }
+
+function buildPreview() {
+  const f = S.form;
+  document.getElementById('prevWrap').innerHTML = `
+    <div class="prev-card">
+      <div class="prev-head">
+        <div class="prev-tag">New Joiner</div>
+        <div class="prev-name">${x(f.name)}</div>
+        <div class="prev-sub">${x(f.designation)} &middot; ${x(f.department)}</div>
+      </div>
+      <div class="prev-body">
+        <div class="psec">Personal</div>
+        ${pr("Father's Name", f.fatherName)}
+        ${pr("Mobile",        f.mobile)}
+        ${pr("Date of Birth", fd(f.dob) + '  (Age ' + age(f.dob) + ' yrs)')}
+        ${f.aadhar  ? pr("Aadhar",  f.aadhar)  : ''}
+        ${f.address ? pr("Address", f.address) : ''}
+        <div class="psec">Role</div>
+        ${pr("Location", f.location)}
+        ${f.replacing ? pr("Replacing", f.replacing) : ''}
+        <div class="psec">Salary</div>
+        ${pr("Monthly In-Hand", '\u20B9 ' + Number(f.salary).toLocaleString('en-IN'))}
+        <div class="psec">Bank</div>
+        ${pr("Account No", f.bankAccount)}
+        ${pr("IFSC",       f.ifsc)}
+        ${pr("Bank",       f.bankName)}
+        ${pr("Branch",     f.branchName)}
+        ${f.uan ? '<div class="psec">PF</div>' + pr("UAN", f.uan) : ''}
+        ${(f.ecName||f.ecMobile) ? '<div class="psec">Emergency</div>' + (f.ecName ? pr("Name", f.ecName) : '') + (f.ecMobile ? pr("Mobile", f.ecMobile) : '') : ''}
+        <div class="psec">Submitted By</div>
+        ${pr("", f.submittedBy)}
+      </div>
+    </div>`;
+}
+
+// â”€â”€ SUBMIT â”€â”€
+async function doSubmit() {
+  if (SURL === 'YOUR_SCRIPT_URL_HERE') { toast('Script URL not set. Complete setup first.'); return; }
+  const btn = document.getElementById('btnSub');
+  btn.querySelector('span').textContent = 'Saving...';
+  btn.disabled = true;
+  try {
+    const res  = await fetch(SURL, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(S.form) });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('sucName').textContent = S.form.name;
+      document.getElementById('sucSub').textContent  = S.form.designation + ' \u00b7 ' + S.form.department;
+      stack = ['scHome','scSuccess'];
+      show('scSuccess','Submitted','Pinaka Infra \u00b7 Fatehpur MSW', true);
+    } else {
+      toast('Error: ' + (data.error || 'Could not save. Try again.'));
+      btn.querySelector('span').textContent = 'Confirm & Submit';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    toast('Network error. Check connection.');
+    btn.querySelector('span').textContent = 'Confirm & Submit';
+    btn.disabled = false;
+  }
+}
+
+function startFresh() { S.form={}; S.sub=null; stack=['scHome']; goAddAuth(); }
+
+// â”€â”€ VIEW FLOW â”€â”€
+function goViewAuth() { stack.push('scViewAuth'); _viewAuth(); }
+function _viewAuth() {
+  document.querySelectorAll('#scViewAuth .auth-btn').forEach(b => b.classList.remove('sel'));
+  show('scViewAuth','Staff Directory Access',null,true);
+}
+
+function pickView(btn, name) {
+  document.querySelectorAll('#scViewAuth .auth-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  setTimeout(async () => {
+    stack.push('scStaff');
+    document.querySelectorAll('.fpill').forEach(p => p.classList.remove('on'));
+    document.querySelector('.fpill').classList.add('on');
+    S.filter = 'All';
+    show('scStaff','All Staff','Viewing as: '+name,true);
+    await loadStaff();
+  }, 180);
+}
+
+async function loadStaff() {
+  document.getElementById('sList').innerHTML  = '<div class="ldr"><div class="spin"></div><div class="ldr-t">Loading staff records...</div></div>';
+  document.getElementById('sCount').textContent = '';
+  if (SURL === 'YOUR_SCRIPT_URL_HERE') { document.getElementById('sList').innerHTML='<div class="empty">Script URL not configured.</div>'; return; }
+  try {
+    const res  = await fetch(SURL + '?action=employees&t=' + Date.now());
+    const data = await res.json();
+    S.staff = data.employees || [];
+    render(S.filter);
+  } catch(e) {
+    document.getElementById('sList').innerHTML = '<div class="empty">Could not load. Check connection.</div>';
+  }
+}
+
+function filt(f, btn) {
+  document.querySelectorAll('.fpill').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  S.filter = f;
+  render(f);
+}
+
+function status(e) {
+  if ((e.status||'').toUpperCase()==='REJECTED') return 'REJECTED';
+  if (e.employeeCode && e.employeeCode.toString().trim()) return 'ACTIVE';
+  return 'PENDING';
+}
+
+function render(f) {
+  let list = S.staff;
+  if      (f==='PENDING') list = S.staff.filter(e => status(e)==='PENDING');
+  else if (f==='ACTIVE')  list = S.staff.filter(e => status(e)==='ACTIVE');
+  else if (f!=='All')     list = S.staff.filter(e => e.department===f);
+
+  document.getElementById('sCount').textContent =
+    list.length + (f!=='All' ? ' of '+S.staff.length : '') + ' employee' + (list.length!==1?'s':'');
+
+  if (!list.length) { document.getElementById('sList').innerHTML='<div class="empty">No records found.</div>'; return; }
+
+  document.getElementById('sList').innerHTML = list.map(e => {
+    const st  = status(e);
+    const ini = e.name.split(' ').map(w=>w[0]||'').join('').substring(0,2).toUpperCase();
+    const avc = st==='PENDING'?'pav':st==='REJECTED'?'rav':'';
+    const bdc = st==='ACTIVE'?'ba':st==='REJECTED'?'br':'bp';
+    return `<div class="scard">
+      <div class="stop">
+        <div class="sav ${avc}">${ini}</div>
+        <div class="sinf">
+          <div class="scode">${st==='PENDING'?'Pending Code Assignment':x(e.employeeCode)}</div>
+          <div class="sname">${x(e.name)}</div>
+          <div class="sdesig">${x(e.designation)} &middot; ${x(e.department)}</div>
+          <div class="sloc">${x(e.location)}</div>
+        </div>
+        <span class="bdg ${bdc}">${st}</span>
+      </div>
+      <div class="sbot">
+        <span class="smob">${x(e.mobile)}</span>
+        <span class="sdoj">${st==='ACTIVE'?'Joined '+( e.doj||'\u2014'):st==='REJECTED'?'Rejected':'Awaiting Satyendra'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// â”€â”€ UTILS â”€â”€
+function x(s) { return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let tT;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(tT); tT = setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+document.getElementById('btnBack').addEventListener('click', goBack);
+</script>
+</body>
+</html>
+

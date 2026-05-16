@@ -1,0 +1,247 @@
+// ════════════════════════════════════════════════════════
+// PINAKA INFRA — STAFF JOINING REGISTER
+// Google Apps Script
+//
+// SETUP STEPS (one time only):
+// 1. Create a new Google Sheet — name it "Pinaka Staff Register"
+// 2. Extensions > Apps Script — delete all existing code
+// 3. Paste this entire file — Save
+// 4. Click Run > setup() — allow permissions when prompted
+// 5. Deploy > New Deployment > Web App
+//    Execute as: Me | Who has access: Anyone
+//    Click Deploy > Copy the Web App URL
+// 6. Open joining-app.html in a text editor
+//    Find:    const SURL = 'YOUR_SCRIPT_URL_HERE';
+//    Replace: paste the Web App URL here — Save
+// 7. Share joining-app.html with Ritesh and Abhinav via WhatsApp
+//
+// SATYENDRA'S INSTRUCTIONS (no app needed — works directly in sheet):
+//   Column A = Employee Code    → type FNP-0001, FNP-0002 etc.
+//   Column B = Status           → starts as PENDING. Type REJECTED to reject.
+//   Column C = Date of Joining  → type the date when approved
+//   All other columns are filled by the app automatically.
+// ════════════════════════════════════════════════════════
+
+const EMP_SHEET = 'Employees';
+const SET_SHEET = 'Settings';
+const MASTER_DATA_URL = 'https://script.google.com/macros/s/AKfycbwRRSc5J2X3SYjJ_9pFDq7eoVwTICDICtyc8DUC_H-DIsgJHjnzmehbKrk7CCv8vZ0G/exec';
+
+// ── ONE-TIME SETUP ──────────────────────────────────────
+function setup() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Employees sheet
+  let sh = ss.getSheetByName(EMP_SHEET);
+  if (!sh) sh = ss.insertSheet(EMP_SHEET);
+  sh.clearContents();
+  sh.clearFormats();
+
+  // Column order — first 3 are for Satyendra, rest auto-filled by app
+  const headers = [
+    'Employee Code',        // A — Satyendra fills (FNP-0001 format)
+    'Status',               // B — App fills PENDING. Satyendra types REJECTED if needed.
+    'Date of Joining',      // C — Satyendra fills after approval
+    'Full Name',            // D
+    "Father's Name",        // E
+    'Mobile',               // F
+    'Date of Birth',        // G
+    'Age at Joining',       // H
+    'Aadhar Number',        // I
+    'Home Address',         // J
+    'Designation',          // K
+    'Department',           // L
+    'Location / Post',      // M
+    'Replacing',            // N
+    'Monthly Salary (In-Hand)',// O
+    'Bank Account Number',  // P
+    'IFSC Code',            // Q
+    'Bank Name',            // R
+    'Branch Name',          // S
+    'UAN Number (PF)',      // T
+    'Emergency Contact',    // U
+    'Emergency Mobile',     // V
+    'Submitted By',         // W
+    'Date of Submission'    // X
+  ];
+
+  const hRange = sh.getRange(1, 1, 1, headers.length);
+  hRange.setValues([headers]);
+  hRange.setBackground('#1B5E20').setFontColor('#FFFFFF').setFontWeight('bold').setFontSize(11);
+  sh.setFrozenRows(1);
+
+  // Highlight Satyendra's columns in yellow so he can spot them easily
+  sh.getRange(1, 1, 1, 3).setBackground('#F9A825').setFontColor('#000000');
+
+  // Column widths
+  const widths = [130,100,130,160,160,120,120,100,140,200,150,170,180,160,160,160,110,130,170,130,160,130,140,160];
+  widths.forEach((w, i) => sh.setColumnWidth(i + 1, w));
+
+  // Settings sheet
+  let st = ss.getSheetByName(SET_SHEET);
+  if (!st) st = ss.insertSheet(SET_SHEET);
+  st.clearContents();
+  st.getRange(1,1,1,3).setValues([['Key','Value','Description']]).setFontWeight('bold');
+  st.getRange(2,1,2,3).setValues([
+    ['project', 'Fatehpur MSW', 'Project name'],
+    ['app_version', '2.0', 'App version']
+  ]);
+
+  SpreadsheetApp.getUi().alert(
+    'Setup Complete!\n\n' +
+    'Sheets created: Employees + Settings\n\n' +
+    'Satyendra columns are highlighted in YELLOW (A, B, C):\n' +
+    '  A = Employee Code (FNP-0001)\n' +
+    '  B = Status (PENDING by default, type REJECTED to reject)\n' +
+    '  C = Date of Joining\n\n' +
+    'Next: Deploy as Web App\n' +
+    'Deploy > New Deployment > Web App\n' +
+    'Execute as: Me | Access: Anyone'
+  );
+}
+
+// ── doGet — return staff list (basic info only, no sensitive data) ──
+function doGet(e) {
+  try {
+    return jsonOut({ employees: getEmployees() });
+  } catch(err) {
+    return jsonOut({ error: err.message });
+  }
+}
+
+// ── doPost — save new joiner ──
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    return jsonOut(saveEmployee(data));
+  } catch(err) {
+    return jsonOut({ success: false, error: err.message });
+  }
+}
+
+// ── READ — only returns non-sensitive columns to the app ──
+function getEmployees() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getSheetByName(EMP_SHEET);
+  if (!sh || sh.getLastRow() < 2) return [];
+
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 24).getValues();
+  return rows.filter(r => r[3]).map(r => ({
+    employeeCode: r[0]  || '',
+    status:       r[1]  || 'PENDING',
+    doj:          r[2]  ? fmtDate(r[2]) : '',
+    name:         r[3]  || '',
+    mobile:       r[5]  || '',
+    designation:  r[10] || '',
+    department:   r[11] || '',
+    location:     r[12] || ''
+    // Sensitive fields (salary, bank, aadhar, PF, address) NOT returned to app
+  }));
+}
+
+// ── WRITE — save one employee row ──
+function saveEmployee(data) {
+  const ss  = SpreadsheetApp.getActiveSpreadsheet();
+  const sh  = ss.getSheetByName(EMP_SHEET);
+  const ts  = Utilities.formatDate(new Date(), 'Asia/Kolkata', 'dd-MMM-yyyy HH:mm:ss');
+  const dob = clean(data.dob);
+  const a   = dob ? calcAge(dob) : '';
+
+  sh.appendRow([
+    '',                         // A: Employee Code — Satyendra fills
+    'PENDING',                  // B: Status
+    '',                         // C: Date of Joining — Satyendra fills
+    clean(data.name),           // D
+    clean(data.fatherName),     // E
+    clean(data.mobile),         // F
+    dob,                        // G
+    a,                          // H: Age
+    clean(data.aadhar),         // I
+    clean(data.address),        // J
+    clean(data.designation),    // K
+    clean(data.department),     // L
+    clean(data.location),       // M
+    clean(data.replacing),      // N
+    clean(data.salary),         // O
+    clean(data.bankAccount),    // P
+    clean(data.ifsc),           // Q
+    clean(data.bankName),       // R
+    clean(data.branchName),     // S
+    clean(data.uan),            // T
+    clean(data.ecName),         // U
+    clean(data.ecMobile),       // V
+    clean(data.submittedBy),    // W
+    ts                          // X
+  ]);
+
+  const masterSync = syncMasterEmployee_(data);
+  return { success: true, masterSync: masterSync };
+}
+
+// ── HELPERS ──
+function syncMasterEmployee_(data) {
+  if (!MASTER_DATA_URL) return { ok: false, skipped: true };
+  try {
+    const payload = {
+      action: 'upsertEmployee',
+      employee: {
+        id: buildMasterEmployeeId_(data),
+        name: clean(data.name),
+        mobile: clean(data.mobile),
+        fatherName: clean(data.fatherName),
+        dob: clean(data.dob),
+        designation: clean(data.designation),
+        department: clean(data.department),
+        role: clean(data.designation),
+        site: clean(data.location) || 'fatehpur',
+        active: true,
+        maintenanceAccess: true,
+        joiningAccess: true,
+        monthlySalary: clean(data.salary),
+        bankName: clean(data.bankName),
+        accountHolderName: clean(data.name),
+        accountNumber: clean(data.bankAccount),
+        ifscCode: clean(data.ifsc),
+        notes: 'Added from Staff Joining app'
+      }
+    };
+    const res = UrlFetchApp.fetch(MASTER_DATA_URL, {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+    const body = JSON.parse(res.getContentText() || '{}');
+    return { ok: res.getResponseCode() === 200 && body.ok === true, status: res.getResponseCode(), error: body.error || '' };
+  } catch (e) {
+    Logger.log('Master employee sync failed: ' + e.message);
+    return { ok: false, error: e.message };
+  }
+}
+
+function buildMasterEmployeeId_(data) {
+  const mobile = clean(data.mobile);
+  const last4 = mobile ? mobile.slice(-4) : Utilities.getUuid().slice(0, 4);
+  const base = clean(data.name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'employee';
+  return base + '-' + last4;
+}
+
+function calcAge(dob) {
+  try {
+    const today = new Date(), b = new Date(dob);
+    let a = today.getFullYear() - b.getFullYear();
+    const m = today.getMonth() - b.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < b.getDate())) a--;
+    return a;
+  } catch(e) { return ''; }
+}
+
+function fmtDate(d) {
+  try { return Utilities.formatDate(new Date(d), 'Asia/Kolkata', 'dd-MMM-yyyy'); }
+  catch(e) { return String(d); }
+}
+
+function clean(v) { return (v !== undefined && v !== null) ? String(v).trim() : ''; }
+
+function jsonOut(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}

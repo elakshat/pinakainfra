@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MSW Complaint Portal | Citizen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/complaints/assets/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="/complaints" aria-label="MSW Complaint Portal">
+          <span class="brand-mark">MSW</span>
+          <span>
+            <strong>MSW Complaint Portal</strong>
+            <small class="font-hi">एमएसडब्ल्यू शिकायत पोर्टल</small>
+          </span>
+        </a>
+        <nav class="top-nav" aria-label="Primary">
+          <a class="active" href="/complaints">Citizen</a>
+          <a href="/complaints/admin.html">Admin</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="toolbar" aria-live="polite">
+        <div>
+          <h1>New complaint</h1>
+          <p class="muted font-hi">अपनी सफाई समस्या दर्ज करें</p>
+        </div>
+        <span class="mode-pill" id="backend-mode">Starting...</span>
+      </section>
+
+      <section id="success-screen" class="panel hidden">
+        <div class="success-box">
+          <p class="eyebrow">Complaint registered</p>
+          <h2 id="success-id">CMP</h2>
+          <p class="muted font-hi">आपकी शिकायत दर्ज हो गई है।</p>
+        </div>
+        <div class="button-row">
+          <button type="button" class="btn" id="btn-another">File another</button>
+          <a class="btn btn-secondary" href="/complaints/admin.html">Open admin</a>
+        </div>
+      </section>
+
+      <form id="complaint-form" class="panel form-grid" autocomplete="on">
+        <div class="field">
+          <label for="name">Full name *</label>
+          <input type="text" id="name" name="name" maxlength="120" />
+          <p class="error hidden" id="err-name"></p>
+        </div>
+
+        <div class="field">
+          <label for="mobile">Mobile number *</label>
+          <input type="tel" id="mobile" name="mobile" maxlength="10" inputmode="numeric" />
+          <p class="error hidden" id="err-mobile"></p>
+        </div>
+
+        <div class="field">
+          <label for="ward">Ward *</label>
+          <select id="ward" name="ward">
+            <option value="">Select ward</option>
+          </select>
+          <p class="error hidden" id="err-ward"></p>
+        </div>
+
+        <div class="field">
+          <label for="type">Complaint type *</label>
+          <select id="type" name="type">
+            <option value="">Select type</option>
+          </select>
+          <p class="error hidden" id="err-type"></p>
+        </div>
+
+        <div class="field full">
+          <label for="description">Description *</label>
+          <textarea
+            id="description"
+            name="description"
+            class="font-hi"
+            placeholder="Describe the issue / समस्या लिखें"
+          ></textarea>
+          <p class="error hidden" id="err-desc"></p>
+        </div>
+
+        <p class="error hidden full" id="err-form"></p>
+
+        <button type="submit" class="btn full" id="btn-submit">Submit complaint</button>
+      </form>
+    </main>
+
+    <div id="otp-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+      <div class="modal">
+        <h2>Verify mobile</h2>
+        <p class="hint" id="otp-help">Demo mode: enter any 6 digits. Firebase Phone Auth can be enabled later.</p>
+        <form id="otp-form" class="otp-form">
+          <input
+            type="text"
+            id="otp-input"
+            maxlength="6"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            placeholder="000000"
+            aria-label="OTP"
+          />
+          <p class="error hidden" id="err-otp"></p>
+          <div class="button-row">
+            <button type="button" class="btn btn-secondary" id="otp-cancel">Cancel</button>
+            <button type="submit" class="btn" id="otp-verify">Verify</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="recaptcha-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="/complaints/js/config.js"></script>
+    <script src="/complaints/js/otp.js"></script>
+    <script src="/complaints/js/store.js"></script>
+    <script src="/complaints/js/citizen.js"></script>
+  </body>
+</html>
